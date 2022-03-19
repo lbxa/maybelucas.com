@@ -1,10 +1,10 @@
 import "./style.css";
-import "../index.css";
+import "./index.css";
 
 import * as THREE from "three";
 
 // DEBUG
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import * as dat from "dat.gui";
 // const gui = new dat.GUI();
 
@@ -17,7 +17,7 @@ const group = new THREE.Group();
 scene.add(group);
 
 const textureLoader = new THREE.TextureLoader();
-const particleTexture = textureLoader.load("../static/particle.png");
+const particleTexture = textureLoader.load("/img/particle.png");
 
 /** -----------------------------------------------------------------
  *  (B) Sizing
