@@ -43,7 +43,7 @@
 @font-face {
   font-family: "Source Code Pro";
   src: local("Source Code Pro"),
-    url("./static/fonts/SourceCodePro/SourceCodePro-Light.ttf");
+    url("/fonts/SourceCodePro/SourceCodePro-Light.ttf");
   font-weight: 300;
   font-style: normal;
 }
@@ -51,7 +51,7 @@
 @font-face {
   font-family: "Source Code Pro";
   src: local("Source Code Pro"),
-    url("./static/fonts/SourceCodePro/SourceCodePro-Medium.ttf");
+    url("/fonts/SourceCodePro/SourceCodePro-Medium.ttf");
   font-weight: 500;
   font-style: normal;
 }
@@ -59,7 +59,7 @@
 @font-face {
   font-family: "Source Code Pro";
   src: local("Source Code Pro"),
-    url("./static/fonts/SourceCodePro/SourceCodePro-Bold.ttf");
+    url("/fonts/SourceCodePro/SourceCodePro-Bold.ttf");
   font-weight: 700;
   font-style: normal;
 }
@@ -67,7 +67,7 @@
 @font-face {
   font-family: "Source Code Pro";
   src: local("Source Code Pro"),
-    url("./static/fonts/SourceCodePro/SourceCodePro-Black.ttf");
+    url("/fonts/SourceCodePro/SourceCodePro-Black.ttf");
   font-weight: 900;
   font-style: normal;
 }
@@ -75,35 +75,35 @@
 /* ROBOTO */
 @font-face {
   font-family: "Roboto";
-  src: local("Roboto"), url("./static/fonts/Roboto/Roboto-Light.ttf");
+  src: local("Roboto"), url("/fonts/Roboto/Roboto-Light.ttf");
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Roboto";
-  src: local("Roboto"), url("./static/fonts/Roboto/Roboto-Regular.ttf");
+  src: local("Roboto"), url("/fonts/Roboto/Roboto-Regular.ttf");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Roboto";
-  src: local("Roboto"), url("./static/fonts/Roboto/Roboto-Medium.ttf");
+  src: local("Roboto"), url("/fonts/Roboto/Roboto-Medium.ttf");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Roboto";
-  src: local("Roboto"), url("./static/fonts/Roboto/Roboto-Bold.ttf");
+  src: local("Roboto"), url("/fonts/Roboto/Roboto-Bold.ttf");
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Roboto";
-  src: local("Roboto"), url("./static/fonts/Roboto/Roboto-Black.ttf");
+  src: local("Roboto"), url("/fonts/Roboto/Roboto-Black.ttf");
   font-weight: 900;
   font-style: normal;
 }

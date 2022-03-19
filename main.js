@@ -16,8 +16,8 @@ const scene = new THREE.Scene();
 const group = new THREE.Group();
 scene.add(group);
 
-const textureLoader = new THREE.TextureLoader();
-const particleTexture = textureLoader.load("/img/particle.png");
+// const textureLoader = new THREE.TextureLoader();
+// const particleTexture = textureLoader.load("/img/particle.png");
 
 /** -----------------------------------------------------------------
  *  (B) Sizing
@@ -47,21 +47,6 @@ window.addEventListener("resize", () => {
  */
 
 const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
-// const material = new THREE.MeshStandardMaterial({
-//   color: 0x292929,
-//   roughness: 0.25,
-//   metalness: 0.5,
-// });
-
-// const material = new THREE.MeshPhongMaterial({
-//   shininess: 100,
-//   color: 0x292929,
-//   specular: 0xffffff,
-//   transparent: true,
-//   side: THREE.BackSide,
-//   blending: THREE.AdditiveBlending,
-//   depthWrite: false,
-// });
 
 const material = new THREE.PointsMaterial({
   size: 0.000001,
@@ -73,13 +58,7 @@ sphere.receiveShadow = true;
 group.add(sphere);
 
 const addParticle = () => {
-  const geometry = new THREE.SphereGeometry(0.05, 24, 24);
-  // const material = new THREE.MeshStandardMaterial({
-  //   color: 0xffffff,
-  //   roughness: 0.25,
-  //   metalness: 0.5,
-  //   emissive: 1,
-  // });
+  const geometry = new THREE.SphereBufferGeometry(0.05, 24, 24);
 
   const material = new THREE.MeshPhongMaterial({
     shininess: 100,
@@ -88,7 +67,7 @@ const addParticle = () => {
     transparent: true,
     side: THREE.BackSide,
     blending: THREE.AdditiveBlending,
-    map: particleTexture,
+    // map: particleTexture,
     depthWrite: false,
   });
 
@@ -96,7 +75,7 @@ const addParticle = () => {
 
   const [x, y, z] = Array(3)
     .fill()
-    .map(() => THREE.MathUtils.randFloatSpread(100));
+    .map(() => THREE.MathUtils.randFloatSpread(80));
 
   particle.position.set(x, y, z);
   particle.castShadow = true;
@@ -104,7 +83,7 @@ const addParticle = () => {
   group.add(particle);
 };
 
-Array(4000).fill().forEach(addParticle);
+Array(1000).fill().forEach(addParticle);
 
 /** -----------------------------------------------------------------
  *  (2) Lights

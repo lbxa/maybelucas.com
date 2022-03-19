@@ -1,5 +1,6 @@
+// https://vitejs.dev/config/
 export default {
   build: {
-    chunkSizeWarningLimit: 1600,
+    chunkSizeWarningLimit: 600,
   },
 };
