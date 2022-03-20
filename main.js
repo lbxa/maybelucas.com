@@ -1,4 +1,3 @@
-import "./style.css";
 import "./index.css";
 
 import * as THREE from "three";
@@ -46,10 +45,16 @@ window.addEventListener("resize", () => {
  *  (1) Geometries
  */
 
-const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
+const geometry = new THREE.SphereBufferGeometry(0.5, 30, 30);
 
+// MacOS: size: 0.005
+// Windows: size: 0.000001
+// Linux:
 const material = new THREE.PointsMaterial({
-  size: 0.000001,
+  size: 0.008,
+  sizeAttenuation: true,
+  map: new THREE.TextureLoader().load("/img/disc.png"),
+  transparent: true,
 });
 
 const sphere = new THREE.Points(geometry, material);
@@ -58,7 +63,7 @@ sphere.receiveShadow = true;
 group.add(sphere);
 
 const addParticle = () => {
-  const geometry = new THREE.SphereBufferGeometry(0.05, 24, 24);
+  const geometry = new THREE.SphereBufferGeometry(0.05, 10, 10);
 
   const material = new THREE.MeshPhongMaterial({
     shininess: 100,
@@ -91,7 +96,7 @@ Array(1000).fill().forEach(addParticle);
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1);
 
-pointLight.intensity = 1.48;
+pointLight.intensity = 1.5;
 
 group.add(pointLight);
 
@@ -170,7 +175,7 @@ const animate = () => {
   pointLight.position.x = a * Math.cos(factor);
   pointLight.position.z = b * Math.sin(factor);
 
-  group.rotation.y = -factor * 0.05;
+  group.rotation.y = -factor * 0.08;
 
   group.rotation.y += 0.5 * (targetX - group.rotation.y);
   group.rotation.x += 0.05 * (targetY - group.rotation.x);

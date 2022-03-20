@@ -3,20 +3,39 @@
 @tailwind utilities;
 
 @layer base {
+  body {
+    @apply text-center;
+    @apply md:text-left;
+  }
+
   h1 {
-    @apply text-5xl;
+    @apply text-4xl;
+    @apply md:text-5xl;
     @apply my-8;
   }
 
   h2 {
-    @apply text-xl;
-    @apply pb-2;
+    @apply text-lg;
+    @apply md:text-xl;
     @apply font-mono;
+    @apply border-b-[1px];
+    @apply border-white;
+    @apply pb-4;
+    @apply md:pb-0;
+    @apply md:border-b-0;
   }
 
   a {
     @apply font-light;
     @apply hover:underline;
+  }
+
+  i {
+    @apply not-italic;
+    @apply invisible;
+    @apply before:content-none;
+    @apply md:visible;
+    @apply md:before:content-["\00a0"];
   }
 
   section {
@@ -27,16 +46,71 @@
     @apply py-4;
     @apply my-8;
     @apply rounded-lg;
+    @apply text-center;
+    @apply md:text-left;
   }
 
   ul {
-    @apply list-disc;
-    @apply pl-10;
+    @apply md:list-disc;
+    @apply pl-0;
+    @apply md:pl-4;
   }
 
   li {
-    @apply py-1;
+    @apply pt-4;
+    @apply pl-0;
+    @apply md:pl-2;
   }
+
+  span {
+    @apply text-sm;
+    @apply block;
+    @apply md:text-xl;
+    @apply md:inline;
+  }
+}
+
+/* WebGL Styles */
+canvas#webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  outline: none;
+  mix-blend-mode: exclusion;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+body {
+  background-color: #181818;
+  overflow-x: hidden;
+  color: white;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #393939 rgb(122, 117, 117);
+}
+
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #393939;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #7a7575;
+  border-radius: 20px;
+  border: 3px solid #393939;
 }
 
 /* SOURCE CODE PRO */
