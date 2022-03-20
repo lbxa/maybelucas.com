@@ -19,10 +19,9 @@
     @apply md:text-xl;
     @apply font-mono;
     @apply border-b-[1px];
+    @apply border-white;
     @apply pb-4;
-    @apply border-b-slate-50;
-    @apply md:pb-2;
-    @apply md:mb-0;
+    @apply md:pb-0;
     @apply md:border-b-0;
   }
 
@@ -69,6 +68,49 @@
     @apply md:text-xl;
     @apply md:inline;
   }
+}
+
+/* WebGL Styles */
+canvas#webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  outline: none;
+  mix-blend-mode: exclusion;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+body {
+  background-color: #181818;
+  overflow-x: hidden;
+  color: white;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #393939 rgb(122, 117, 117);
+}
+
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #393939;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #7a7575;
+  border-radius: 20px;
+  border: 3px solid #393939;
 }
 
 /* SOURCE CODE PRO */
