@@ -3,20 +3,40 @@
 @tailwind utilities;
 
 @layer base {
+  body {
+    @apply text-center;
+    @apply md:text-left;
+  }
+
   h1 {
-    @apply text-5xl;
+    @apply text-4xl;
+    @apply md:text-5xl;
     @apply my-8;
   }
 
   h2 {
-    @apply text-xl;
-    @apply pb-2;
+    @apply text-lg;
+    @apply md:text-xl;
     @apply font-mono;
+    @apply border-b-[1px];
+    @apply pb-4;
+    @apply border-b-slate-50;
+    @apply md:pb-2;
+    @apply md:mb-0;
+    @apply md:border-b-0;
   }
 
   a {
     @apply font-light;
     @apply hover:underline;
+  }
+
+  i {
+    @apply not-italic;
+    @apply invisible;
+    @apply before:content-none;
+    @apply md:visible;
+    @apply md:before:content-["\00a0"];
   }
 
   section {
@@ -27,15 +47,27 @@
     @apply py-4;
     @apply my-8;
     @apply rounded-lg;
+    @apply text-center;
+    @apply md:text-left;
   }
 
   ul {
-    @apply list-disc;
-    @apply pl-10;
+    @apply md:list-disc;
+    @apply pl-0;
+    @apply md:pl-4;
   }
 
   li {
-    @apply py-1;
+    @apply pt-4;
+    @apply pl-0;
+    @apply md:pl-2;
+  }
+
+  span {
+    @apply text-sm;
+    @apply block;
+    @apply md:text-xl;
+    @apply md:inline;
   }
 }
 
