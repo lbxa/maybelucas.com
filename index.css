@@ -21,7 +21,9 @@
     @apply border-b-[1px];
     @apply border-white;
     @apply pb-4;
+    @apply mb-2;
     @apply md:pb-0;
+    @apply md:mb-0;
     @apply md:border-b-0;
   }
 
@@ -39,7 +41,7 @@
   }
 
   section {
-    @apply bg-black/20;
+    @apply bg-black/30;
     @apply backdrop-blur-sm;
     @apply backdrop-brightness-200;
     @apply px-6;
@@ -53,13 +55,13 @@
   ul {
     @apply md:list-disc;
     @apply pl-0;
-    @apply md:pl-4;
+    @apply md:pl-7;
   }
 
   li {
-    @apply pt-4;
+    @apply pt-2;
     @apply pl-0;
-    @apply md:pl-2;
+    @apply md:pl-1;
   }
 
   span {
