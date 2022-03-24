@@ -20,7 +20,6 @@
     @apply md:text-3xl;
     @apply font-mono;
     @apply pb-1;
-    @apply md:pb-0;
   }
 
   a {
