@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="I should probably write something useful in here..."
+    />
     <title>Lucas Barbosa</title>
   </head>
   <body>
@@ -28,16 +32,23 @@
 
           <ul>
             <li>
-              Automated manual microservices to optimise tax accountancy
+              Automated manual microservices to optimize tax accountancy
               workflow, reducing the amount of non-billable hours.
             </li>
             <li>
-              Engineered an intranet platform using the MERN stack that allows
-              for future tailored applications to be easily integrated.
+              Engineered an intranet platform using the MERN stack to create an
+              ecosystem for future cutting-edge applications to be built on.
             </li>
             <li>
-              Developed custom text-analytics algorithms to parse 800+ page word
-              documents into organisable and indexable MongoDB databases.
+              The platform incorporated multiple caching techniques to optimise
+              efficiency since it was being hosted on a low-performance VPS in
+              the Cloud.
+            </li>
+            <li>
+              One of these applications was a text-analytics algorithm to parse
+              800+ page word documents and organise their data into MongoDB
+              databases for faster search and PDF exporting features saving
+              hours of manual work.
             </li>
           </ul>
         </section>
@@ -49,17 +60,24 @@
 
           <ul>
             <li>
-              Turned Figma User flow diagrams into a real user interface using
-              React and deployed to the internet using AWS.
+              Built the frontend of a QR scanning app from Figma User flow
+              diagrams with React and Redux and deployed to the internet using
+              an AWS EC2 instance.
             </li>
             <li>
-              Integrated the React frontend with a pre-existing Flask backend
-              tackling obstacles of not having a well-built API, to begin with.
+              Integrated the React frontend with a pre-existing Python Flask
+              backend tackling obstacles of not having a well-built API, to
+              begin with. This resulted in a full-stack application.
             </li>
             <li>
-              Worked on conceptualising new ideas for the second iteration of
+              Conducted User tests in person by approaching customers at a Cafe
+              who would be interested in using the product and collected their
+              feedback on our system.
+            </li>
+            <li>
+              Worked on conceptualizing new ideas for the second iteration of
               the product focusing on the data returned from the first
-              iteration’s UX surveys.
+              iteration’s User Testing and UX surveys.
             </li>
           </ul>
         </section>
@@ -102,7 +120,7 @@
             <li>
               Private Tutor<i>/</i>
               <span class="text-base font-mono font-light"
-                >Hills District and broader Sydney</span
+                >Hills District and Broader Sydney</span
               >
             </li>
           </ul>
@@ -136,7 +154,7 @@
           <ul>
             <li>
               Collects data from multiple APIs like Google Calendar,
-              OpenWeatherMap and Notion as inputs into an anxiety-analyser
+              OpenWeatherMap, and Notion as inputs into an anxiety-analyzer
               algorithm.
             </li>
             <li>
@@ -150,18 +168,69 @@
             </li>
           </ul>
         </section>
+        <section>
+          <h2>
+            Moose<i>/</i>
+            <span class="font-mono font-light"
+              >Crypto and Stock Algorithm Trading Suite</span
+            >
+          </h2>
+
+          <ul>
+            <li>
+              Fetching real-time crypto data from the Binance Exchange using Web
+              sockets into a SQLite database to be analysed with Pandas and
+              Numpy.
+            </li>
+
+            <li>
+              Applying indicators such as MACD and Vortex along with other
+              technical analysis strategies to execute real-time market orders
+              on the Binance exchange all from a Python server.
+            </li>
+
+            <li>
+              Built a CI/CD pipeline that benchmarks each strategy through
+              backtests of large historical datasets from Binance to ensure
+              correctness and efficiency prior to live deployment.
+            </li>
+
+            <li>
+              Deployed code to a high-performance VPS on the Cloud to run 24/7
+              with daily database backups to ensure data integrity in the case
+              of a disaster.
+            </li>
+          </ul>
+        </section>
         <footer>
           <section class="text-center mb-8">
             <p>
               This website was built using
-              <a href="https://threejs.org/">Three.js</a>,
-              <a href="https://tailwindcss.com/">tailwindcss</a> and WebGL
+              <a class="font-mono" href="https://threejs.org/">Three.js</a> and
+              <a class="font-mono" href="https://get.webgl.org/">WebGL</a>
             </p>
-            <p class="font-mono font-light">2022 Lucas Barbosa</p>
+            <p>
+              My
+              <a class="font-mono" href="https://github.com/lucasbrsa"
+                >Github</a
+              >
+              and
+              <a class="font-mono" href="https://www.linkedin.com/in/lucasbrsa/"
+                >LinkedIn</a
+              >
+            </p>
+            <p class="font-light">
+              (C) Lucas Barbosa <strong id="date"></strong>
+            </p>
           </section>
         </footer>
       </article>
     </div>
     <script type="module" defer src="/main.js"></script>
+    <script defer>
+      const dateField = document.querySelector("strong#date");
+      const date = new Date();
+      dateField.innerHTML = date.getFullYear();
+    </script>
   </body>
 </html>
