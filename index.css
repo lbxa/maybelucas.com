@@ -20,7 +20,6 @@
     @apply md:text-3xl;
     @apply font-mono;
     @apply pb-1;
-    @apply md:pb-0;
   }
 
   a {
@@ -32,13 +31,12 @@
     @apply bg-black/30;
     @apply backdrop-blur-sm;
     @apply backdrop-brightness-200;
-    @apply px-10;
+    @apply px-4;
+    @apply md:px-10;
     @apply py-6;
     @apply my-8;
     @apply rounded-lg;
-    @apply text-center;
     @apply md:text-2xl;
-    @apply md:text-left;
   }
 
   ul {
@@ -48,18 +46,11 @@
   }
 
   li {
-    @apply pb-6;
+    @apply pt-6;
     @apply pl-0;
     @apply text-lg;
     @apply md:pl-1;
   }
-
-  /* span {
-    @apply text-sm;
-    @apply block;
-    @apply md:text-2xl;
-    @apply md:inline;
-  } */
 }
 
 /* WebGL Styles */
