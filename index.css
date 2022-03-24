@@ -51,13 +51,6 @@
     @apply text-lg;
     @apply md:pl-1;
   }
-
-  /* span {
-    @apply text-sm;
-    @apply block;
-    @apply md:text-2xl;
-    @apply md:inline;
-  } */
 }
 
 /* WebGL Styles */
