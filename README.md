@@ -4,7 +4,7 @@ I'm Lucas. Currently a third-year student at **UNSW Sydney**. When I'm not codin
 
 ## Coding Projects 💻
 
-- [BrainFreeze.org](http://brainfreeze.org) — The HSC's hedge against future pandemics.
+- [Brainfreeze.org](http://brainfreeze.org) — The HSC's hedge against future pandemics.
 - Moose — Crypto algorithm trading suite using technical analysis strategies; recorded a daily profit of 3% on average.
 - Summer — Personal AI Assistant running on a NodeJS engine with GraphQL to manage the 8+ APIs providing data to its mind.
 - #TBA# — The Sydney nightlife needs some revitalising....
