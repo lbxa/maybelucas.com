@@ -7,7 +7,7 @@ I'm Lucas. Currently a third-year student at **UNSW Sydney**. When I'm not codin
 - [BrainFreeze.org](http://brainfreeze.org) — The HSC's hedge against future pandemics.
 - Moose — Crypto algorithm trading suite using technical analysis strategies; recorded a daily profit of 3% on average.
 - Summer — Personal AI Assistant running on a NodeJS engine with GraphQL to manage the 8+ APIs providing data to its mind.
-- #TBA#— The Sydney nightlife needs some revitalising....
+- #TBA# — The Sydney nightlife needs some revitalising....
 - UNSW Dreams — A fun little app we built in CS1531 at UNSW. Took the front-end a bit further.
 - maybelucas.com — My personal website that’s built with some cool graphics 👀.
 
