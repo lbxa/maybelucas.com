@@ -9,9 +9,10 @@
   }
 
   h1 {
-    @apply text-4xl;
-    @apply md:text-5xl;
-    @apply my-8;
+    @apply text-5xl;
+    @apply md:text-6xl;
+    @apply my-10;
+    @apply md:my-12;
   }
 
   h2 {
@@ -53,12 +54,12 @@
     @apply md:pl-1;
   }
 
-  span {
+  /* span {
     @apply text-sm;
     @apply block;
     @apply md:text-2xl;
     @apply md:inline;
-  }
+  } */
 }
 
 /* WebGL Styles */
