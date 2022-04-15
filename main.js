@@ -140,7 +140,7 @@ let targetY = 0;
 
 document.addEventListener("scroll", (e) => {
   // camera.position.y = window.scrollY * 0.0009;
-  group.position.z = window.scrollY * 0.001;
+  group.position.z = window.scrollY * 0.0005;
 });
 
 document.addEventListener("mousemove", (e) => {
