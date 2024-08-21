@@ -1,16 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import RootLayout from '../layouts/RootLayout.astro';
 import Card from '../components/Card.astro';
 import Particles from '../components/Particles.astro';
+import {Test} from "../components/Test"
 ---
 <Particles/>
-<Layout title="Starseeker Blog">
+<RootLayout title="Starseeker Blog">
 	<main>
 		<h1>Welcome to the <span class="text-gradient">Starseeker Blog</span></h1>
 		<p class="instructions">
 			To get started, open the directory <code>src/pages</code> in your project.<br />
 			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
 		</p>
+		<Test client:load/>
 		<ul role="list" class="link-card-grid">
 			<Card
 				href="/posts"
@@ -18,23 +20,13 @@ import Particles from '../components/Particles.astro';
 				body="Have a read of my most recent posts"
 			/>
 			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
+				href="/about"
+				title="About"
+				body="About the author"
 			/>
 		</ul>
 	</main>
-</Layout>
+</RootLayout>
 
 <style>
 	main {

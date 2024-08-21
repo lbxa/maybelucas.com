@@ -1,14 +1,15 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
+import RootLayout from "../../layouts/RootLayout.astro";
 
 const posts = await getCollection("blog")
 ---
-<Layout title="Posts">
+<RootLayout title="Posts">
   <h1>Posts</h1>
+  <a href="/">Home</a>
   {posts.map((p) => (
     <p>
       <a href={"/posts/" + p.slug}>{p.data.title}</a>
     </p>
   ))} 
-</Layout>
+</RootLayout>

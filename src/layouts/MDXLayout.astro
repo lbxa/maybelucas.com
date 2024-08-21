@@ -1,5 +1,6 @@
 ---
 import type { MDXLayoutProps } from "astro"
+import RootLayout from "./RootLayout.astro";
 
 type Props = MDXLayoutProps<{
 	title: string;
@@ -9,67 +10,13 @@ type Props = MDXLayoutProps<{
 
 const { frontmatter } = Astro.props;
 ---
-
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{frontmatter.title}</title>
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css"
-			integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ"
-			crossorigin="anonymous"
-		/>
-	</head>
-	<body>
+<RootLayout title={frontmatter.title}>
+	<main>
 		<h1>{frontmatter.title} by {frontmatter.author}</h1>
 		<slot />
 		<hr>
 		<footer>
 			Written by {frontmatter.author} {frontmatter.date}.
 		</footer>
-	</body>
-</html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-		color: white;
-	}
-	body {
-		padding: 0 20%;
-	}
-	blockquote {
-		border-left: 3px solid #ccc;
-		color: #ccc;
-		padding-left: 15px;
-		margin: 0;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
-</style>
+	</main>
+</RootLayout>

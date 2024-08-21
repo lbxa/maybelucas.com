@@ -1,6 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
+import RootLayout from '../../layouts/RootLayout.astro';
 
 type Props = {
   title: string;
@@ -27,7 +27,7 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout title={entry.data.title}>
+<RootLayout title={entry.data.title}>
   <article>
     <header>
       <h1>{entry.data.title}</h1>
@@ -37,4 +37,4 @@ export async function getStaticPaths() {
       <Content />
     </section>
   </article>
-</Layout>
+</RootLayout>
