@@ -1,0 +1,40 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+type Props = {
+  title: string;
+}
+
+const { title } = Astro.params;
+
+// Fetch the blog entry based on the title parameter
+const entry = await getEntry('blog', title);
+
+if (!entry) {
+  throw new Error(`Blog post with title "${title}" not found`);
+}
+
+// Render the content and metadata from the entry
+const { Content, headings } = await entry.render();
+
+// Define getStaticPaths to generate paths for all blog posts
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog');
+  return blogPosts.map(post => ({
+    params: { title: post.slug },
+  }));
+}
+---
+
+<Layout title={entry.data.title}>
+  <article>
+    <header>
+      <h1>{entry.data.title}</h1>
+      <p>By {entry.data.author} on {new Date(entry.data.date)}</p>
+    </header>
+    <section>
+      <Content />
+    </section>
+  </article>
+</Layout>
