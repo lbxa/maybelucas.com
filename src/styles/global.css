@@ -1,3 +1,13 @@
+/* reset.css */
+/* https://hankchizljaw.com/wrote/a-modern-css-reset/ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --accent: 136, 58, 234;
   --accent-light: 224, 204, 250;
@@ -14,6 +24,53 @@ html {
   font-family: system-ui, sans-serif;
   background: #13151a;
   color: white;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  @apply mb-sm;
+}
+
+h1 {
+  @apply text-3xl font-bold mb-xl;
+}
+
+h2 {
+  @apply text-xl font-bold mb-md;
+}
+
+#root,
+#__next {
+  isolation: isolate;
 }
 
 code {
@@ -30,9 +87,4 @@ blockquote {
   color: #ccc;
   padding-left: 15px;
   margin: 0;
-}
-
-code {
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-    Bitstream Vera Sans Mono, Courier New, monospace;
 }

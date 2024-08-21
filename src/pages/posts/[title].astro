@@ -1,6 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
-import RootLayout from '../../layouts/RootLayout.astro';
+import RootLayout from '@layouts/RootLayout.astro';
 
 type Props = {
   title: string;
@@ -37,4 +37,8 @@ export async function getStaticPaths() {
       <Content />
     </section>
   </article>
+  <hr>
+  <footer>
+		Written by {entry.data.author} {new Date(entry.data.date).getFullYear()}.
+	</footer>
 </RootLayout>
