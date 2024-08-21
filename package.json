@@ -2,6 +2,9 @@
   "name": "maybelucas.com",
   "type": "module",
   "version": "2.0.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
