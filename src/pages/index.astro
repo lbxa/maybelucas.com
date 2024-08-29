@@ -2,13 +2,16 @@
 import RootLayout from '@layouts/RootLayout.astro';
 import Card from '@components/Card.astro';
 import Particles from '@components/Particles.astro';
-import {Test} from "@components/Solid"
 ---
 <Particles/>
-<RootLayout title="Starseeker Blog">
+<RootLayout title="Lucas Barbosa">
 	<main>
-		<h1>Lucas</h1>
-		<Test client:load/>
+		<div class="h-screen flex">
+		<div class="text-center text-4xl sm:text-6xl lg:text-8xl uppercase font-black m-auto">
+			<p>Lucas</p>
+			<p>Barbosa</p>
+      </>
+    </div>
 	</main>
 </RootLayout>
 
