@@ -1,4 +1,3 @@
-// 1. Import utilities from `astro:content`
 import { defineCollection, z } from 'astro:content';
 
 const blogCollection = defineCollection({
@@ -11,6 +10,11 @@ const blogCollection = defineCollection({
   })
 });
 
+const aboutCollection = defineCollection({
+  type: "content"
+})
+
 export const collections = {
   'blog': blogCollection,
+  'about': aboutCollection
 };

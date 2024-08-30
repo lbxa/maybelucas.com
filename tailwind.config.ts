@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme"
 
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -20,14 +21,17 @@ export default {
 				},
 				ivory: '#f5f5f5'
 			},
-		},
-		spacing: {
-			'sm': '8px',
-      'md': '12px',
-      'lg': '16px',
-      'xl': '24px',
-      '2xl': '32px',
-      '3xl': '48px',
+			fontFamily: {
+				mono: ["Source Code Pro", ...defaultTheme.fontFamily.mono],
+			},
+			spacing: {
+				'sm': '8px',
+				'md': '12px',
+				'lg': '16px',
+				'xl': '24px',
+				'2xl': '32px',
+				'3xl': '48px',
+			}
 		}
 	},
 	darkMode: "selector",

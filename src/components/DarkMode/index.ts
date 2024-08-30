@@ -1,1 +1,1 @@
-export * from "./DarkMode"
+export * from "./DarkMode.astro"

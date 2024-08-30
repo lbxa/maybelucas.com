@@ -1,21 +1,23 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import RootLayout from '@layouts/RootLayout.astro';
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import I from '@components/I.astro';
+dayjs.extend(relativeTime);
 
 type Props = {
   title: string;
 }
 
 const { title } = Astro.params;
-
-// Fetch the blog entry based on the title parameter
 const entry = await getEntry('blog', title);
 
+// TODO Redirect to 404 page
 if (!entry) {
   throw new Error(`Blog post with title "${title}" not found`);
 }
 
-// Render the content and metadata from the entry
 const { Content, headings } = await entry.render();
 
 // Define getStaticPaths to generate paths for all blog posts
@@ -28,17 +30,19 @@ export async function getStaticPaths() {
 ---
 
 <RootLayout title={entry.data.title}>
-  <article>
-    <header>
-      <h1>{entry.data.title}</h1>
-      <p>By {entry.data.author} on {new Date(entry.data.date)}</p>
-    </header>
-    <section>
-      <Content />
-    </section>
-  </article>
-  <hr>
-  <footer>
-		Written by {entry.data.author} {new Date(entry.data.date).getFullYear()}.
-	</footer>
+  <main>
+    <article>
+      <header>
+        <h1>{entry.data.title}</h1>
+        <p>{entry.data.description} <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I></p>
+      </header>
+      <section>
+        <Content />
+      </section>
+    </article>
+    <hr class="pb-md">
+    <footer class="pb-md text-right">
+      maybelucas.com {new Date(entry.data.date).getFullYear()}
+    </footer>
+  </main>
 </RootLayout>

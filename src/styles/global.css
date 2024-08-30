@@ -16,16 +16,11 @@
 } */
 
 html {
-  @apply bg-ivory;
-  @apply text-shark-950;
+  @apply bg-ivory dark:bg-shark-950;
+  @apply text-shark-950 dark:text-ivory;
   font-family: system-ui, sans-serif;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-}
-
-html.dark {
-  @apply bg-shark-950;
-  @apply text-ivory;
 }
 
 body {
@@ -50,6 +45,8 @@ select {
 }
 
 p,
+blockquote,
+code,
 h1,
 h2,
 h3,
@@ -68,28 +65,61 @@ h2 {
   @apply text-xl font-bold mb-md;
 }
 
+h3 {
+  @apply text-lg font-bold mb-sm;
+}
+
 #root,
 #__next {
   isolation: isolate;
 }
 
-code {
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-    Bitstream Vera Sans Mono, Courier New, monospace;
-}
-
-body {
+main {
   padding: 0 10%;
 }
 
 blockquote {
-  border-left: 3px solid #ccc;
-  color: #ccc;
+  @apply border-l-4 border-l-gray-700 text-gray-700 dark:border-l-gray-400 dark:text-gray-400;
   padding-left: 15px;
-  margin: 0;
 }
 
 code {
-  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-    Bitstream Vera Sans Mono, Courier New, monospace;
+  font-family: monospace;
+}
+
+/* SOURCE CODE PRO */
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Light.ttf");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Bold.ttf");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Black.ttf");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
 }
