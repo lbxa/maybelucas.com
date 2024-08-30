@@ -4,11 +4,18 @@ import Particles from '@components/Particles/Particles.astro';
 ---
 <Particles/>
 <RootLayout title="Lucas Barbosa">
-	<div class="h-screen flex">
+	<div class="splash flex">
 		<div class="text-center text-6xl lg:text-8xl uppercase font-black m-auto">
 			<p>Lucas</p>
 			<p>Barbosa</p>
 		</div>
 	</div>
 </RootLayout>
+
+<style>
+	.splash {
+		min-height: 100vh;
+		min-height: calc(100vh - env(safe-area-inset-bottom));
+	}
+</style>
 
