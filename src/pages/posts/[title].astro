@@ -30,8 +30,8 @@ export async function getStaticPaths() {
 ---
 
 <RootLayout title={entry.data.title}>
-  <main>
-    <article>
+  <main class="flex flex-col min-h-screen">
+    <article class="grow">
       <header>
         <h1>{entry.data.title}</h1>
         <p>{entry.data.description} <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I></p>
@@ -40,8 +40,9 @@ export async function getStaticPaths() {
         <Content />
       </section>
     </article>
-    <hr class="mt-[50vh] pb-md">
-    <footer class="pb-md text-right">
+    <footer class="mt-[33vh] text-right pb-md">
+      <p class="text-center">[Blank Space]</p>
+      <hr class="pb-md">
       maybelucas.com {new Date(entry.data.date).getFullYear()}
     </footer>
   </main>

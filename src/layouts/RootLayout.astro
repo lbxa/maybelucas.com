@@ -28,10 +28,12 @@ const { title } = Astro.props;
 		<script src="../components/DarkMode/dark-mode-init.ts"></script>
 	</head>
 	<body>
-		<div class="z-50 fixed top-0 left-0 flex m-auto px-[10%] h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm">
-			<Nav/>
-			<div class="ml-auto">
-				<DarkMode/>
+		<div class="z-50 fixed top-0 left-0 m-auto h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm">
+			<div class="flex mx-auto px-lg lg:px-0 max-w-screen-md">
+				<Nav/>
+				<div class="ml-auto">
+					<DarkMode/>
+				</div>
 			</div>
 		</div>
 		<slot />
@@ -40,6 +42,7 @@ const { title } = Astro.props;
 
 <style is:global>
 	main {
+		@apply px-lg lg:px-0 max-w-screen-md;
 		padding-top: calc(50px + 10px);
 	}
 </style>

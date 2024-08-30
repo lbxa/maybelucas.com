@@ -9,16 +9,29 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 5;
 
-const renderer = new THREE.WebGLRenderer({
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  canvas: document.querySelector("#webgl")!,
-  alpha: true,
-  antialias: true,
-  powerPreference: "high-performance"
-});
-renderer.setSize(window.innerWidth, window.innerHeight);
+/** -----------------------------------------------------------------
+ *  (B) Sizing
+ */
 
-// Particle setup
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+
+window.addEventListener("resize", () => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+/** -----------------------------------------------------------------
+ *  (1) Geometries
+ */
 const particleCount = 1000; 
 const positions = new Float32Array(particleCount * 3); 
 
@@ -50,6 +63,19 @@ const material = new THREE.PointsMaterial({
 
 const particleSystem = new THREE.Points(geometry, material);
 scene.add(particleSystem);
+
+/** -----------------------------------------------------------------
+ *  (2) Rendering
+ */
+const renderer = new THREE.WebGLRenderer({
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  canvas: document.querySelector("#webgl")!,
+  alpha: true,
+  antialias: true,
+  powerPreference: "high-performance"
+});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
 
 function animate() {
   requestAnimationFrame(animate);
