@@ -122,22 +122,13 @@ const mouseY = 0;
 let targetX = 0;
 let targetY = 0;
 
-// document.addEventListener("scroll", (_) => {
-//   // camera.position.y = window.scrollY * 0.0009;
-//   group.position.z = window.scrollY * 0.0005;
-// });
-
-// document.addEventListener("mousemove", (e) => {
-//   mouseX = e.clientX - window.innerWidth / 2;
-//   mouseY = e.clientY - window.innerHeight / 2;
-// });
-
 const clock = new THREE.Clock();
 const renderer = new THREE.WebGLRenderer({
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   canvas: document.querySelector("#webgl")!,
   alpha: true,
   antialias: true,
+  powerPreference: "high-performance"
 });
 
 renderer.setPixelRatio(window.devicePixelRatio);
