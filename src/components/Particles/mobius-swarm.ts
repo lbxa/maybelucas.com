@@ -49,10 +49,11 @@ scene.add(particleSystem);
 
 function createParticlePositions(count: number) {
   particleCount = count;
-  positions = new Float32Array(particleCount * 3); // Reinitialize positions array with new size
+  positions = new Float32Array(particleCount * 3); 
 
   for (let i = 0; i < particleCount; i++) {
-    const t = (i / particleCount) * Math.PI * 2; // Parameter along the Möbius strip
+    // Parameter along the Möbius strip
+    const t = (i / particleCount) * Math.PI * 2; 
     const s = (Math.random() - 0.5) * stripWidth; 
 
     // Möbius strip parametric equations
