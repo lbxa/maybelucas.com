@@ -12,7 +12,6 @@ camera.position.z = 5;
 /** -----------------------------------------------------------------
  *  (B) Sizing
  */
-
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -32,43 +31,55 @@ window.addEventListener("resize", () => {
 /** -----------------------------------------------------------------
  *  (1) Geometries
  */
-const particleCount = 1000; 
-const positions = new Float32Array(particleCount * 3); 
+let particleCount = 1000; 
+let positions = new Float32Array(particleCount * 3); 
 
-const radius = 2; 
-const stripWidth = 0.9
-
-for (let i = 0; i < particleCount; i++) {
-  const t = i / particleCount * Math.PI * 2; // Parameter along the Möbius strip
-  const s = (Math.random() - 0.5) * stripWidth; 
-
-  // Möbius strip parametric equations
-  const x = (radius + s * Math.cos(t / 2)) * Math.cos(t);
-  const y = (radius + s * Math.cos(t / 2)) * Math.sin(t);
-  const z = s * Math.sin(t / 2);
-
-  positions[i * 3] = x;
-  positions[i * 3 + 1] = y;
-  positions[i * 3 + 2] = z;
-}
+const radius = 2.5; 
+const stripWidth = 0.9;
 
 const geometry = new THREE.BufferGeometry();
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
 const material = new THREE.PointsMaterial({
   color: 0xffffff, 
   size: 0.05, 
   sizeAttenuation: true, // Make particle size relative to distance
 });
 
-const particleSystem = new THREE.Points(geometry, material);
+let particleSystem = new THREE.Points(geometry, material);
 scene.add(particleSystem);
+
+function createParticlePositions(count: number) {
+  particleCount = count;
+  positions = new Float32Array(particleCount * 3); // Reinitialize positions array with new size
+
+  for (let i = 0; i < particleCount; i++) {
+    const t = (i / particleCount) * Math.PI * 2; // Parameter along the Möbius strip
+    const s = (Math.random() - 0.5) * stripWidth; 
+
+    // Möbius strip parametric equations
+    const x = (radius + s * Math.cos(t / 2)) * Math.cos(t);
+    const y = (radius + s * Math.cos(t / 2)) * Math.sin(t);
+    const z = s * Math.sin(t / 2);
+
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+  }
+
+  updateParticleSystem();
+}
+
+function updateParticleSystem() {
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.attributes.position.needsUpdate = true;
+  geometry.computeBoundingSphere();
+}
+
+createParticlePositions(particleCount);
 
 /** -----------------------------------------------------------------
  *  (2) Rendering
  */
 const renderer = new THREE.WebGLRenderer({
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   canvas: document.querySelector("#webgl")!,
   alpha: true,
   antialias: true,
@@ -86,3 +97,24 @@ function animate() {
 }
 
 animate();
+
+/** -----------------------------------------------------------------
+ *  (3) Event Listener for Input
+ */
+
+const slider = document.getElementById('particleDensity');
+slider?.addEventListener('input', (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const currentValue = Number(target.value);
+  const maxValue = Number(target.max);
+
+  if (currentValue === maxValue) {
+    slider.classList.add('animate-shake')
+
+    slider.addEventListener('animationend', () => {
+      slider.classList.remove('animate-shake');
+    }, { once: true }); // `{ once: true }` ensures the event listener is removed after it's triggered
+  }
+
+  createParticlePositions(Number(target.value)); 
+});

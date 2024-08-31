@@ -12,8 +12,13 @@ const posts = await getCollection("blog")
   <main>
     <h1>Posts</h1>
     {posts.map((p) => (
-      <div>
-        <a class="hover:underline" href={"/posts/" + p.slug}>{p.data.title}</a>
+      <div class="pb-md sm:pb-0">
+        <a 
+          class="hover:underline focus:underline visited:text-purple-600" 
+          href={"/posts/" + p.slug}
+        >
+          {p.data.title}
+        </a>
         <I>{dayjs(p.data.date).toNow(true)} ago</I>
       </div>
     ))} 
