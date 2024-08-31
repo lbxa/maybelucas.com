@@ -15,7 +15,8 @@ import Particles from '@components/Particles/Particles.astro';
 <style>
 	.splash {
 		min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-		height: 100%;
+		/* mobile viewport bug fix */
+  	min-height: -webkit-fill-available;
 		display: flex;
 		align-items: center; 
 		justify-content: center; 

@@ -25,12 +25,12 @@ export default {
 				mono: ["Source Code Pro", ...defaultTheme.fontFamily.mono],
 			},
 			spacing: {
-				'sm': '8px',
-				'md': '12px',
-				'lg': '16px',
-				'xl': '24px',
-				'2xl': '32px',
-				'3xl': '48px',
+				'sm': '0.5rem',   // 8px / 16 = 0.5rem
+				'md': '0.75rem',  // 12px / 16 = 0.75rem
+				'lg': '1rem',     // 16px / 16 = 1rem
+				'xl': '1.5rem',   // 24px / 16 = 1.5rem
+				'2xl': '2rem',    // 32px / 16 = 2rem
+				'3xl': '3rem',    // 48px / 16 = 3rem
 			}
 		}
 	},

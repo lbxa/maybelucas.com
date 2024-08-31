@@ -21,11 +21,14 @@ html {
   font-family: system-ui, sans-serif;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  height: -webkit-fill-available;
 }
 
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
 }
 
 img,
