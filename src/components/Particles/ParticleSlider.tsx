@@ -8,7 +8,7 @@ export const ParticleSlider = () => {
   const [value, setValue] = createSignal(1000);
   const [visible, setVisible] = createSignal(true);
   
-  const redBg = createMemo(() => ({"bg-red-400/50 dark:bg-red-900/50": value() === MAX_VAL}))
+  const redBg = createMemo(() => ({"bg-red-400/50 dark:bg-red-800/50": value() === MAX_VAL}))
 
   const handleInput = (e: InputEvent) => {
     const target = e.currentTarget as HTMLInputElement;
