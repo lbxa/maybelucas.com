@@ -31,12 +31,13 @@ const { title } = Astro.props;
 			integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ"
 			crossorigin="anonymous"
 		/>
-		<script>
+		<script is:inline>
 			// fetch user dark mode settings
+			// inline option removes astro overhead - no theme flickering
 			(() => {
-			const theme: string = (() => {
+			const theme = (() => {
 				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-					return localStorage.getItem('theme') as string;
+					return localStorage.getItem('theme');
 				}
 				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 					return 'dark';
