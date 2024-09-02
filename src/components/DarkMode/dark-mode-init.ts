@@ -5,7 +5,7 @@ const theme: string = (() => {
   if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     return 'dark';
   }
-    return 'light';
+  return 'light';
 })();
 
 if (theme === 'light') {
