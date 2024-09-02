@@ -35,27 +35,39 @@ const { title } = Astro.props;
 			// fetch user dark mode settings
 			// inline option removes astro overhead - no theme flickering
 			(() => {
-			const theme = (() => {
-				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-					return localStorage.getItem('theme');
-				}
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					return 'dark';
-				}
-				return 'light';
-			})();
+				const theme = (() => {
+					if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+						return localStorage.getItem('theme');
+					}
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						return 'dark';
+					}
+					return 'light';
+				})();
 
-			if (theme === 'light') {
-				document.documentElement.classList.remove('dark');
-			} else {
-				document.documentElement.classList.add('dark');
-			}
+				if (theme === 'light') {
+					document.documentElement.classList.remove('dark');
+				} else {
+					document.documentElement.classList.add('dark');
+				}
 
-			window.localStorage.setItem('theme', theme);
+				window.localStorage.setItem('theme', theme);
+
+				// set status bar dark mode on mobile
+				const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
+
+				function updateThemeColor() {
+					const isDarkMode = document.documentElement.classList.contains('dark');
+					themeColorMetaTag?.setAttribute('content', isDarkMode ? '#121212' : '#f5f5f5');
+				}
+
+				updateThemeColor(); // Initial call to set the theme color based on current mode
+
+				const observer = new MutationObserver(updateThemeColor);
+				observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 			})();
 		</script>
 		<script src="../components/DarkMode/dark-mode-init.ts"></script>
-		<script src="../components/DarkMode/status-bar-dark-mode.ts"></script>
 	</head>
 	<body>
 		<div class="z-50 fixed top-0 left-0 m-auto h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm">
