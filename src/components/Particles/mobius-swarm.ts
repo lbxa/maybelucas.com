@@ -102,7 +102,6 @@ animate();
 /** -----------------------------------------------------------------
  *  (3) Event Listener for Input
  */
-
 const slider = document.getElementById('particle-density-slider');
 slider?.addEventListener('input', (event: Event) => {
   const target = event.target as HTMLInputElement;

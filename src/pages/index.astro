@@ -3,10 +3,10 @@ import RootLayout from '@layouts/RootLayout.astro';
 import Particles from '@components/Particles/Particles.astro';
 ---
 <RootLayout title="Lucas Barbosa">
-	<div class="splash flex">
+	<div class="splash flex items-center justify-center overflow-hidden">
 		<div class="text-center text-6xl lg:text-8xl uppercase font-black m-auto">
-			<p>Lucas</p>
-			<p>Barbosa</p>
+			<div>Lucas</div>
+			<div>Barbosa</div>
 		</div>
 	</div>
 </RootLayout>
@@ -15,13 +15,12 @@ import Particles from '@components/Particles/Particles.astro';
 <style>
 	.splash {
 		min-height: 100vh; 
-		/* mobile viewport bug fix */
-		/* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
-  	min-height: -webkit-fill-available;
-		display: flex;
-		align-items: center; 
-		justify-content: center; 
-		overflow: hidden; 
 	}
+
+	@supports (min-height: 100dvh) {
+    .splash {
+      min-height: 100dvh;
+    }
+  }
 </style>
 
