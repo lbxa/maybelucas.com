@@ -1,21 +1,3 @@
-const theme: string = (() => {
-  if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-    return localStorage.getItem('theme') as string;
-  }
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
-  return 'light';
-})();
-
-if (theme === 'light') {
-  document.documentElement.classList.remove('dark');
-} else {
-  document.documentElement.classList.add('dark');
-}
-
-window.localStorage.setItem('theme', theme);
-
 const handleToggleClick = () => {
   const element = document.documentElement;
   element.classList.toggle("dark");
@@ -24,4 +6,6 @@ const handleToggleClick = () => {
   localStorage.setItem("theme", isDark ? "dark" : "light");
 }
 
-document.getElementById("themeToggle")?.addEventListener("click", handleToggleClick);
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("themeToggle")?.addEventListener("click", handleToggleClick);
+});
