@@ -5,10 +5,20 @@ import RootLayout from "@layouts/RootLayout.astro";
 const { title } = Astro.props;
 ---
 <RootLayout title={title}>
-  <main class="flex flex-col min-h-screen">
+  <main class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-md">
     <article class="grow">
       <slot />
     </article>
     <Footer /> 
   </main>
 </RootLayout>
+
+<style>
+	main {
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+		/* mobile viewport bug fix */
+		/* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
+  	min-height: -webkit-fill-available;
+		padding-top: calc(50px + 10px);
+	}
+</style>

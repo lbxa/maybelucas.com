@@ -8,13 +8,6 @@
   padding: 0;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  html {
-    @apply bg-shark-950;
-    @apply text-ivory;
-  }
-} */
-
 html {
   @apply bg-ivory dark:bg-shark-950;
   @apply text-shark-950 dark:text-ivory;
@@ -77,11 +70,6 @@ h3 {
 #root,
 #__next {
   isolation: isolate;
-}
-
-main {
-  max-width: 700px;
-  margin: 0 auto;
 }
 
 blockquote {
