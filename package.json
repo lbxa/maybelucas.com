@@ -1,6 +1,9 @@
 {
   "name": "maybelucas.com",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
