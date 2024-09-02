@@ -14,7 +14,7 @@ html {
   font-family: system-ui, sans-serif;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-  height: -webkit-fill-available;
+  /* height: -webkit-fill-available; */
 }
 
 body {
@@ -23,7 +23,13 @@ body {
   min-height: 100vh;
   /* mobile viewport bug fix */
   /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
-  min-height: -webkit-fill-available;
+  /* min-height: -webkit-fill-available; */
+}
+
+@supports (height: 100dvh) {
+  body {
+    height: 100dvh;
+  }
 }
 
 img,
