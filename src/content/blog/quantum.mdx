@@ -1,0 +1,140 @@
+---
+title: The Ultimate Quantum Analogy
+author: Lucas
+date: 2024-08-20
+description: The fundamentals of quantum physics are heavily intertwined with our modern reality.
+---
+# Foundations
+
+> The fundamental principles of quantum mechanics are stored in quote blocks.
+>
+
+## States
+
+Quantum states are stored in bra’s $\bra{a} = (a_1, a_2, \ldots, a_n)$ and kets
+
+$$
+\ket{b} = \begin{pmatrix}b_1\\b_2\\ \vdots \\ b_n\end{pmatrix}.
+$$
+
+This elegant notation comes from Dirac himself. It’s the quantum analogue to vector spaces.
+
+States also may have eigenvalues and eigenvectors. Given a system $\bold M$, if
+
+$$
+\bold M \ket{\lambda} = \lambda \ket{\lambda}
+$$
+
+Then $\lambda$ is the eigenvalue and $\ket{\lambda}$ is the eigenvector.
+
+## Observability
+
+Observables in quantum mechanics are represented by linear operators that equal their own Hermitian conjugate
+
+$$
+\bold L = \bold L^{\dagger}.
+$$
+
+Hermitian operators are tied to observability because of a special property. Lets take $\bold L \ket{\lambda} = \lambda \ket{\lambda}$ to be a standard Hermitian operation on $\ket{\lambda}$. We know that
+
+$$
+\begin{align*}
+\bold L \ket{\lambda} &= \lambda \ket{\lambda} \\
+
+\bra{\lambda} \bold L^{\dagger}  &= \bra{\lambda} \lambda^*.
+\end{align*}
+$$
+
+Now multiplying both of these equations but the missing bra and ket vector
+
+$$
+\begin{align*}
+\bra{\lambda}\bold L \ket{\lambda} &= \lambda \braket{\lambda|\lambda} \\
+
+\bra{\lambda} \bold L^{\dagger} \ket{\lambda}  &= \lambda^* \braket{\lambda|\lambda} .
+\end{align*}
+$$
+
+We already $\bold L = \bold L^{\dagger}$ and therefore it must be true that $\lambda = \lambda^*$ if both equations are to be equal. Hence $\lambda$ is guaranteed to be **real** number — an observable quantity.
+
+> Observable and measurable quantities are represented by linear operator $\bold L$, the Hermitian.
+>
+
+## Measurements
+
+> The possible results of a measurements are the eigenvalues $\lambda_i$ of the observable $\bold L$. If a system is in eigenstate $\ket{\lambda_i}$ then the result of a measurement is guaranteed to be $\lambda_i$.
+>
+
+Given a quantum state $\ket{\Psi}$ at $t=0$, can we infer what it be at any value of $t$? Quantum mechanics doesn’t offer that kind of deterministic guarantee we’re used to in classical physics.
+
+However we can compute a probability of what future measurements will be, or more formally the linear operator $\bold U(t)$ can
+
+$$
+\ket{\Psi(t)} = \bold U(t) \ket{\Psi(0)}.
+$$
+
+$\bold U(t)$ is a special operator because of the principle of unitarity
+
+$$
+\bold U^{\dagger}\bold U = I.
+$$
+
+Having $\bold U(t)$ be a unitary linear operator will make state transitions *easier* to deal with.
+
+This is quasi-determinism. $\bold U(t)$ can act on $\ket{\Psi(0)}$ to produce a new state $\ket{\Psi(t)}$. However a new state does not guarantee a new measurement. This is where we draw possible the largest distinction between quantum and classical physics.
+
+| Classical | No difference between a state and a measurement. |
+| --- | --- |
+| Quantum | The difference is profound. |
+
+So if we have a quantum state $\ket{A}$ how do we measure it? First it needs to be operated on by an observable $\bold L$
+
+$$
+\bold L \ket{A} = \lambda_i \ket{\lambda_i}.
+$$
+
+Once we know possible $\lambda_i$ values we can then calculated their probability of being measured
+
+$$
+P(\lambda_i) = \braket{A|\lambda_i}\braket{\lambda_i|A}.
+$$
+
+> If $\ket{A}$ is the state of a system after the observable $\bold L$ is measured the probability of measuring $\lambda_i$ is $P(\lambda_i) = \braket{A|\lambda_i}\braket{\lambda_i|A}.$
+>
+
+## Energy
+
+Instead of analysing time change in large clunky intervals of $t$, lets use an infitesimal quantity $\epsilon$ which will allows us to construct the differential model for quantum time evolution,
+
+$$
+\bold U^{\dagger}(\epsilon)\bold U(\epsilon) = I.
+$$
+
+Lets make some arbitrary decisions with no content at all. These formulations will simply make more sense later on,
+
+$$
+\begin{align*}
+\bold U(\epsilon) &= I - i\epsilon\bold H\\
+\bold U^{\dagger}(\epsilon) &= I + i\epsilon \bold H^{\dagger}.
+\end{align*}
+$$
+
+Now lets convert the standard time-evolution $\ket{\Psi(t)} = \bold U(t) \ket{\Psi(0)}$ to
+
+$$
+\ket{\Psi(\epsilon)} = \bold (I - i\epsilon\bold H) \ket{\Psi(0)}.
+$$
+
+After some light algebra we arrive at a very familiar formulation
+
+$$
+\dfrac{\ket{\Psi(\epsilon)}- \ket{\Psi(0)}}{\epsilon} = -i\bold H \ket{\Psi(0)}.
+$$
+
+This is the time-dependant Schrödinger’s equation
+
+$$
+\hbar\dfrac{\partial \Psi}{\partial t} = -i\bold H \ket{\Psi}
+$$
+
+with $\hbar$  added for dimensional consistency ($\bold H$ has energy units on right).

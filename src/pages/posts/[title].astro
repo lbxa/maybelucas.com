@@ -1,0 +1,40 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import ContentLayout from '@layouts/ContentLayout.astro';
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import I from '@components/I.astro';
+dayjs.extend(relativeTime);
+
+type Props = {
+  title: string;
+}
+
+const { title } = Astro.params;
+const entry = await getEntry('blog', title);
+
+// TODO Redirect to 404 page
+if (!entry) {
+  throw new Error(`Blog post with title "${title}" not found`);
+}
+
+const { Content, headings } = await entry.render();
+
+// Define getStaticPaths to generate paths for all blog posts
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog');
+  return blogPosts.map(post => ({
+    params: { title: post.slug },
+  }));
+}
+---
+
+<ContentLayout title={entry.data.title}>
+  <header>
+    <h1>{entry.data.title}</h1>
+    <p>{entry.data.description} <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I></p>
+  </header>
+  <section>
+    <Content />
+  </section>
+</ContentLayout>

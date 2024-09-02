@@ -1,0 +1,15 @@
+---
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry } from 'astro:content';
+
+const manifesto = await getEntry("about", "manifesto")
+const { Content: ManifestoContent } = await manifesto.render();
+---
+<ContentLayout title="About">
+  <header>
+    <h1>About me...</h1>
+  </header>
+  <section>
+    <ManifestoContent />
+  </section>
+</ContentLayout>

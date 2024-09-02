@@ -1,0 +1,119 @@
+/* reset.css */
+/* https://hankchizljaw.com/wrote/a-modern-css-reset/ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  @apply bg-ivory dark:bg-shark-950;
+  @apply text-shark-950 dark:text-ivory;
+  font-family: system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  height: -webkit-fill-available;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  /* mobile viewport bug fix */
+  /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
+  min-height: -webkit-fill-available;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+blockquote,
+code,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  @apply mb-sm;
+}
+
+h1 {
+  @apply text-3xl font-bold mb-xl;
+}
+
+h2 {
+  @apply text-xl font-bold mb-md;
+}
+
+h3 {
+  @apply text-lg font-bold mb-sm;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+
+blockquote {
+  @apply border-l-4 border-l-gray-700 text-gray-700 dark:border-l-gray-400 dark:text-gray-400;
+  padding-left: 15px;
+}
+
+code {
+  font-family: monospace;
+}
+
+/* SOURCE CODE PRO */
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Light.ttf");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Bold.ttf");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("Source Code Pro"),
+    url("/fonts/SourceCodePro/SourceCodePro-Black.ttf");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
