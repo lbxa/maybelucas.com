@@ -103,19 +103,8 @@ animate();
  *  (3) Event Listener for Input
  */
 
-const slider = document.getElementById('particleDensity');
+const slider = document.getElementById('particle-density-slider');
 slider?.addEventListener('input', (event: Event) => {
   const target = event.target as HTMLInputElement;
-  const currentValue = Number(target.value);
-  const maxValue = Number(target.max);
-
-  if (currentValue === maxValue) {
-    slider.classList.add('animate-shake')
-
-    slider.addEventListener('animationend', () => {
-      slider.classList.remove('animate-shake');
-    }, { once: true }); // `{ once: true }` ensures the event listener is removed after it's triggered
-  }
-
   createParticlePositions(Number(target.value)); 
 });

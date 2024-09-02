@@ -1,19 +1,9 @@
+---
+import { ParticleSlider } from "@components/Particles/ParticleSlider";
+---
+
 <canvas id="webgl"></canvas>
-<div 
-  class="z-50 fixed flex w-3/4 max-w-[300px] bg-ivory/50 dark:bg-shark-950/50 
-          backdrop-blur-sm py-md px-lg rounded-xl bottom-xl left-1/2 transform 
-          -translate-x-1/2 -translate-y-1/2"
->
-  <input 
-    class="m-auto w-full h-full"
-    type="range" 
-    id="particleDensity" 
-    name="volume" 
-    min="10" 
-    max="100000" 
-    value="1000"
-  />
-</div>
+<ParticleSlider client:visible />
 <script src="./mobius-swarm.ts"></script>
 <style>
 canvas#webgl {
@@ -27,17 +17,4 @@ canvas#webgl {
   pointer-events: none; /* This is crucial */
   mix-blend-mode: exclusion;
 }
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-}
-
-/* Animation class for shaking */
-.animate-shake {
-  animation: shake 0.3s ease-in-out;
-}
-
 </style>

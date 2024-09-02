@@ -29,6 +29,7 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   /* mobile viewport bug fix */
+  /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
   min-height: -webkit-fill-available;
 }
 
