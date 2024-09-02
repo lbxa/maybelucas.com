@@ -19,7 +19,7 @@ const { title } = Astro.props;
     min-height: calc(env(safe-area-inset-top) - env(safe-area-inset-bottom));
 		/* mobile viewport bug fix */
 		/* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
-  	min-height: -webkit-fill-available;
+  	/* min-height: -webkit-fill-available; */
 		padding-top: calc(50px + 10px);
     background-color: red;
 	}
