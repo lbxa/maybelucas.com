@@ -1,26 +1,26 @@
 ---
 import { getCollection } from "astro:content";
-import RootLayout from "@layouts/RootLayout.astro";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import I from "@components/I.astro";
+import ContentLayout from "@layouts/ContentLayout.astro";
 dayjs.extend(relativeTime);
 
 const posts = await getCollection("blog")
 ---
-<RootLayout title="Posts">
-  <main>
+<ContentLayout title="Posts">
+  <header>
     <h1>Posts</h1>
-    {posts.map((p) => (
-      <div class="pb-md sm:pb-0">
-        <a 
-          class="hover:underline focus:underline visited:text-purple-600" 
-          href={"/posts/" + p.slug}
-        >
-          {p.data.title}
-        </a>
-        <I>{dayjs(p.data.date).toNow(true)} ago</I>
-      </div>
-    ))} 
-  </main>
-</RootLayout>
+  </header>
+  {posts.map((p) => (
+    <div class="pb-md sm:pb-0">
+      <a 
+        class="hover:underline focus:underline visited:text-purple-600" 
+        href={"/posts/" + p.slug}
+      >
+        {p.data.title}
+      </a>
+      <I>{dayjs(p.data.date).toNow(true)} ago</I>
+    </div>
+  ))} 
+</ContentLayout>

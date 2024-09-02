@@ -1,6 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
-import RootLayout from '@layouts/RootLayout.astro';
+import ContentLayout from '@layouts/ContentLayout.astro';
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import I from '@components/I.astro';
@@ -29,21 +29,12 @@ export async function getStaticPaths() {
 }
 ---
 
-<RootLayout title={entry.data.title}>
-  <main class="flex flex-col min-h-screen">
-    <article class="grow">
-      <header>
-        <h1>{entry.data.title}</h1>
-        <p>{entry.data.description} <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I></p>
-      </header>
-      <section>
-        <Content />
-      </section>
-    </article>
-    <footer class="mt-[33vh] text-center pb-md">
-      <p>[Blank Space]</p>
-      <hr class="pb-md">
-      maybelucas.com {new Date(entry.data.date).getFullYear()}
-    </footer>
-  </main>
-</RootLayout>
+<ContentLayout title={entry.data.title}>
+  <header>
+    <h1>{entry.data.title}</h1>
+    <p>{entry.data.description} <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I></p>
+  </header>
+  <section>
+    <Content />
+  </section>
+</ContentLayout>

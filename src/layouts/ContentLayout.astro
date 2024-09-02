@@ -1,0 +1,14 @@
+---
+import Footer from "@components/Footer.astro";
+import RootLayout from "@layouts/RootLayout.astro";
+
+const { title } = Astro.props;
+---
+<RootLayout title={title}>
+  <main class="flex flex-col min-h-screen">
+    <article class="grow">
+      <slot />
+    </article>
+    <Footer /> 
+  </main>
+</RootLayout>
