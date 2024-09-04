@@ -25,6 +25,7 @@ export default {
 				mono: ["Source Code Pro", ...defaultTheme.fontFamily.mono],
 			},
 			spacing: {
+				'xs': '0.25rem',  // 4px / 16 = 0.25rem
 				'sm': '0.5rem',   // 8px / 16 = 0.5rem
 				'md': '0.75rem',  // 12px / 16 = 0.75rem
 				'lg': '1rem',     // 16px / 16 = 1rem

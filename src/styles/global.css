@@ -18,12 +18,14 @@ html {
 }
 
 body {
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   /* mobile viewport bug fix */
   /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
   min-height: -webkit-fill-available;
+  @apply text-base;
 }
 
 img,
@@ -33,6 +35,7 @@ canvas,
 svg {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 input,
@@ -55,16 +58,51 @@ h6 {
   @apply mb-sm;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+  @apply font-bold;
+}
+
 h1 {
-  @apply text-3xl font-bold mb-xl;
+  @apply text-4xl mb-xl;
 }
 
 h2 {
-  @apply text-xl font-bold mb-md;
+  @apply text-3xl mb-lg;
 }
 
 h3 {
-  @apply text-lg font-bold mb-sm;
+  @apply text-2xl mb-md;
+}
+
+h4 {
+  @apply text-xl mb-sm;
+}
+
+h5 {
+  @apply text-lg mb-sm;
+}
+
+h6 {
+  @apply text-base mb-sm;
+}
+
+p {
+  @apply mb-md;
+}
+
+ul,
+ol {
+  @apply ml-md mb-md;
+}
+
+li {
+  @apply mb-sm;
 }
 
 #root,
@@ -74,11 +112,79 @@ h3 {
 
 blockquote {
   @apply border-l-4 border-l-gray-700 text-gray-700 dark:border-l-gray-400 dark:text-gray-400;
-  padding-left: 15px;
+  @apply pl-lg my-lg;
+  font-style: italic;
 }
 
 code {
-  font-family: monospace;
+  @apply font-mono;
+  @apply bg-gray-100 dark:bg-gray-800;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+pre {
+  @apply bg-gray-100 dark:bg-gray-800;
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+hr {
+  @apply border-t border-gray-300 dark:border-gray-700;
+  @apply my-md;
+}
+
+table {
+  border-collapse: collapse;
+  @apply mb-lg w-full;
+}
+
+th,
+td {
+  @apply border border-gray-300 dark:border-gray-700;
+  @apply p-sm text-left;
+}
+
+th {
+  @apply bg-gray-100 dark:bg-gray-800;
+  font-weight: bold;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Print styles */
+@media print {
+  body {
+    @apply text-black bg-white;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  @page {
+    margin: 2cm;
+  }
 }
 
 /* SOURCE CODE PRO */
