@@ -30,7 +30,7 @@ export async function getStaticPaths() {
 ---
 
 <ContentLayout title={entry.data.title}>
-  <header>
+  <header class="mb-xl">
     <h1>{entry.data.title}</h1>
     <p>{entry.data.description} <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I></p>
   </header>

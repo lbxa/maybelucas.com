@@ -91,9 +91,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 function animate() {
   requestAnimationFrame(animate);
-  particleSystem.rotation.x += 0.01; // Rotate around X-axis
-  particleSystem.rotation.y += 0.01; // Rotate around Y-axis
-  particleSystem.rotation.z += 0.005; // Rotate around Z-axis for slant
+  particleSystem.rotation.x += 0.005; // Rotate around X-axis
+  particleSystem.rotation.y += 0.005; // Rotate around Y-axis
+  particleSystem.rotation.z += 0.008; // Rotate around Z-axis for slant
   renderer.render(scene, camera);
 }
 

@@ -96,13 +96,40 @@ p {
   @apply mb-md;
 }
 
+a {
+  @apply underline;
+}
+
+ul,
 ul,
 ol {
-  @apply ml-md mb-md;
+  @apply ml-lg mb-md;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+ul ul,
+ol ul {
+  list-style-type: circle;
+}
+
+ol ol,
+ul ol {
+  list-style-type: lower-latin;
 }
 
 li {
   @apply mb-sm;
+}
+
+li::marker {
+  @apply text-gray-600 dark:text-gray-400;
 }
 
 #root,
@@ -157,6 +184,10 @@ td {
 th {
   @apply bg-gray-100 dark:bg-gray-800;
   font-weight: bold;
+}
+
+section {
+  @apply mb-xl;
 }
 
 /* Accessibility */
