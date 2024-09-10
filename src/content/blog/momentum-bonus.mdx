@@ -1,8 +1,51 @@
 ---
 title: Momentum Bonus
 author: Lucas
-date: 2024-05-01
+date: 2024-09-08
 description: Notes on reproducible hyper productivity.
 ---
 
-Additionally__, breaking large insurmountable tasks into manageable subtasks enabled hyper-productivity. I found that completing a high volume of small tasks results in a larger area under the productivity curve due to the ‘momentum bonus’ when compared to completing fewer monolith tasks 
+Breaking large insurmountable tasks into smaller manageable subtasks enables hyper-productivity. I found that completing a high volume of small tasks results in a larger area under the productivity curve due to a ‘momentum bonus’ when compared to completing fewer monolith tasks.
+
+Let’s prove it mathematically. 
+
+**Definitions**. Momentum is a mass in motion $p=mv$. Let’s define velocity to be *productivity* and mass to be the *magnitude* of the task being completed.
+
+Momentum is conserved so if two objects $A$ and $B$ collide, elastically, so $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ where  $v'$ represents their posterior velocities, respectively. The analogy in the context of productivity can switching from task $A$ to task $B$ after either $A$ has been completed or sidebared. The reason I model context switching as a collision is because it can be classified as elastic or inelastic. Kind of neat.
+
+In the inelastic case $m_av_a + m_bv_b = (m_a+m_b)v$ where kinetic energy is not conserved. For a quick refresher:
+
+- Elastic collisions have both momentum and kinetic energy conserved e.g. throw billiard balls against the edge of a pool table and it comes back just as fast
+- Inelastic collisions only have momentum conserved e.g. you pushing your friend off a cliff (their kinetic energy is converted mostly to friction on the ground)
+
+The coefficient of restitution is designed to quantify collision elasticity
+
+$$
+e = \dfrac{v'_b - v_a'}{v_a - v_b}.
+$$
+
+The value of $e$  means that
+
+- $e= 0$ is perfectly inelastic
+- $0< e < 1$ is real-world inelastic
+- $e = 1$ is perfectly elastic
+- $e > 1$ occurs in special cases where the collision results in an explosion
+- $e = \infin$ when there is a [perfect explosion of a rigid system](https://en.wikipedia.org/wiki/Coefficient_of_restitution)
+
+Back to productivity.
+
+Case 1: You finish task $A$ and move onto $B$ (elastic)
+
+Since $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ you’re posterior velocities remain unchanged i.e. you haven’t hit the wall yet.
+
+Case 2: You don’t finish task $A$ and move onto $B$ (inelastic)
+
+This case falls under the condition where $0\le e < 1$ which means your posterior velocity will decrease from loses to the environment hence $m_av_a + m_bv_b = (m_a+m_b)v$. By definition we know that $v \le v_a, v_b$ since it can be thought of as a downscaled $v_a$ or $v_b$. We can re-arrange to get 
+
+$$
+v = \dfrac{m_av_a + m_bv_b}{m_a+m_b}.
+$$
+
+If we decrease either $m_a$ or $m_b$ whilst increasing $v_a$ or $v_b$ then $v$ our final velocity increases. The real-world analogy is have maximum productivity on the smallest task possible results in a larger final velocity for your next *collision* i.e. task $C$.
+
+My hypothesis is the smaller $m$ is the larger your gradual $v$ will become.
