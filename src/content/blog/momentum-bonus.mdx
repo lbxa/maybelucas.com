@@ -7,16 +7,16 @@ description: Notes on reproducible hyper productivity.
 
 Breaking large insurmountable tasks into smaller manageable subtasks enables hyper-productivity. I found that completing a high volume of small tasks results in a larger area under the productivity curve due to a ‘momentum bonus’ when compared to completing fewer monolith tasks.
 
-Let’s prove it mathematically. 
+Let’s prove it mathematically.
 
 **Definitions**. Momentum is a mass in motion $p=mv$. Let’s define velocity to be *productivity* and mass to be the *magnitude* of the task being completed.
 
-Momentum is conserved so if two objects $A$ and $B$ collide, elastically, so $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ where  $v'$ represents their posterior velocities, respectively. The analogy in the context of productivity can switching from task $A$ to task $B$ after either $A$ has been completed or sidebared. The reason I model context switching as a collision is because it can be classified as elastic or inelastic. Kind of neat.
+Momentum is conserved so if two objects $A$ and $B$ collide, elastically, $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ where  $v'$ represents their posterior velocities, respectively. In the inelastic case $m_av_a + m_bv_b = (m_a+m_b)v$ kinetic energy is not conserved and *lost* to the environment. The analogy in the context of productivity is switching from task $A$ to task $B$ after either $A$ has been completed or not. The reason I model context switching as a collision is because it can be classified as elastic or inelastic. Kind of neat.
 
-In the inelastic case $m_av_a + m_bv_b = (m_a+m_b)v$ where kinetic energy is not conserved. For a quick refresher:
+For a quick refresher:
 
-- Elastic collisions have both momentum and kinetic energy conserved e.g. throw billiard balls against the edge of a pool table and it comes back just as fast
-- Inelastic collisions only have momentum conserved e.g. you pushing your friend off a cliff (their kinetic energy is converted mostly to friction on the ground)
+- Elastic collisions have both momentum and kinetic energy conserved e.g. throwing billiard balls against the edge of a pool table and it comes back just as fast
+- Inelastic collisions only have momentum conserved e.g. you trying to push your friend off a cliff (their kinetic energy is converted mostly to friction on the ground)
 
 The coefficient of restitution is designed to quantify collision elasticity
 
@@ -34,18 +34,26 @@ The value of $e$  means that
 
 Back to productivity.
 
-Case 1: You finish task $A$ and move onto $B$ (elastic)
+Case 1: You fully completely task $A$ and move onto $B$ (elastic)
 
-Since $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ you’re posterior velocities remain unchanged i.e. you haven’t hit the wall yet.
+Since $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ you’re posterior velocities remain unchanged i.e. you haven’t hit the wall yet. At this point you’ll have the maximum momentum prior to starting task $B$. God speed.
 
-Case 2: You don’t finish task $A$ and move onto $B$ (inelastic)
+Case 2: You don’t fully complete task $A$ and move onto $B$ (inelastic)
 
-This case falls under the condition where $0\le e < 1$ which means your posterior velocity will decrease from loses to the environment hence $m_av_a + m_bv_b = (m_a+m_b)v$. By definition we know that $v \le v_a, v_b$ since it can be thought of as a downscaled $v_a$ or $v_b$. We can re-arrange to get 
+This case falls under the condition where $0\le e < 1$ which means your posterior velocity will decrease from loses to the environment hence $m_av_a + m_bv_b = (m_a+m_b)v$. By definition we know that $v \le v_a, v_b$. We can re-arrange to get
 
 $$
 v = \dfrac{m_av_a + m_bv_b}{m_a+m_b}.
 $$
 
-If we decrease either $m_a$ or $m_b$ whilst increasing $v_a$ or $v_b$ then $v$ our final velocity increases. The real-world analogy is have maximum productivity on the smallest task possible results in a larger final velocity for your next *collision* i.e. task $C$.
+If we decrease either $m_a$ or $m_b$ whilst increasing $v_a$ or $v_b$ then the final velocity $v$ increases. The real-world analogy is have maximum productivity on the smallest task possible results in a larger final velocity for your next *collision* i.e. task $C$. Unfortunately we don’t live in a world where $v\rightarrow \infin$. Productivity always feels like it tapers at a physical maximum. There’s many different methods to increasing $v_a$ and $v_b$, namely:
 
-My hypothesis is the smaller $m$ is the larger your gradual $v$ will become.
+- Great sleep
+- Physical exercise
+- Standing desk
+- Frequent breaks
+- Deep focus/flow state triggered from deep curiosity
+
+Once you’ve applied everything from this list (and your own personal hacks not included in there) the only thing left to do is to start shaving down $m_a$ and $m_b$ to non-zero values.
+
+We always strive to have our days structured as a sequence of case 1 victories, but reality is way more brutal. I find myself frequently in case 2 territory . Now I have a theoretical framework, a new attack angle.
