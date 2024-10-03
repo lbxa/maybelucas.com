@@ -1,0 +1,45 @@
+---
+title: Turning Research Papers Into a Podcast
+author: Lucas
+date: 2024-10-03
+description: I started a Podcast.
+---
+
+I've found that consuming knowledge in a wide range of modalities reinforces a deeper understanding of certain topics.
+
+My latest experiment has been listening to research papers, then reading them.
+
+I’ve extracted the text from PDF files and piped it to OpenAI’s voice API. It was cheaper to convert Andrej Kaparthy’s PhD thesis to a 3hr mp3 file for \$3.20 than to print it for 0.2c/side totalling $19 for 90 pages.
+
+A lot of the time there’s a few pages that aren’t worth transforming into audio such as references,  table of contents, appendices—so they get trimmed away.
+
+One constraint with OpenAI’s voice API is the max character count of 4096 per request. I ended up breaking up the paper into $n$ chunks of 4096 characters each. Parallelising this produced very quick results.
+
+```python
+import os
+import concurrent.futures
+
+def process_chunk(filepath: Path, chunk_info: tuple, voice) -> None:
+  # ...
+  # send request OpenAI
+  # stream response to mp3 file
+
+chunks = [] # n chunks of maximum 4096 characters each
+max_workers = min(32, os.cpu_count() + 4)
+voice = random.choice(["alloy", "echo", "fable", "onyx", "nova", "shimmer"])
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+	executor.map(process_chunk, repeat(filepath), chunks, repeat(voice))
+```
+
+The smaller chunks of mp3 files had to be merged back together using [ffmpeg.org](https://www.ffmpeg.org/). 
+
+But now all we have is an 3hr mp3 file. How do we consume this easily? I want the convenience of having this available wherever I go, whenever I have a moment to spare. I ended up automating the mp3 creation and uploading to a GCP bucket, then hosting a Podcast RSS feed from GitHub pages for free.
+
+After two o1-mini prompts I had a full podcast setup. Its that easy. I copy pasted the feed URL [lbxa.github.io/arxiv-to-mp3/rss.xml](https://lbxa.github.io/arxiv-to-mp3/rss.xml) into the free Overcast app on iOS and voilà. Podcast. 
+
+I’m excited to see if this unlocks a new dimension of knowledge dissemination. I’ll be either listening to my favourite house tracks or seminal papers in science and technology. What a dichotomy. The random narration voice selection should also keep the Podcast quite dynamic with 6 co-hosts to listen to—more than the usual Podcast.
+
+An unsolved limitation is $\LaTeX$. PDF text extraction is a non-trivial task but I chose to extract text without OCR to get something working quickly. OCR could be more robust.
+
+If you have any feedback, please create an issue on [github.com/lbxa/arxiv-to-mp3](https://github.com/lbxa/arxiv-to-mp3). The Podcast home page is live at [lbxa.github.io/arxiv-to-mp3](https://lbxa.github.io/arxiv-to-mp3). It's pretty naked right now but we'll see how this evolves as more content gets added.

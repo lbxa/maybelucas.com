@@ -19,7 +19,11 @@ export default defineConfig({
       rehypePlugins: [rehypeKatex],
       syntaxHighlight: 'shiki',
       shikiConfig: {
-        theme: 'dracula'
+        theme: 'dark-plus',
+        // themes: { // TODO make theme switcher work
+        //   light: 'light-plus',
+        //   dark: 'dark-plus',
+        // },
       }
     }), 
     tailwind(), 
