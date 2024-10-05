@@ -19,7 +19,7 @@ const posts = await getCollection("blog")
     {posts 
       .sort((a, b) => dayjs(a.data.date).isBefore(dayjs(b.data.date)) ? 1 : -1)
       .map((p) => (
-      <div class="flex gap-sm pb-md sm:pb-0">
+      <div class="flex flex-col sm:flex-row sm:gap-sm pb-md sm:pb-0">
         <a 
           class="hover:underline focus:underline visited:text-purple-600" 
           href={"/posts/" + p.slug}
