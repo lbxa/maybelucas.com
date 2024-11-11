@@ -1,10 +1,12 @@
 ---
 const { href, label } = Astro.props;
 const path = Astro.url.pathname;
-const isActive = path === href || path.startsWith(href + '/');
+const isActive = path === href || path.startsWith(href + "/");
 ---
 
-<a href={href} class={`font-mono hover:underline ${isActive ? 'underline' : 'no-underline'}`}>
+<a
+  href={href}
+  class={`font-mono hover:underline ${isActive ? "underline" : "no-underline"}`}
+>
   {label}
 </a>
-
