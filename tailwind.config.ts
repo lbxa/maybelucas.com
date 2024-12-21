@@ -22,7 +22,9 @@ export default {
 				ivory: '#f5f5f5'
 			},
 			fontFamily: {
-				mono: ["Source Code Pro", ...defaultTheme.fontFamily.mono],
+				mono: ["ui-monospace", ...defaultTheme.fontFamily.mono],
+				sans: ["Neue Montreal", ...defaultTheme.fontFamily.sans],
+				serif: ["Signifier", ...defaultTheme.fontFamily.serif],
 			},
 			spacing: {
 				'xs': '0.25rem',  // 4px / 16 = 0.25rem

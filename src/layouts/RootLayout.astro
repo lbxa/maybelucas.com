@@ -1,10 +1,10 @@
 ---
-import DarkMode from "@components/DarkMode/DarkMode.astro"
-import Nav from "@components/Nav.astro"
-import "../styles/global.css"
+import DarkMode from "@components/DarkMode/DarkMode.astro";
+import Nav from "@components/Nav.astro";
+import "../styles/global.css";
 
 interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
@@ -12,73 +12,102 @@ const { title } = Astro.props;
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Personal website of Lucas Barbosa" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="theme-color" content="#f5f5f5" id="theme-color" />
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<title>{title}</title>
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css"
-			integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ"
-			crossorigin="anonymous"
-			media="print" onload="this.media='all'"
-		/>
-		<script is:inline>
-			// fetch user dark mode settings
-			// inline option removes astro overhead - no theme flickering
-			(() => {
-				const theme = (() => {
-					if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-						return localStorage.getItem('theme');
-					}
-					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						return 'dark';
-					}
-					return 'light';
-				})();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Personal website of Lucas Barbosa" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#f5f5f5" id="theme-color" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>{title}</title>
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/icons/favicon-16x16.png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css"
+      integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ"
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
+    />
+    <script is:inline>
+      // fetch user dark mode settings
+      // inline option removes astro overhead - no theme flickering
+      (() => {
+        const theme = (() => {
+          if (
+            typeof localStorage !== "undefined" &&
+            localStorage.getItem("theme")
+          ) {
+            return localStorage.getItem("theme");
+          }
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            return "dark";
+          }
+          return "light";
+        })();
 
-				if (theme === 'light') {
-					document.documentElement.classList.remove('dark');
-				} else {
-					document.documentElement.classList.add('dark');
-				}
+        if (theme === "light") {
+          document.documentElement.classList.remove("dark");
+        } else {
+          document.documentElement.classList.add("dark");
+        }
 
-				window.localStorage.setItem('theme', theme);
+        window.localStorage.setItem("theme", theme);
 
-				// set status bar dark mode on mobile
-				const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
+        // set status bar dark mode on mobile
+        const themeColorMetaTag = document.querySelector(
+          'meta[name="theme-color"]'
+        );
 
-				function updateThemeColor() {
-					const isDarkMode = document.documentElement.classList.contains('dark');
-					themeColorMetaTag?.setAttribute('content', isDarkMode ? '#121212' : '#f5f5f5');
-				}
+        function updateThemeColor() {
+          const isDarkMode =
+            document.documentElement.classList.contains("dark");
+          themeColorMetaTag?.setAttribute(
+            "content",
+            isDarkMode ? "#121212" : "#f5f5f5"
+          );
+        }
 
-				updateThemeColor(); // Initial call to set the theme color based on current mode
+        updateThemeColor(); // Initial call to set the theme color based on current mode
 
-				const observer = new MutationObserver(updateThemeColor);
-				observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-			})();
-		</script>
-		<script src="../components/DarkMode/dark-mode-init.ts"></script>
-	</head>
-	<body>
-		<div class="z-50 fixed top-0 left-0 m-auto h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm">
-			<div class="flex mx-auto px-lg lg:px-0 max-w-screen-sm">
-				<Nav/>
-				<div class="ml-auto">
-					<DarkMode/>
-				</div>
-			</div>
-		</div>
-		<slot />
-	</body>
+        const observer = new MutationObserver(updateThemeColor);
+        observer.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+      })();
+    </script>
+    <script src="../components/DarkMode/dark-mode-init.ts"></script>
+  </head>
+  <body>
+    <div
+      class="z-50 fixed top-0 left-0 m-auto h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm"
+    >
+      <div class="flex mx-auto px-lg lg:px-0 max-w-screen-sm">
+        <Nav />
+        <div class="ml-auto">
+          <DarkMode />
+        </div>
+      </div>
+    </div>
+    <slot />
+  </body>
 </html>

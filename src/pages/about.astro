@@ -1,20 +1,21 @@
 ---
-import Socials from "@components/Socials.astro"
+import Socials from "@components/Socials.astro";
+import Title from "@components/Title.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
-import { getEntry } from 'astro:content';
+import { getEntry } from "astro:content";
 
-const bio = await getEntry("about", "bio")
+const bio = await getEntry("about", "bio");
 const { Content: BioContent } = await bio.render();
 
-const manifesto = await getEntry("about", "manifesto")
+const manifesto = await getEntry("about", "manifesto");
 const { Content: ManifestoContent } = await manifesto.render();
 ---
 
 <ContentLayout title="About">
-  <header>
-    <h1>About me...</h1>
-  </header>
   <section>
+    <Title>About me...</Title>
+  </section>
+  <section class="font-mono">
     <BioContent />
   </section>
   <Socials />
