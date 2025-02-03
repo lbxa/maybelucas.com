@@ -5,7 +5,6 @@ import remarkMath from 'remark-math';
 import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
 import icon from "astro-icon";
-
 import partytown from "@astrojs/partytown";
 
 // https://astro.build/config
