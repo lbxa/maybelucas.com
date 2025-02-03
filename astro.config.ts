@@ -7,9 +7,11 @@ import solidJs from "@astrojs/solid-js";
 import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 
+const DEV = process.env.NODE_ENV !== 'production';
+
 // https://astro.build/config
 export default defineConfig({
-  site: "https://maybelucas.com",
+  site: DEV ? 'http://localhost:4321' : 'https://maybelucas.com',
   prefetch: {
     prefetchAll: true,
     defaultStrategy: "viewport"

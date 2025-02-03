@@ -4,24 +4,14 @@ import RootLayout from "@layouts/RootLayout.astro";
 
 const { title } = Astro.props;
 ---
+
 <RootLayout title={title}>
-  <main class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-sm">
+  <main
+    class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-sm min-h-dvh pt-[60px]"
+  >
     <article class="grow">
       <slot />
     </article>
-    <Footer /> 
+    <Footer />
   </main>
 </RootLayout>
-
-<style>
-	main {
-    min-height: 100vh;
-		padding-top: calc(50px + 10px);
-	}
-
-  @supports (min-height: 100dvh) {
-    main {
-      min-height: 100dvh;
-    }
-  }
-</style>

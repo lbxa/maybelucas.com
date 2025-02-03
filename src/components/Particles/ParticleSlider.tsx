@@ -1,16 +1,23 @@
-import { createMemo, createSignal } from "solid-js";
+import { createMemo, createResource, createSignal } from "solid-js";
+import { fetchVisitorCount } from "./fetch-visitor-count";
+import { $C } from "@/utils";
 import "./particle-slider.css"
 
-const MAX_VAL = 100000
-const MIN_VAL = 10
-
 export const ParticleSlider = () => {
-  const [value, setValue] = createSignal(1000);
+  const [visitorCount] = createResource(fetchVisitorCount);
+  const [count, setCount] = createSignal<number>(Number($C.MIN_PARTICLES));
   const [visible, setVisible] = createSignal(true);
   
+  createMemo(() => {
+    const currentCount = visitorCount();
+    if (currentCount !== undefined && !visitorCount.error) {
+      setCount(currentCount);
+    }
+  });
+
   const bg = createMemo(() => ({
-    "bg-red-400/50 dark:bg-red-900/50": value() === MAX_VAL,
-    "bg-ivory/50 dark:bg-shark-950/50": value() !== MAX_VAL
+    "bg-red-400/50 dark:bg-red-900/50": count() === $C.MAX_PARTICLES,
+    "bg-ivory/50 dark:bg-shark-950/50": count() !== $C.MAX_PARTICLES
   }))
 
   const handleInput = (e: InputEvent) => {
@@ -19,7 +26,7 @@ export const ParticleSlider = () => {
     const maxValue = Number(target.max);
 
     setVisible(true);
-    setValue(currentValue); 
+    setCount(currentValue); 
 
     if (currentValue === maxValue) {
       target?.classList.add("animate-shake");
@@ -41,9 +48,9 @@ export const ParticleSlider = () => {
         type="range" 
         id="particle-density-slider" 
         name="volume" 
-        min={MIN_VAL}
-        max={MAX_VAL}
-        value={value()}
+        min={$C.MIN_PARTICLES}
+        max={$C.MAX_PARTICLES}
+        value={count()}
         onInput={handleInput}
         onBlur={() => setVisible(false)}
         aria-label="Particle density slider"
@@ -54,7 +61,7 @@ export const ParticleSlider = () => {
                backdrop-blur-sm font-mono"
         classList={bg()}
       >
-        {value()}/{MAX_VAL}
+        {count()}/{$C.MAX_PARTICLES}
       </div>}
     </div>
   )
