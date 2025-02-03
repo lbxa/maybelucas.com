@@ -19,6 +19,7 @@
     "@astrojs/solid-js": "^4.4.4",
     "@astrojs/tailwind": "^5.1.2",
     "@libsql/client": "^0.14.0",
+    "@types/three": "^0.173.0",
     "astro": "^4.16.14",
     "astro-icon": "^1.1.1",
     "dayjs": "^1.11.13",
@@ -29,8 +30,5 @@
     "three": "^0.167.1",
     "typescript": "^5.5.4"
   },
-  "packageManager": "pnpm@9.15.1",
-  "devDependencies": {
-    "@types/three": "^0.167.2"
-  }
+  "packageManager": "pnpm@9.15.1"
 }
