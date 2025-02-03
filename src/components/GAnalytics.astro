@@ -1,0 +1,24 @@
+<!-- Google tag (gtag.js) -->
+<script
+  is:inline
+  async
+  type="text/partytown"
+  src="https://www.googletagmanager.com/gtag/js?id=G-90PM2761DG"></script>
+<script is:inline type="text/partytown">
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+
+  // This should ALWAYS be set before the gtag("config", "G-XXXXXXXXXX"); line
+  // collect anonymous user data
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+  });
+
+  gtag("config", "G-90PM2761DG");
+</script>

@@ -6,6 +6,8 @@ import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
 import icon from "astro-icon";
 
+import partytown from "@astrojs/partytown";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://maybelucas.com",
@@ -15,18 +17,22 @@ export default defineConfig({
   },
   integrations: [
     mdx({
-      remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
-      syntaxHighlight: 'shiki',
-      shikiConfig: {
-        themes: { 
-          light: "light-plus",
-          dark: "dark-plus",
-        },
-      }
-    }), 
-    tailwind(), 
-    solidJs(), 
-    icon({iconDir: "src/assets/icons"})
-  ]
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
+    syntaxHighlight: 'shiki',
+    shikiConfig: {
+      themes: { 
+        light: "light-plus",
+        dark: "dark-plus",
+      },
+    }
+  }), 
+  tailwind(), 
+  solidJs(), 
+  icon({iconDir: "src/assets/icons"}), 
+  partytown({
+    config: {
+      forward: ["dataLayer.push"],
+    }
+  })]
 });
