@@ -1,3 +1,4 @@
+import { $C } from '@/utils';
 import * as THREE from 'three';
 
 class MobiusSwarm {
@@ -13,7 +14,7 @@ class MobiusSwarm {
   private readonly radius = 2.5;
   private readonly stripWidth = 0.9;
 
-  constructor(canvas: HTMLCanvasElement, initialParticleCount = 1000) {
+  constructor(canvas: HTMLCanvasElement, initialParticleCount = $C.MIN_PARTICLES) {
     this.particleCount = initialParticleCount;
     this.sizes = {
       width: window.innerWidth,
