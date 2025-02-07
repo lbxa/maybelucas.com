@@ -21,6 +21,7 @@ const { title } = Astro.props;
     <meta name="theme-color" content="#f5f5f5" id="theme-color" />
     <meta name="mobile-web-app-capable" content="yes" />
     <title>{title}</title>
+    <GAnalytics />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
@@ -48,7 +49,6 @@ const { title } = Astro.props;
       media="print"
       onload="this.media='all'"
     />
-    <GAnalytics />
     <script is:inline>
       // fetch user dark mode settings
       // inline option removes astro overhead - no theme flickering
