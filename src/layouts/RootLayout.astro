@@ -48,6 +48,7 @@ const { title } = Astro.props;
       media="print"
       onload="this.media='all'"
     />
+    <GAnalytics />
     <script is:inline>
       // fetch user dark mode settings
       // inline option removes astro overhead - no theme flickering
@@ -98,7 +99,6 @@ const { title } = Astro.props;
     </script>
     <script src="../components/DarkMode/dark-mode-init.ts"></script>
   </head>
-  <GAnalytics />
   <body>
     <div
       class="z-50 fixed top-0 left-0 m-auto h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm"
