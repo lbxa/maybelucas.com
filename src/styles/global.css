@@ -101,7 +101,7 @@ a {
 
 ul,
 ol {
-  @apply mb-md;
+  @apply mb-md pl-md md:pl-lg;
 }
 
 ul {
@@ -120,7 +120,7 @@ ol ol {
 }
 
 li {
-  @apply mb-sm ml-lg leading-relaxed text-lg;
+  @apply mb-sm ml-md leading-relaxed text-lg;
 }
 
 li::marker {
