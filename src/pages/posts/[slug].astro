@@ -3,8 +3,8 @@ import { getCollection, getEntry } from "astro:content";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import I from "@components/I.astro";
 import Title from "@components/Title.astro";
+import ReadingTime from "@/components/ReadingTime.astro";
 dayjs.extend(relativeTime);
 
 type Props = {
@@ -35,7 +35,11 @@ export async function getStaticPaths() {
     <Title>{entry.data.title}</Title>
     <p>
       {entry.data.description}
-      <I>Written {dayjs(entry.data.date).toNow(true)} ago.</I>
+      <div class="text-gray-700 dark:text-gray-400">
+        <ReadingTime content={entry.body} />
+        <span>•</span>
+        <span>Written {dayjs(entry.data.date).toNow(true)} ago</span>
+      </div>
     </p>
   </header>
   <section>

@@ -1,0 +1,28 @@
+---
+interface Props {
+  content: string;
+  wordsPerMinute?: number;
+}
+
+const ONE_MINUTE = 1;
+
+const { content, wordsPerMinute = 200 } = Astro.props;
+
+function calculateReadingTime(text: string, wpm: number): number {
+  const cleanText = text
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const wordCount = cleanText
+    .split(" ")
+    .filter((word) => word.length > 0).length;
+  const readingTime = Math.ceil(wordCount / wpm);
+  return Math.max(ONE_MINUTE, readingTime); // < 1m is 1m
+}
+
+const estimatedTime = calculateReadingTime(content, wordsPerMinute);
+---
+
+<span>
+  {estimatedTime} min read
+</span>
