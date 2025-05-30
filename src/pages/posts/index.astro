@@ -29,9 +29,9 @@ const posts = await getCollection("blog");
             >
               {p.data.title.trim()}
             </a>
-            <div class="text-gray-700 dark:text-gray-400">
+            <div class="text-gray-700 dark:text-gray-400 text-xs">
               <ReadingTime content={p.body} />
-              <span>•</span>
+              <span class="font-sans">•</span>
               <span>{dayjs(p.data.date).toNow(true)} ago</span>
             </div>
           </div>
