@@ -1,14 +1,16 @@
 ---
 import DarkMode from "@components/DarkMode/DarkMode.astro";
 import Nav from "@components/Nav.astro";
+import Particles from "@components/Particles/Particles.astro";
 import "../styles/global.css";
 import GAnalytics from "@components/GAnalytics.astro";
 
 interface Props {
   title: string;
+  showSlider?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, showSlider = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -111,5 +113,6 @@ const { title } = Astro.props;
       </div>
     </div>
     <slot />
+    <Particles transition:persist showSlider={showSlider} />
   </body>
 </html>

@@ -5,9 +5,15 @@ import ContentLayout from "@layouts/ContentLayout.astro";
 import { getEntry } from "astro:content";
 
 const bio = await getEntry("about", "bio");
+if (!bio) {
+  throw new Error("Bio content not found");
+}
 const { Content: BioContent } = await bio.render();
 
 const manifesto = await getEntry("about", "manifesto");
+if (!manifesto) {
+  throw new Error("Manifesto content not found");
+}
 const { Content: ManifestoContent } = await manifesto.render();
 ---
 

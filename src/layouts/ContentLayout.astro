@@ -5,9 +5,14 @@ import RootLayout from "@layouts/RootLayout.astro";
 const { title } = Astro.props;
 ---
 
-<RootLayout title={title}>
+<RootLayout title={title} showSlider={false}>
+  <div
+    class="fixed inset-0 backdrop-blur-md bg-ivory/40 dark:bg-shark-950/60 z-10"
+  >
+  </div>
+
   <main
-    class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-sm min-h-dvh pt-[60px]"
+    class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-sm min-h-dvh pt-[60px] relative z-10"
   >
     <article class="grow">
       <slot />

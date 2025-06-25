@@ -1,0 +1,210 @@
+---
+export interface Props {
+  // Inner shadow
+  shadowColor?: string;
+  shadowBlur?: number;
+  shadowSpread?: number;
+
+  // Glass tint
+  tintColor?: string;
+  tintOpacity?: number;
+
+  // Frost blur
+  frostBlur?: number;
+
+  // Noise distortion
+  noiseFrequency?: number;
+  distortionStrength?: number;
+
+  // Outer shadow
+  outerShadowBlur?: number;
+
+  // Dimensions and styling
+  width?: number;
+  height?: number;
+  borderRadius?: number;
+
+  // Functionality
+  draggable?: boolean;
+
+  // CSS classes
+  class?: string;
+}
+
+const {
+  shadowColor = "#ffffff",
+  shadowBlur = 20,
+  shadowSpread = -5,
+  tintColor = "#ffffff",
+  tintOpacity = 0.4,
+  frostBlur = 2,
+  noiseFrequency = 0.008,
+  distortionStrength = 77,
+  outerShadowBlur = 24,
+  width = 300,
+  height = 200,
+  borderRadius = 28,
+  draggable = true,
+  class: className = "",
+} = Astro.props;
+
+// Convert hex color to RGB values for CSS custom property
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return "255, 255, 255";
+  return [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16),
+  ].join(", ");
+}
+
+const tintRgb = hexToRgb(tintColor);
+const uniqueId = `glass-distortion-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div
+  class={`liquid-glass ${className}`}
+  data-draggable={draggable}
+  style={{
+    "--shadow-blur": `${shadowBlur}px`,
+    "--shadow-spread": `${shadowSpread}px`,
+    "--shadow-color": shadowColor,
+    "--tint-color": tintRgb,
+    "--tint-opacity": tintOpacity,
+    "--frost-blur": `${frostBlur}px`,
+    "--outer-shadow-blur": `${outerShadowBlur}px`,
+    "--width": `${width}px`,
+    "--height": `${height}px`,
+    "--border-radius": `${borderRadius}px`,
+  }}
+>
+  <slot />
+</div>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="0"
+  height="0"
+  style="position:absolute; overflow:hidden"
+>
+  <defs>
+    <filter id={uniqueId} x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency={`${noiseFrequency} ${noiseFrequency}`}
+        numOctaves="2"
+        seed="92"
+        result="noise"></feTurbulence>
+      <feGaussianBlur in="noise" stdDeviation="2" result="blurred"
+      ></feGaussianBlur>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="blurred"
+        scale={distortionStrength}
+        xChannelSelector="R"
+        yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </defs>
+</svg>
+
+<style>
+  .liquid-glass {
+    position: relative;
+    width: var(--width);
+    height: var(--height);
+    border-radius: var(--border-radius);
+    cursor: move;
+    isolation: isolate;
+    touch-action: none;
+    box-shadow: 0px 6px var(--outer-shadow-blur) rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .liquid-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: var(--border-radius);
+    box-shadow: inset 0 0 var(--shadow-blur) var(--shadow-spread)
+      var(--shadow-color);
+    background-color: rgba(var(--tint-color), var(--tint-opacity));
+  }
+
+  .liquid-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(var(--frost-blur));
+    filter: url(#glass-distortion);
+    isolation: isolate;
+    -webkit-backdrop-filter: blur(var(--frost-blur));
+  }
+
+  .liquid-glass > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+</style>
+
+<script>
+  function initDraggable() {
+    const glassElements = document.querySelectorAll(
+      '.liquid-glass[data-draggable="true"]'
+    );
+
+    glassElements.forEach((elmnt) => {
+      let startX = 0,
+        startY = 0;
+
+      const onPointerDown = (e: PointerEvent) => {
+        e.preventDefault();
+        const rect = elmnt.getBoundingClientRect();
+        (elmnt as HTMLElement).style.position = "absolute";
+        (elmnt as HTMLElement).style.top = rect.top + "px";
+        (elmnt as HTMLElement).style.left = rect.left + "px";
+        (elmnt as HTMLElement).style.transform = "none";
+
+        startX = e.clientX;
+        startY = e.clientY;
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", onPointerUp, { once: true });
+      };
+
+      const onPointerMove = (e: PointerEvent) => {
+        e.preventDefault();
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        startX = e.clientX;
+        startY = e.clientY;
+        (elmnt as HTMLElement).style.left =
+          (elmnt as HTMLElement).offsetLeft + dx + "px";
+        (elmnt as HTMLElement).style.top =
+          (elmnt as HTMLElement).offsetTop + dy + "px";
+      };
+
+      const onPointerUp = () => {
+        document.removeEventListener("pointermove", onPointerMove);
+      };
+
+      elmnt.addEventListener("pointerdown", onPointerDown as EventListener);
+    });
+  }
+
+  // Initialize on DOM content loaded
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDraggable);
+  } else {
+    initDraggable();
+  }
+
+  // Re-initialize when navigating in SPA mode
+  document.addEventListener("astro:page-load", initDraggable);
+</script>

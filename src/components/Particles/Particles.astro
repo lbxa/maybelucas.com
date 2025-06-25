@@ -1,20 +1,25 @@
 ---
+export interface Props {
+  showSlider?: boolean;
+}
+
+const { showSlider = true } = Astro.props;
 import { ParticleSlider } from "@components/Particles/ParticleSlider";
 ---
 
 <canvas id="webgl"></canvas>
-<ParticleSlider client:visible />
+{showSlider && <ParticleSlider client:visible />}
 <script src="./mobius-swarm.ts"></script>
 <style>
-canvas#webgl {
-  position: fixed;
-  top: 0;
-  left: 0;
-  outline: none;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none; /* This is crucial */
-  mix-blend-mode: exclusion;
-}
+  canvas#webgl {
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none; /* This is crucial */
+    mix-blend-mode: exclusion;
+  }
 </style>
