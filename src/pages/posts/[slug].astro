@@ -32,9 +32,17 @@ export async function getStaticPaths() {
 
 <ContentLayout title={entry.data.title}>
   <header class="mb-xl">
+    <div class="my-lg">
+      <a
+        href="/posts"
+        class="font-mono hover:underline no-underline inline-flex items-center gap-xs text-gray-700 dark:text-gray-400 hover:text-shark-950 hover:dark:text-ivory transition-colors duration-200"
+      >
+        ← Back
+      </a>
+    </div>
     <Title>{entry.data.title}</Title>
     <p>
-      {entry.data.description}
+      {entry.data.description ?? null}
       <div class="text-gray-700 dark:text-gray-400">
         <ReadingTime content={entry.body} />
         <span>•</span>
