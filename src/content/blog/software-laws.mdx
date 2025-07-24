@@ -1,0 +1,353 @@
+---
+title: The Laws of Software
+author: Lucas
+date: 2025-07-24
+description: These laws have been aggregated from several reputable sources and software pop culture more broadly.
+---
+
+## **Amdahl’s** Law
+
+> The $s$ speed up of a program is limited by the $p$ proportion of execution it previously occupied.
+> 
+
+Mathematically,
+
+$$
+S(s) = \dfrac{1}{(1-p) + \dfrac{p}{s}},
+$$
+
+which, when evaluated in the limit, produces,
+
+$$
+\lim_{s\rightarrow \infin} S(s) = \dfrac{1}{1-p}.
+$$
+
+In other words, the faster it gets, the harder it gets to make it faster.
+
+## Atwood’s Law
+
+> Any application that can be written in JavaScript will eventually be written in JavaScript.
+> 
+
+This didn’t happen by chance. The following events led to its proliferation,
+
+1. [Brendan Eich](https://en.wikipedia.org/wiki/Brendan_Eich) wrote the first version [in 10 days at Netscape](https://brendaneich.com/2011/06/new-javascript-engine-module-owner/) (1995)
+2. [Brendan Eich rewrote Mocha](https://brendaneich.com/2011/06/new-javascript-engine-module-owner/), which became the SpiderMonkey engine (1996)
+3. Standardised into [ECMAScript](https://tc39.es/ecma262/) (1997)
+4. Apple released JavaScript Core engine (2002)
+5. Google releases [v8 engine](https://v8.dev/blog) (2008)
+6. Ryan Dahl builds the Node runtime on top of v8 (2009)
+
+The next most important thing about a language other than itself is its runtime. In 16 years, JavaScript could run anywhere and very quickly. All browsers, servers, and even embedded devices (please do not write embedded JS). The speed of v8, SpiderMonkey, and JavaScript Core meant end users could do more useful interactive tasks with JavaScript besides form validation.
+
+Fast-track to today, and we have bun; yet another leap in performance for JavaScript and its cousin, TypeScript. Whilst there are still so many quirks (`null` vs `undefined`, `delete obj[key]` performance issues in v8, CJS vs ESM, and single-threaded) I have found my peace with it.
+
+[Jarred Sumner](https://x.com/jarredsumner?lang=en) put it well: JavaScript is not I/O bound anymore, and we’re still far from achieving the theoretical limit of hardware.
+
+## Brooks’ Law
+
+> Adding manpower to a late software project makes it later due to increased communication overhead and learning curves.
+> 
+
+The ideal analogy for software engineering is working in a restaurant kitchen. High-performing teams are coordinated by excellent technical leadership (the Marco Pierre's of the world) and kept intentionally small. The chefs must memorise the layout of the kitchen, so they know exactly where to look for the spatula or cleaning fluid. If the layout of the kitchen changes, then it'll take time for the chefs to rewire the previously burned-in muscle memory, akin to a large codebase refactor.
+
+As the old saying goes, too many cooks spoil the broth.
+
+Too many developers working on the same features can cause logic clashes, integration conflicts, and duplicated effort. This can only be overcome with communication which adds plenty of overhead. In conclusion, keep teams small and highly competent.
+
+## Choose Boring Technology
+
+> Consider how you would solve your immediate problem without adding anything new.
+> 
+
+I disagree with this one mostly over personal preference. I always opt to choose new technologies, e.g., GraphQL over REST, to stay intellectually stimulated when I’m writing out tens of thousands of lines of code. When you know exactly what the shape of the next 10k lines are going to look like… well, that’s just boring. I’ve always compared the craft of software closely to the art of writing or painting. If you’re bored, you won’t pain a masterpiece.
+
+In the era of Claude 4 and Gemini 2.5, boring boilerplaty technologies like SQLite and PHP might be more reliable since it's more prevalent in the training data hence the models make less mistakes. Hopefully this diminishes as the models get progressively more capable.
+
+There are only two specific cases where I go back on my word above: databases and message queues. After listening to [Cursor’s CTO explain their journey with cutting-edge database technologies](https://www.youtube.com/watch?v=4jDQi9P9UIw), it reassured me right back into the arms of Postgres.
+
+## Conway’s Law
+
+> Systems mirror the communication structures of the organizations that produce them; Inverse Conway’s Law can be used to optimize architecture.
+> 
+
+## Cunningham’s Law
+
+> Posting wrong answers on the internet often leads to correct ones, as users love correcting others; this can help unstick oneself from problems.
+> 
+
+## Doerr’s Law
+
+> We need teams of missionaries, not teams of mercenaries.
+> 
+
+## Fitt’s Law
+
+> The time to acquire a target is a function of the distance to and the size of the target.
+> 
+
+## Gall’s Law
+
+> A complex system that works has evolved from a simple system that worked. A complex system built from scratch won’t work.
+> 
+
+## Gilb’s Law
+
+> Anything that can be quantified can be measured in some way, making “measurement” better than none at all.
+> 
+
+## Goodhart’s Law
+
+> When a measure becomes a target, it ceases to be a good measure.
+> 
+
+When new coding models drop, the software community on X goes nuts.  All the new SWE benchmark results get posted, but that’s not where the real value lies. The real value comes from connecting with the new models when continuously having to prompt them via Claude Code and Cursor. 
+
+Who cares if Grok 4 is technically the smartest model on the market if it’s not as good at crafting code like Sonnet 4. The big AI labs shouldn’t strive to simply top these benchmarks but actually improve the user experience of developers who have to use these models every day. For example, increasing token efficiency so these models become more cost-effective when these amazing subscription tiers disappear, and everyone falls back to usage-based pricing (very underrated).
+
+## Greenspun’s Tenth Rule
+
+> Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp.
+> 
+
+## Hofstadter’s Law
+
+> It always takes longer than you expect, even when you account for Hofstadter’s Law. Buffers are essential in project planning.
+> 
+
+Buffers. Always buffer delivery timelines. A good rule of thumb is to form a solid delivery schedule and then double that. Aim to overdeliver quicker, but probably not.
+
+## Hyrum’s Law
+
+> With a sufficient number of users of an API, all observable behaviors will be depended upon by somebody; removing “unused” features becomes challenging.
+> 
+
+## Kerckhoff’s Principle
+
+> A system should be secure even if everything about the system, except for a small piece of information—the key—is public knowledge.
+> 
+
+## Kernighan’s Law
+
+> Debugging is twice as hard as writing a program in the first place.
+> 
+
+## Knuth’s Optimization Principle
+
+> Premature optimization is the root of all evil.
+> 
+
+## Law of Leaky Abstractions
+
+> All non-trivial abstractions, to some degree, are leaky.
+> 
+
+## Linus’s Law
+
+> Given enough eyeballs, all bugs are shallow.
+> 
+
+## Moore’s Law
+
+> The complexity for minimum component costs has increased at a rate of roughly a factor of two per year.
+> 
+
+## Murphy’s Law
+
+> Anything that can go wrong will go wrong.
+> 
+
+## Norvig’s Law
+
+> Any technology that surpasses 50% penetration will never double again.
+> 
+
+## Parkinson’s Law
+
+> Work expands so as to fill the time available for its completion.
+> 
+
+## Peter Principle
+
+> People in a hierarchy tend to rise to a level of respective incompetence.
+> 
+
+Distance from the arena?
+
+## Postel’s Law
+
+> Be conservative in what you send, liberal in what you accept.
+> 
+
+## Price’s Law
+
+> In any group, 50% of the work is done by the square-root number of people.
+> 
+
+## The Ringelmann Effect
+
+> As group size increases, individual productivity decreases due to loss of motivation and coordination problems.
+> 
+
+## Shirky Principle
+
+> Institutions will try to preserve the problem to which they are the solution.
+> 
+
+## Sturgeon’s Law
+
+> “90% of everything is crap”; understanding this helps focus on creating value and not wasting resources on poor features.
+> 
+
+## Wirth’s Law
+
+> Software gets slower faster than hardware gets faster.
+> 
+
+## Zawinski’s Law
+
+> Every program attempts to expand until it can read mail. Those programs which cannot so expand are replaced by ones which can.
+> 
+
+We can slightly adapt this to 2025 with “chatbot” instead of mail. Cross-attention is truly magical, but we don’t need chatbots stuck everywhere. Sometimes people just want to mindlessly click some buttons without an AI magic button.
+
+## Gustafson’s Law
+
+> Scaling up problem size lets you get near-linear speedups $S(N)=p+s×N$, where $p$ is the nonparallelizable fraction and $s$ the parallelizable per-processor work.
+> 
+
+## Metcalfe’s Law
+
+> Network value grows proportional to the square of its nodes $C \propto n^2$.
+> 
+
+## Pareto Principle
+
+> Roughly 80% of effects come from 20% of causes — e.g. 80% of bugs in 20% of modules.
+> 
+
+## Karlton’s Law
+
+> There are only two hard things in Computer Science: cache invalidation and naming things.
+> 
+
+## KISS
+
+> Keep It Simple, Stupid – most designs work best if kept simple rather than made complex.
+> 
+
+## YAGNI
+
+> You Ain’t Gonna Need It – don’t add functionality until it is absolutely necessary.
+> 
+
+## DRY
+
+> Don’t Repeat Yourself – every piece of knowledge must have a single, unambiguous, authoritative representation.
+> 
+
+Famous last words. This often stands in contradiction to “[Parse Don’t Validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/).”
+
+```tsx
+interface User {
+	id: string;
+	name: string;
+};
+
+interface Task {
+	id: string;
+	items: string[];
+}
+
+interface Workspace {
+	members: User[];
+	tasks: Task[];
+}
+```
+
+The example above seems okay. Pretend we built an entire application around it, and now we have to test! Unit tests might check array membership in `Workspace`, making sure there’s always a `User` in there, otherwise the workspace is void.
+
+Since a zero-member workspace is void, why should we allow that in the first place? One simple change can move that runtime test to a static compile-time test.
+
+```tsx
+interface Workspace {
+	owner: User;
+	members: User[];
+	tasks: Task[];
+}
+```
+
+Now, let’s pretend the product did well and new features were added: personal and professional workspaces. They have one distinct difference *for now;* professional workspaces have a plan attached to them.
+
+```tsx
+interface Plan {
+	type: string;
+	valueUsd: number;
+}
+
+interface Workspace {
+	owner: User;
+	members: User[];
+	tasks: Task[];
+	plan: Plan;
+}
+```
+
+The above change is a mediocre outcome. But since it’s drilled into us since CS101 that DRY is life, we want to stay efficient and reduce code duplication at all costs. Why not just re-use the `Workspace` structure?
+
+What’s going to happen next is the `Workspace` structure will grow in complexity with newly requested features. Devs will have to write more tests to make sure workspaces are behaving according to the rules written by the product team.
+
+There is another way; a fork in the road. To parse and not validate. If a personal workspace cannot have a plan, our type system should express that **explicitly**.
+
+```tsx
+interface PersonalWorkspace {
+	owner: User;
+	members: User[];
+	tasks: Task[];
+}
+
+interface ProfessionalWorkspace {
+	owner: User;
+	members: User[];
+	tasks: Task[];
+	plan: Plan;
+}
+```
+
+We can even be more explicit. The code below is more verbose and violates DRY. But it etches our domain rules explicitly. This simple change has eliminated the need to write several runtime tests. It’s okay for the `PersonalWorkspace` to be naked for now because it’s guaranteed to grow following Zawinski’s Law.
+
+```tsx
+interface BaseWorkspace {
+	owner: User;
+	members: User[];
+	tasks: Task[];
+}
+
+interface PersonalWorkspace extends BaseWorkspace {
+	// TBA ...
+}
+
+interface ProfessionalWorkspace extends BaseWorkspace {
+	plan: Plan;
+}
+
+type Workspaces = PersonalWorkspace | ProfessionalWorkspace;
+```
+
+More code is not a bad thing, necessarily.
+
+## Principle of Least Astonishment
+
+> Software should behave in a way that least surprises users and other developers.
+> 
+
+## No Silver Bullet
+
+> There is no single development, in either technology or management, which by itself promises even one order-of-magnitude improvement within a decade in productivity, in reliability, in simplicity. (Fred Brooks)
+
+---
+
+Sources
+
+- https://www.laws-of-software.com/
+- https://newsletter.manager.dev/p/the-13-software-engineering-laws
