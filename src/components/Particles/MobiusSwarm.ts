@@ -1,5 +1,6 @@
 import { $C } from '@/utils';
 import * as THREE from 'three';
+import { particleCount, setParticleCount } from '@/stores/particleStore';
 
 interface LoadingCallbacks {
   onLoadingStart?: () => void;
@@ -7,7 +8,7 @@ interface LoadingCallbacks {
   onLoadingComplete?: () => void;
 }
 
-class MobiusSwarm {
+export class MobiusSwarm {
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
@@ -24,11 +25,16 @@ class MobiusSwarm {
   private isLoading: boolean = true;
   private loadingCallbacks: LoadingCallbacks = {};
 
-  constructor(canvas: HTMLCanvasElement, initialParticleCount = $C.MIN_PARTICLES, callbacks?: LoadingCallbacks) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    initialParticleCount = $C.MIN_PARTICLES,
+    callbacks?: LoadingCallbacks,
+  ) {
     this.loadingCallbacks = callbacks || {};
     this.emitLoadingStart();
-    
-    this.particleCount = initialParticleCount;
+
+    // Get particle count from Nano Store
+    this.particleCount = particleCount.get();
     this.sizes = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -106,6 +112,8 @@ class MobiusSwarm {
 
   private createParticlePositions(count: number): void {
     this.particleCount = count;
+    // Update the Nano Store
+    setParticleCount(count);
     this.positions = new Float32Array(this.particleCount * 3);
 
     for (let i = 0; i < this.particleCount; i++) {
@@ -125,7 +133,10 @@ class MobiusSwarm {
   }
 
   private updateParticleSystem(): void {
-    this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
+    this.geometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(this.positions, 3),
+    );
     this.geometry.attributes.position.needsUpdate = true;
     this.geometry.computeBoundingSphere();
   }
@@ -142,8 +153,8 @@ class MobiusSwarm {
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
 
-    const slider = document.getElementById('particle-density-slider');
-    slider?.addEventListener('input', (event: Event) => {
+    const slider = document.getElementById("particle-density-slider");
+    slider?.addEventListener("input", (event: Event) => {
       const target = event.target as HTMLInputElement;
       this.createParticlePositions(Number(target.value));
     });
@@ -156,78 +167,10 @@ class MobiusSwarm {
     this.particleSystem.rotation.z += 0.006;
     this.renderer.render(this.scene, this.camera);
   }
-}
 
-// Initialize with loading callbacks
-const canvas = document.querySelector("#webgl") as HTMLCanvasElement;
-if (canvas) {
-  // Optional: Add loading UI elements
-  const loadingElement = document.createElement('div');
-  loadingElement.id = 'particle-loading';
-  loadingElement.innerHTML = `
-    <div style="
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 100;
-      color: #f5f5f5;
-      font-family: ui-monospace, monospace;
-      text-align: center;
-      pointer-events: none;
-      background: rgba(18, 18, 18, 0.8);
-      backdrop-filter: blur(8px);
-      padding: 24px 32px;
-      border-radius: 16px;
-      border: 1px solid rgba(245, 245, 245, 0.1);
-    ">
-      <div id="loading-text" style="font-size: 16px; margin-bottom: 12px;">Loading Particles</div>
-      <div id="loading-progress" style="font-size: 12px; color: #888;">0%</div>
-      <div style="
-        width: 200px;
-        height: 2px;
-        background: rgba(245, 245, 245, 0.1);
-        border-radius: 1px;
-        margin: 12px auto 0;
-        overflow: hidden;
-      ">
-        <div id="loading-bar" style="
-          height: 100%;
-          background: #f5f5f5;
-          width: 0%;
-          transition: width 0.3s ease;
-        "></div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(loadingElement);
-
-  const loadingText = document.getElementById('loading-text');
-  const loadingProgress = document.getElementById('loading-progress');
-  const loadingBar = document.getElementById('loading-bar');
-
-  new MobiusSwarm(canvas, $C.MIN_PARTICLES, {
-    onLoadingStart: () => {
-      console.log('🌌 Mobius particle system loading started');
-      if (loadingElement) loadingElement.style.display = 'block';
-    },
-    onLoadingProgress: (progress: number) => {
-      console.log(`🔄 Loading progress: ${progress}%`);
-      if (loadingProgress) loadingProgress.textContent = `${progress}%`;
-      if (loadingBar) loadingBar.style.width = `${progress}%`;
-    },
-    onLoadingComplete: () => {
-      console.log('✨ Mobius particle system loaded successfully');
-      if (loadingElement) {
-        // Small delay to show 100% completion
-        setTimeout(() => {
-          loadingElement.style.opacity = '0';
-          loadingElement.style.transition = 'opacity 0.5s ease-out';
-          setTimeout(() => {
-            loadingElement.remove();
-          }, 500);
-        }, 300);
-      }
-    }
-  });
-}
+  public dispose(): void {
+    this.geometry.dispose();
+    this.material.dispose();
+    this.renderer.dispose();
+  }
+} 

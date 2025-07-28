@@ -1,17 +1,21 @@
 import { createMemo, createResource, createSignal } from "solid-js";
+import { useStore } from "@nanostores/solid";
 import { fetchVisitorCount } from "./fetch-visitor-count";
 import { $C } from "@/utils";
+import { particleCount, setParticleCount } from "@/stores/particleStore";
 import "./particle-slider.css"
 
 export const ParticleSlider = () => {
   const [visitorCount] = createResource(fetchVisitorCount);
-  const [count, setCount] = createSignal<number>(Number($C.MIN_PARTICLES));
+  
+  // Use the Nano Store for particle count
+  const count = useStore(particleCount);
   const [visible, setVisible] = createSignal(true);
   
   createMemo(() => {
     const currentCount = visitorCount();
     if (currentCount !== undefined && !visitorCount.error) {
-      setCount(currentCount);
+      setParticleCount(currentCount);
     }
   });
 
@@ -26,7 +30,7 @@ export const ParticleSlider = () => {
     const maxValue = Number(target.max);
 
     setVisible(true);
-    setCount(currentValue); 
+    setParticleCount(currentValue); 
 
     if (currentValue === maxValue) {
       target?.classList.add("animate-shake");

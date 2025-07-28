@@ -26,6 +26,9 @@ importers:
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
+      '@nanostores/solid':
+        specifier: ^1.0.0
+        version: 1.0.0(nanostores@1.0.1)(solid-js@1.8.21)
       '@types/three':
         specifier: ^0.173.0
         version: 0.173.0
@@ -38,6 +41,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      nanostores:
+        specifier: ^1.0.1
+        version: 1.0.1
       rehype-katex:
         specifier: ^7.0.1
         version: 7.0.1
@@ -582,6 +588,12 @@ packages:
 
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
+
+  '@nanostores/solid@1.0.0':
+    resolution: {integrity: sha512-H3P5mvHyX0oSlMMm4PF60zyUIhCCUoHeAJukdSjhYSAagxJUru7rde9/RfUH1tiMJ1Dt0o/c0DNX9QLUB+SvjA==}
+    peerDependencies:
+      nanostores: '>=0.9.0 <2.0.0'
+      solid-js: ^1.6.0
 
   '@neon-rs/load@0.0.4':
     resolution: {integrity: sha512-kTPhdZyTQxB+2wpiRcFWrDcejc4JI6tkPuS7UZCG4l6Zvc5kU/gGQ/ozvHTh1XR5tS+UlfAfGuPajjzQjCiHCw==}
@@ -1972,6 +1984,10 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  nanostores@1.0.1:
+    resolution: {integrity: sha512-kNZ9xnoJYKg/AfxjrVL4SS0fKX++4awQReGqWnwTRHxeHGZ1FJFVgTqr/eMrNQdp0Tz7M7tG/TDaX8QfHDwVCw==}
+    engines: {node: ^20.0.0 || >=22.0.0}
 
   neotraverse@0.6.18:
     resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
@@ -3558,6 +3574,11 @@ snapshots:
     transitivePeerDependencies:
       - acorn
       - supports-color
+
+  '@nanostores/solid@1.0.0(nanostores@1.0.1)(solid-js@1.8.21)':
+    dependencies:
+      nanostores: 1.0.1
+      solid-js: 1.8.21
 
   '@neon-rs/load@0.0.4': {}
 
@@ -5415,6 +5436,8 @@ snapshots:
   nanoid@3.3.11: {}
 
   nanoid@3.3.7: {}
+
+  nanostores@1.0.1: {}
 
   neotraverse@0.6.18: {}
 
