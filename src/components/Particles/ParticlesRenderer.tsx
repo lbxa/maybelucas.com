@@ -1,6 +1,7 @@
 import { onMount, onCleanup } from 'solid-js';
 import { MobiusSwarm } from './MobiusSwarm';
 import { $C } from '@/utils';
+import { particleCount, getParticleCount } from '@/stores/particleStore';
 
 let mobiusSwarm: MobiusSwarm | null = null;
 
@@ -12,6 +13,18 @@ export const ParticlesRenderer = () => {
       
       // Reinitialize on ViewTransitions
       document.addEventListener('astro:page-load', initializeParticles);
+      
+      // Listen to particle count changes from the store
+      const unsubscribe = particleCount.subscribe((newCount) => {
+        if (mobiusSwarm) {
+          mobiusSwarm.updateParticleCount(newCount);
+        }
+      });
+      
+      // Clean up subscription
+      onCleanup(() => {
+        unsubscribe();
+      });
     }
   });
 
@@ -89,7 +102,9 @@ export const ParticlesRenderer = () => {
       const loadingProgress = document.getElementById('loading-progress');
       const loadingBar = document.getElementById('loading-bar');
 
-      mobiusSwarm = new MobiusSwarm(canvas, $C.MIN_PARTICLES, {
+      // Use the stored particle count instead of MIN_PARTICLES
+      const initialCount = getParticleCount();
+      mobiusSwarm = new MobiusSwarm(canvas, initialCount, {
         onLoadingStart: () => {
           console.log('🌌 Mobius particle system loading started');
           if (loadingElement) loadingElement.style.display = 'block';

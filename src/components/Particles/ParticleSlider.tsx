@@ -2,7 +2,7 @@ import { createMemo, createResource, createSignal } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { fetchVisitorCount } from "./fetch-visitor-count";
 import { $C } from "@/utils";
-import { particleCount, setParticleCount } from "@/stores/particleStore";
+import { particleCount, setParticleCount, initializeWithVisitorCount } from "@/stores/particleStore";
 import "./particle-slider.css"
 
 export const ParticleSlider = () => {
@@ -12,10 +12,11 @@ export const ParticleSlider = () => {
   const count = useStore(particleCount);
   const [visible, setVisible] = createSignal(true);
   
+  // Initialize with visitor count only if no user preference exists
   createMemo(() => {
     const currentCount = visitorCount();
     if (currentCount !== undefined && !visitorCount.error) {
-      setParticleCount(currentCount);
+      initializeWithVisitorCount(currentCount);
     }
   });
 

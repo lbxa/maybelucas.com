@@ -27,7 +27,7 @@ export class MobiusSwarm {
 
   constructor(
     canvas: HTMLCanvasElement,
-    initialParticleCount = $C.MIN_PARTICLES,
+    initialParticleCount: number = $C.MIN_PARTICLES,
     callbacks?: LoadingCallbacks,
   ) {
     this.loadingCallbacks = callbacks || {};
@@ -110,6 +110,12 @@ export class MobiusSwarm {
     this.renderer.setSize(this.sizes.width, this.sizes.height);
   }
 
+  // Public method to update particle count dynamically
+  public updateParticleCount(count: number): void {
+    if (this.isLoading) return; // Don't update during loading
+    this.createParticlePositions(count);
+  }
+
   private createParticlePositions(count: number): void {
     this.particleCount = count;
     // Update the Nano Store
@@ -153,11 +159,7 @@ export class MobiusSwarm {
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
 
-    const slider = document.getElementById("particle-density-slider");
-    slider?.addEventListener("input", (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      this.createParticlePositions(Number(target.value));
-    });
+    // Note: Removed slider event listener - now handled through store subscription in ParticlesRenderer
   }
 
   private animate(): void {

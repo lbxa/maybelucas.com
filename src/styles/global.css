@@ -71,41 +71,32 @@ h6 {
 }
 
 h1 {
-  @apply text-5xl md:text-6xl mb-3xl mt-3xl font-light;
-  line-height: 1.1;
-  letter-spacing: -0.04em;
+  @apply text-5xl/snug md:text-6xl/snug mb-2xl mt-2xl font-light;
+
 }
 
 h2 {
-  @apply text-3xl md:text-4xl mt-3xl mb-xl font-light;
-  line-height: 1.25;
+  @apply text-3xl/snug md:text-4xl/snug mt-2xl mb-xl font-light;
 }
 
 h3 {
-  @apply text-2xl md:text-3xl mt-2xl mb-lg font-medium;
-  line-height: 1.3;
+  @apply text-2xl/snug md:text-3xl/snug mt-2xl mb-lg font-medium;
 }
 
 h4 {
-  @apply text-xl md:text-2xl mt-2xl mb-md font-medium;
-  line-height: 1.35;
+  @apply text-xl/snug md:text-2xl/snug mt-2xl mb-md font-medium;
 }
 
 h5 {
-  @apply text-lg md:text-xl mt-xl mb-sm font-semibold;
-  line-height: 1.4;
+  @apply text-lg/snug md:text-xl/snug mt-xl mb-sm font-semibold;
 }
 
 h6 {
-  @apply text-base md:text-lg mt-lg mb-sm font-semibold uppercase;
-  line-height: 1.45;
-  letter-spacing: 0.05em;
-  font-size: 0.875rem;
+  @apply text-base/snug md:text-lg/snug mt-lg mb-sm font-semibold uppercase;
 }
 
 p {
   @apply mb-lg;
-  line-height: 1.75;
 }
 
 a {
