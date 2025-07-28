@@ -1,4 +1,4 @@
-import { createMemo, createResource, createSignal } from "solid-js";
+import { createMemo, createResource, createSignal, createEffect, onMount } from "solid-js";
 import { useStore } from "@nanostores/solid";
 import { fetchVisitorCount } from "./fetch-visitor-count";
 import { $C } from "@/utils";
@@ -17,6 +17,39 @@ export const ParticleSlider = () => {
     const currentCount = visitorCount();
     if (currentCount !== undefined && !visitorCount.error) {
       initializeWithVisitorCount(currentCount);
+    }
+  });
+
+  // Ensure slider input stays in sync with store after navigation
+  createEffect(() => {
+    if (typeof document !== 'undefined') {
+      const slider = document.getElementById('particle-density-slider') as HTMLInputElement;
+      if (slider && slider.value !== count().toString()) {
+        slider.value = count().toString();
+      }
+    }
+  });
+
+  // Force sync on mount to handle ViewTransitions navigation
+  onMount(() => {
+    if (typeof document !== 'undefined') {
+      const syncSlider = () => {
+        const slider = document.getElementById('particle-density-slider') as HTMLInputElement;
+        if (slider) {
+          slider.value = count().toString();
+        }
+      };
+      
+      // Sync immediately
+      syncSlider();
+      
+      // Also sync on ViewTransitions navigation
+      document.addEventListener('astro:page-load', syncSlider);
+      
+      // Cleanup
+      return () => {
+        document.removeEventListener('astro:page-load', syncSlider);
+      };
     }
   });
 

@@ -86,27 +86,45 @@ const { title, showSlider = true } = Astro.props;
         // Reapply theme on ViewTransitions navigation
         document.addEventListener("astro:page-load", applyTheme);
 
-        // set status bar dark mode on mobile
-        const themeColorMetaTag = document.querySelector(
-          'meta[name="theme-color"]',
-        );
+        // Theme color management for mobile browsers
+        let themeColorObserver = null;
 
-        function updateThemeColor() {
-          const isDarkMode =
-            document.documentElement.classList.contains("dark");
-          themeColorMetaTag?.setAttribute(
-            "content",
-            isDarkMode ? "#121212" : "#f5f5f5",
+        function setupThemeColor() {
+          // Clean up existing observer if any
+          if (themeColorObserver) {
+            themeColorObserver.disconnect();
+          }
+
+          // Get fresh reference to meta tag
+          const themeColorMetaTag = document.querySelector(
+            'meta[name="theme-color"]',
           );
+
+          function updateThemeColor() {
+            const isDarkMode =
+              document.documentElement.classList.contains("dark");
+            themeColorMetaTag?.setAttribute(
+              "content",
+              isDarkMode ? "#121212" : "#f5f5f5",
+            );
+          }
+
+          // Initial call to set the theme color based on current mode
+          updateThemeColor();
+
+          // Set up new observer
+          themeColorObserver = new MutationObserver(updateThemeColor);
+          themeColorObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+          });
         }
 
-        updateThemeColor(); // Initial call to set the theme color based on current mode
+        // Setup theme color initially
+        setupThemeColor();
 
-        const observer = new MutationObserver(updateThemeColor);
-        observer.observe(document.documentElement, {
-          attributes: true,
-          attributeFilter: ["class"],
-        });
+        // Re-setup theme color on ViewTransitions navigation
+        document.addEventListener("astro:page-load", setupThemeColor);
       })();
     </script>
     <script is:inline>
