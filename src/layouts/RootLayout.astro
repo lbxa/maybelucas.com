@@ -24,6 +24,20 @@ const { title, showSlider = true } = Astro.props;
     <meta name="theme-color" content="#f5f5f5" id="theme-color" />
     <meta name="mobile-web-app-capable" content="yes" />
     <title>{title}</title>
+    
+    <!-- DNS prefetch for external domains -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="/fonts/NeueMontreal/NeueMontreal-Regular.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="/fonts/Signifier/Signifier-Light.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="/fonts/Signifier/Signifier-Black.otf" as="font" type="font/otf" crossorigin />
+    
+    <!-- Preload and defer KaTeX CSS -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" as="style" onload="this.onload=null;this.rel='stylesheet';" />
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" /></noscript>
+    
     <GAnalytics />
     <ClientRouter />
     <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
@@ -32,14 +46,6 @@ const { title, showSlider = true } = Astro.props;
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="maybelucas" />
     <link rel="manifest" href="/icons/site.webmanifest" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css"
-      integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ"
-      crossorigin="anonymous"
-      media="print"
-      onload="this.media='all'"
-    />
     <script is:inline>
       // fetch user dark mode settings
       // inline option removes astro overhead - no theme flickering

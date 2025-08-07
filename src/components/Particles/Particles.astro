@@ -10,7 +10,7 @@ import { ParticlesRenderer } from "@components/Particles/ParticlesRenderer";
 
 <canvas id="webgl" transition:persist></canvas>
 {showSlider && <ParticleSlider client:visible />}
-<ParticlesRenderer client:load />
+<ParticlesRenderer client:idle />
 
 <style>
   canvas#webgl {

@@ -14,6 +14,26 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: "viewport"
   },
+  build: {
+    inlineStylesheets: 'auto',
+    assets: '_astro'
+  },
+  vite: {
+    build: {
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'three': ['three'],
+            'solid': ['solid-js', '@nanostores/solid', 'nanostores']
+          }
+        }
+      }
+    },
+    ssr: {
+      noExternal: ['three']
+    }
+  },
   integrations: [
     mdx({
     remarkPlugins: [remarkMath],

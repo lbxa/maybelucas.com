@@ -232,7 +232,7 @@ th {
   }
 }
 
-/* Neue Montreal */
+/* Neue Montreal - Critical fonts only */
 
 @font-face {
   font-family: "Neue Montreal";
@@ -246,103 +246,13 @@ th {
 @font-face {
   font-family: "Neue Montreal";
   src: local("Neue Montreal"),
-    url("/fonts/NeueMontreal/NeueMontreal-Italic.otf") format("opentype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  src: local("Neue Montreal"),
-    url("/fonts/NeueMontreal/NeueMontreal-Bold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  src: local("Neue Montreal"),
-    url("/fonts/NeueMontreal/NeueMontreal-BoldItalic.otf") format("opentype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  src: local("Neue Montreal"),
-    url("/fonts/NeueMontreal/NeueMontreal-Light.otf") format("opentype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  src: local("Neue Montreal"),
-    url("/fonts/NeueMontreal/NeueMontreal-LightItalic.otf") format("opentype");
-  font-weight: 300;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  src: local("Neue Montreal"),
     url("/fonts/NeueMontreal/NeueMontreal-Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
-@font-face {
-  font-family: "Neue Montreal";
-  src: local("Neue Montreal"),
-    url("/fonts/NeueMontreal/NeueMontreal-MediumItalic.otf") format("opentype");
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* Signifier */
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-Thin.otf") format("opentype");
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-ThinItalic.otf") format("opentype");
-  font-weight: 100;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-Extralight.otf") format("opentype");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-ExtralightItalic.otf") format("opentype");
-  font-weight: 200;
-  font-style: italic;
-  font-display: swap;
-}
+/* Signifier - Critical fonts only */
 
 @font-face {
   font-family: "Signifier";
@@ -350,15 +260,6 @@ th {
     url("/fonts/Signifier/Signifier-Light.otf") format("opentype");
   font-weight: 300;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-LightItalic.otf") format("opentype");
-  font-weight: 300;
-  font-style: italic;
   font-display: swap;
 }
 
@@ -374,62 +275,8 @@ th {
 @font-face {
   font-family: "Signifier";
   src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-RegularItalic.otf") format("opentype");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-Medium.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-MediumItalic.otf") format("opentype");
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-Bold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-BoldItalic.otf") format("opentype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
     url("/fonts/Signifier/Signifier-Black.otf") format("opentype");
   font-weight: 900;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Signifier";
-  src: local("Signifier"),
-    url("/fonts/Signifier/Signifier-BlackItalic.otf") format("opentype");
-  font-weight: 900;
-  font-style: italic;
   font-display: swap;
 }
