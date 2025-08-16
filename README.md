@@ -1,4 +1,4 @@
-## **Hi there** 👋🏼 **!** [![Netlify Status](https://api.netlify.com/api/v1/badges/2807a2fc-8ad6-499b-9551-6a219b67c63d/deploy-status)](https://app.netlify.com/sites/trusting-pare-d99ec7/deploys)
+## **Hi there** 👋🏼 **!**
 
 I'm Lucas. Currently a third-year student at **UNSW Sydney**. When I'm not coding I'm either slinging drinks 🍹 or surfing the Maroubra rights 🏄🏻.
 
