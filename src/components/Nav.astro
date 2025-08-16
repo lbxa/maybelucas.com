@@ -1,9 +1,17 @@
 ---
 import NavLink from "@components/NavLink.astro";
+import NavWithBackButton from "@components/NavWithBackButton.tsx";
+
+const path = Astro.url.pathname;
+const isPostPage = path.startsWith("/posts/") && path !== "/posts" && path !== "/posts/";
 ---
 
-<nav class="flex gap-md">
-  <NavLink href="/" label="Home" />
-  <NavLink href="/posts" label="Posts" />
-  <NavLink href="/about" label="About" />
-</nav>
+{isPostPage ? (
+  <NavWithBackButton client:load />
+) : (
+  <nav class="flex gap-md items-center">
+    <NavLink href="/" label="Home" />
+    <NavLink href="/posts" label="Posts" />
+    <NavLink href="/about" label="About" />
+  </nav>
+)}
