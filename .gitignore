@@ -24,3 +24,6 @@ pnpm-debug.log*
 .idea/
 
 local.db
+
+_worker.js
+_routes.json

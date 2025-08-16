@@ -7,17 +7,22 @@ import solidJs from "@astrojs/solid-js";
 import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://maybelucas.com',
+
   prefetch: {
     prefetchAll: true,
     defaultStrategy: "viewport"
   },
+
   build: {
     inlineStylesheets: 'auto',
     assets: '_astro'
   },
+
   vite: {
     build: {
       cssCodeSplit: true,
@@ -34,6 +39,7 @@ export default defineConfig({
       noExternal: ['three']
     }
   },
+
   integrations: [
     mdx({
     remarkPlugins: [remarkMath],
@@ -53,5 +59,6 @@ export default defineConfig({
     config: {
       forward: ["dataLayer.push"],
     }
-  })]
+  })],
+  adapter: cloudflare()
 });

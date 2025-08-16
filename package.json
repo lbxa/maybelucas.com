@@ -10,10 +10,13 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "wranger:dev": "bunx astro build && bunx wrangler pages dev ./dist",
+    "wranger:deploy": "bunx astro build && bunx wrangler pages deploy ./dist"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.6.4",
     "@astrojs/mdx": "^4.3.1",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/solid-js": "^5.1.0",
@@ -30,7 +33,8 @@
     "solid-js": "^1.8.21",
     "tailwindcss": "^3.4.10",
     "three": "^0.167.1",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "wrangler": "^4.30.0"
   },
   "packageManager": "bun@1.2.19"
 }
