@@ -11,5 +11,19 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "routes": [
+    {
+      "pattern": "maybelucas.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "lucasbarbosa.net",
+      "custom_domain": true
+    },
+    {
+      "pattern": "lbxa.net",
+      "custom_domain": true
+    },
+  ]
 }
