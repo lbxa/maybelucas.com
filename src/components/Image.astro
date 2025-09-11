@@ -1,0 +1,57 @@
+---
+import { Image as AstroImage } from "astro:assets";
+
+type ImageLike = string | { src: string; width?: number; height?: number };
+
+interface Props {
+  src: ImageLike;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  width,
+  height,
+  class: className,
+} = Astro.props as Props;
+const isOptimizable = typeof src === "object" && src !== null && "src" in src;
+---
+
+<figure class={`not-prose my-6 ${className ?? ""}`}>
+  {
+    isOptimizable ? (
+      <AstroImage src={src as any} alt={alt} width={width} height={height} />
+    ) : (
+      <img
+        src={src as string}
+        alt={alt}
+        width={width}
+        height={height}
+        loading="lazy"
+        decoding="async"
+      />
+    )
+  }
+  {
+    caption && (
+      <figcaption class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>
+
+<style>
+  figure :where(img) {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.5rem;
+  }
+</style>
