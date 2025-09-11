@@ -99,11 +99,15 @@ p {
   @apply mb-lg;
 }
 
-.blog-content a {
-  @apply underline text-sky-600 dark:text-sky-300;
+a {
+  text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
   transition: all 0.2s ease;
+}
+
+.blog-content a {
+  @apply text-sky-600 dark:text-sky-300;
 }
 
 .blog-content a:hover {
