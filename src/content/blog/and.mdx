@@ -6,11 +6,12 @@ description: One quiet enemy of great work is our habit of treating things as mu
 ---
 
 import Image from '@components/Image.astro';
-import venn from './venn.png';
+import vennOr from './venn-or.png';
+import vennAnd from './venn-and.png';
 
 Formally, if two propositions $p$ and $q$ are mutually exclusive, then $p\land q$ is a contradiction. In probability, events $A$ and $B$ are mutually exclusive if and only if $P(A \cap B) = 0$; on a Venn diagram, their intersection is empty.
 
-<Image src={venn} class="w-full md:w-3/5 mx-auto" alt="Overlapping sets illustrating inclusion over exclusivity" caption="A Venn diagram of two mutually exclusive events: no overlap means they cannot both occur at the same time." />
+<Image src={vennOr} class="w-full md:w-3/5 mx-auto" alt="Overlapping sets illustrating inclusion over exclusivity" caption="A Venn diagram of two mutually exclusive events: no overlap means they cannot both occur at the same time." />
 
 Used as a constraint, this principle is useful in mathematics. Constraints act like the fulcrum of a lever, giving you a fixed point to move the problem. Outside mathematics, mutual exclusivity creeps into everyday thinking and dialogue, not as a helpful constraint but as a limiting dogma.
 
@@ -35,6 +36,8 @@ Consider food. The default is McDonald’s speed or fine dining quality. Why not
 Speaking of flying why can’t airlines pursue more mutual inclusions? You can either fly quickly or cheaply. The [Concorde](https://en.wikipedia.org/wiki/Concorde) proved you could get from London to New York in less than 3.5 hours under Mach 2 speed. Sadly, it’s operators lived in a world where supersonic could be fast or economically viable but never both (maybe because it was a government sponsored project). Plus a tragic fatal crash that killed all on board didn’t help bolster demand. [Boom](https://www.youtube.com/watch?v=lQvQsvD4Ykw) is rewriting supersonic commercial flight with [Overture](https://boomsupersonic.com/overture). The Overture aircraft’s [Symphony engine](https://boomsupersonic.com/symphony) targets Mach 1.7, whilst less than the Concorde’s Mach 2, still roughly twice as fast as today’s airliners, with the benefit of curbing noise and fuel burn. The Olympus 593 engine onboard the Concorde needed afterburners for takeoff to punch through the transonic drag rise, creating very high noise. Symphony instead uses a medium-bypass turbofan with no afterburner to actually adhere to global noise standards whilst staying fast and efficient. Noise was a such a big deal it restricted the Concorde to only transatlantic routes that didn’t fly overland. This combination of *sound* engineering decisions (pardon the pun) inspired by the lessons learnt from the Concorde have a high probability of unlocking affordable supersonic travel from London to New York in one sitting of Oppenheimer… whilst eating gourmet fast-food made from a robot kitchen.
 
 Now consider AI. Today the trade-off seems stark: very large models like GPT-5 with expert-level capability using  somewhere in the range of $10^{7}$-$10^{11}$ parameters or a smaller variant like Mistral’s Small-3.1 with 24 billion parameters but far less intelligent. For embedded use, especially AR glasses, on-device is non-negotiable. To get [E.D.I.T.H-style](https://marvelcinematicuniverse.fandom.com/wiki/E.D.I.T.H.) assistants that respond in under ~200 ms (natural human gaps in conversation) without interrupting conversation, we need expert-level intelligence at the edge, not a stream of hallucinations in your ear. The winner of the AR glasses race will be the first to deploy an expert-level AI running locally. I’m bullish on [Sesame Labs](https://www.sesame.com/), their voice demo induced goosebumps. Hopefully they finesse the hardware.
+
+<Image src={vennAnd} class="w-full md:w-3/5 mx-auto" alt="A Venn diagram showing two overlapping circles with a shared intersection area, representing the concept of mutual inclusion rather than mutual exclusion" caption="Greatness lives in the overlap, when you refuse to choose A or B, and instead build A and B." />
 
 Being an “and-yes” person is liberating and banning the word “or” from the vocabulary feels like unlocking a new ability in the skill tree.
 
