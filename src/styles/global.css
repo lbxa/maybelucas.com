@@ -284,3 +284,28 @@ th {
   font-style: normal;
   font-display: swap;
 }
+
+@media (max-width: 767px) {
+/* KaTeX: keep large display equations from causing page-wide horizontal scroll */
+.katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* keep default KaTeX vertical rhythm but ensure space for scrollbar */
+  padding-bottom: 0.25rem;
+}
+
+.katex-display > .katex {
+  /* avoid wrapping; allow horizontal scroll within container */
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.katex-display > .tag {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: none;
+}
+}
