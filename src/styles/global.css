@@ -71,8 +71,7 @@ h6 {
 }
 
 h1 {
-  @apply text-5xl/snug md:text-6xl/snug mb-2xl mt-2xl font-light;
-
+  @apply text-4xl/snug md:text-5xl/snug mb-2xl mt-2xl font-light;
 }
 
 h2 {
@@ -107,7 +106,8 @@ a {
 }
 
 .blog-content a {
-  @apply text-sky-600 dark:text-sky-300;
+  /* @apply text-sky-600 dark:text-sky-300; */
+  @apply text-blue-700 dark:text-blue-300;
 }
 
 .blog-content a:hover {

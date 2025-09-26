@@ -1,0 +1,23 @@
+---
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+
+function countWords(text: string): number {
+  const cleanText = text
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (cleanText.length === 0) return 0;
+  return cleanText.split(" ").filter((word) => word.length > 0).length;
+}
+
+const wordCount = countWords(content);
+---
+
+<span>
+  {wordCount.toLocaleString()}
+  {wordCount === 1 ? "word" : "words"}
+</span>

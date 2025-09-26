@@ -6,7 +6,7 @@ const isActive = path === href || path.startsWith(href + "/");
 
 <a
   href={href}
-  class={`font-mono hover:underline ${isActive ? "underline" : "no-underline"}`}
+  class={`font-mono no-underline ${isActive ? "text-blue-700 dark:text-blue-300 transition-colors duration-200" : ""}`}
 >
-  {label}
+  {"["}<span>{label}</span>{"]"}
 </a>

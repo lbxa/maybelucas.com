@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Title from "@components/Title.astro";
 import ReadingTime from "@/components/ReadingTime.astro";
+import WordCount from "@/components/WordCount.astro";
 dayjs.extend(relativeTime);
 
 type Props = {
@@ -44,6 +45,8 @@ export async function getStaticPaths() {
     <p>
       {entry.data.description ?? null}
       <div class="text-gray-700 dark:text-gray-400">
+        <WordCount content={entry.body} />
+        <span>•</span>
         <ReadingTime content={entry.body} />
         <span>•</span>
         <span>Written {dayjs(entry.data.date).toNow(true)} ago</span>

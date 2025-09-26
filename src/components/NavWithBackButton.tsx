@@ -2,9 +2,12 @@ import { createSignal, onMount, onCleanup } from "solid-js";
 
 export default function NavWithBackButton() {
   const [isScrolled, setIsScrolled] = createSignal(false);
+  const [currentPath, setCurrentPath] = createSignal("");
 
   onMount(() => {
     if (typeof document === 'undefined') return;
+
+    setCurrentPath(window.location.pathname);
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -17,6 +20,24 @@ export default function NavWithBackButton() {
       window.removeEventListener('scroll', handleScroll);
     });
   });
+
+  const isActive = (href: string) => {
+    const path = currentPath();
+    return path === href || path.startsWith(href + "/");
+  };
+
+  type MiniNavLinkProps = { href: string; label: string };
+
+  function MiniNavLink(props: MiniNavLinkProps) {
+    return (
+      <a
+        href={props.href}
+        class={`font-mono no-underline ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''}`}
+      >
+        {"["}<span>{props.label}</span>{"]"}
+      </a>
+    );
+  }
 
   const handleBack = () => {
     window.history.back();
@@ -35,9 +56,9 @@ export default function NavWithBackButton() {
         <span class="mx-md">|</span>
       </div>
       <div class={`flex gap-md transition-all duration-300 ${isScrolled() ? 'ml-20' : 'ml-0'}`}>
-        <a href="/" class="font-mono hover:underline no-underline">Home</a>
-        <a href="/posts" class="font-mono hover:underline underline">Posts</a>
-        <a href="/about" class="font-mono hover:underline no-underline">About</a>
+        <MiniNavLink href="/" label="Home" />
+        <MiniNavLink href="/posts" label="Posts" />
+        <MiniNavLink href="/about" label="About" />
       </div>
     </nav>
   );

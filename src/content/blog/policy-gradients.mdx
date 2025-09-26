@@ -1,0 +1,175 @@
+---
+title: Policy Gradients
+author: Lucas
+date: 2025-09-27T10:30:00+11:00
+---
+
+# Elements
+
+The ultimate goal in RL is to learn a policy $\pi: \mathcal{S} \rightarrow \mathcal{A}$ that maximises the expected return in an MDP $(\mathcal{S}, \mathcal{A}, P, r, \rho_0, \gamma)$ with reward $r: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow \R$ provided by the environment. At time $t$ the agent samples $a_t \sim \pi(\cdot|s_t)$ and the environment transitions to $s_{t+1} \sim P(\cdot|s_t,a_t)$ where $a_t\in\mathcal{A}$ and $s_t\in\mathcal{S}$.
+
+It’s convenient to bundle one full episode into a trajectory as $\tau = (s_0, a_0, s_1, a_1, \ldots, s_T)$ for $t \in [0, T]$.
+
+In general,
+
+1. Observe the current state $s_t$ ($s_0\sim \rho_0(\cdot)$ at episode start)
+2. Select the action $a_t$
+3. Transition to the next state $s_{t+1} \sim P(\cdot|s_t,a_t)$
+4. Retrieve reward from the environment $r_t = r(s_t,a_t,s_{t+1})$
+5. Repeat
+
+So far I described the stochastic setting. There also exists a deterministic special case with the policy $a_t = \mu(s_t)$, and if dynamics are deterministic, $s_{t+1} = f(s_t,a_t)$ *when environments are noise free*. However in most cases, especially in the real world, stochasticity is impossible to ignore.
+
+From the oversimplified RL algorithm above 2) is the chief concern of most RL research. Since this post is titled “Policy Gradients” I’m going to focus on action selection. There’s plenty of room for later posts on reward functions (stay tuned).
+
+# Action Selection
+
+> 2. Select the action $a_t$
+> 
+
+The best action, should by definition yield the best reward or more concretely the expected return and it comes from the policy $a_t \sim \pi(\cdot|s_t)$. The effectiveness of this policy can be quantified from the value function,
+
+$$
+\begin{equation}
+V^\pi(s) = \mathbb E_{\tau \sim \pi}\left[\sum_{t=0}^{\infty} \gamma^t r_{t}\;\bigg|\; s_0 = s\right].
+\end{equation}
+$$
+
+This explains how valuable a state $s_t$ is when the action is sampled directly from the policy $a_t \sim \pi(\cdot|s_t)$ assuming the start of the episode is at $t = 0$.
+
+Eq. 1 employs a discounted reward with $\gamma$ to determine how myopic $(\gamma \approx 0)$ or foresighted $(\gamma \approx 1)$ the agent should be. The infinite sum case requires that $\gamma \in [0,1)$ to converge. If the present reward isn’t more valuable than a future reward then discounting can be removed in favour of a finite time horizon,
+
+$$
+V^\pi(s) = \mathbb E_{\tau\sim\pi }\left[R(\tau)\mid s_0 = s\right] ,\quad R(\tau) =\begin{cases}
+\sum_{k=0}^\infty \gamma^k r_{k}, & \\
+\sum_{k=0}^{T} r_{k}.
+\end{cases}
+$$
+
+This is assuming the episode starts $t = 0$, otherwise we could be more general for any $t$,
+
+$$
+R(\tau) =\begin{cases}
+\sum_{k=0}^\infty \gamma^k r_{t+k}, \\
+\sum_{k=0}^{T - t} r_{t+k}.
+\end{cases}
+$$
+
+The expected value $\mathbb{E}_{\tau\sim\pi }[R(\tau)]$ determines how effective the policy is performing. Formally, we want to solve for the optimal policy,
+
+$$
+\pi^* = \argmax_\pi \mathbb{E}_{\tau\sim\pi }[R(\tau)].
+$$
+
+What if we want to select an arbitrary $a$ without relying on the state-action pair from the value $V^\pi$ of an invariant policy. Enter the Q-function,
+
+$$
+Q^\pi(s, a) = \mathbb E_{\tau\sim\pi}[R(\tau)\mid s_0 = s, a_0 = a].
+$$
+
+Unless stated otherwise, $Q(s,a)$ denotes $Q^{\pi}(s,a)$ for the current policy; $Q^{*}$ denotes the optimal action-value.
+
+If the action space $\mathcal{A}$ and state space $\mathcal{S}$ are both small and discrete, its feasible to sample a large quantity of Q-values into a Q-table. This can be used to produce the next best action based on,
+
+$$
+a = \argmax_{a\in \mathcal{A}} Q^\pi(s,a).
+$$
+
+In discrete action spaces $\argmax_{a\in \mathcal{A}} Q^\pi(s,a)$ can be chosen via a finite $O(|\mathcal{A}|)$ scan of the Q-table which can be defined in one line of numpy.
+
+```python
+Q = np.array((state_count, action_count), dtype=float)
+```
+
+In continuous spaces $\argmax_{a\in \mathcal{A}} Q^\pi(s,a)$ is only tractable when $Q^\pi(s,\cdot)$ has a concave form allowing convex optimisation to solve for the best $a$.
+
+Most real world problems (especially in robotics, the field I’m most interested in) unfortunately sit within extremely large continuous action spaces of torque control, action controls and gripper commands. State spaces are likewise high dimensional and continuous, spanning joint angles and velocities, torques, motor currents and other sensors readings. 
+
+This means a pure $\arg\max_a Q^\pi(s,a)$ approach is often impractical, motivating actor-critic and deterministic policy gradients; I’ll cover when value-based control is the right tool (SARSA, Q-learning, DQN) in a separate post.
+
+We’re here to talk about policy gradients.
+
+# Policy Gradients
+
+Real environments are high dimensional and continuous, so we cannot sample the value function densely enough to find a global best action without catastrophe. Instead we can borrow concepts from supervised learning with gradient descent to optimise a policy parametrised over $\theta \in \mathbb{R}^d$ directly from interaction, updating $\pi_\theta$ with gradients of the expected return estimated from rollouts. In short, policy gradients *learn by doing*.
+
+If we have a expected return,
+
+$$
+J(\theta) = \mathbb E_{ \tau\sim \pi_{\theta}}\left[R(\tau)\right],
+$$
+
+we can compute its gradient $\nabla_{\theta}J(\theta)$ and use gradient ascent to *maximise* the expected return,
+
+$$
+\theta \leftarrow \theta + \alpha \nabla_{\theta}J(\theta).
+$$
+
+Alternatively, in supervised learning we use gradient descent $\theta \leftarrow \theta - \eta \nabla_{\theta}J(\theta)$ since we’re *minimising* a loss function.
+
+Computing $\nabla_{\theta}J(\theta)$ isn’t straight-forward. First we need to expand out the expression,
+
+$$
+\begin{align}
+\nabla_\theta J(\theta) = \nabla_\theta J(\pi_\theta) &= \nabla_\theta  \mathbb{E}_{\tau \sim \pi_\theta} [R(\tau)] \\
+&= \nabla_\theta \int_\tau P(\tau|\theta)R(\tau) \,\mathrm{d}\tau \\
+&=  \int_\tau \nabla_\theta P(\tau|\theta)R(\tau) \,\mathrm{d}\tau \\
+&=  \int_\tau  P(\tau|\theta) \nabla_\theta \log P(\tau|\theta)R(\tau) \,\mathrm{d}\tau \\
+&=  \mathbb{E}_{\tau \sim \pi_\theta} [\nabla_\theta \log P(\tau|\theta)R(\tau)].
+\end{align}
+$$
+
+The bottleneck exists in Eq. 5 where all possible trajectories are integrated over $\int_\tau P(\tau|\theta)R(\tau)\,\mathrm{d}\tau$. The sample space is enormous and has no closed-form solution since the dynamics are not know initially. We can use the policy gradient theorem to simplify Eq. 2 to,
+
+$$
+\nabla_\theta J(\theta) = \nabla_\theta \mathbb E_{ \tau\sim \pi_{\theta}}\left[\sum_{t=0}^T \gamma^tr(s_t,a_t)\right] = \mathbb{E}_{\tau \sim \pi_\theta} \left[\sum^T_{t=0}  \nabla_\theta  \log\pi_\theta(a_t|s_t)R(\tau)\right].
+$$
+
+## Policy Gradient Theorem
+
+We can instead augment the definition of $P(\tau | \theta)$  where $\rho_0$ is the initial state distribution with the log-derivative trick to *remove* *terms* with unknown dynamics,
+
+$$
+P(\tau | \theta) = \rho_0(s_0) \prod^{T-1}_{t=0} P(s_{t+1}|s_t, a_t) \pi_\theta(a_t|s_t).
+$$
+
+Now to calculate the gradient-log-probability $\nabla_\theta \log P(\tau | \theta)$ in Eq. 5,
+
+$$
+\begin{align*}
+\log P(\tau | \theta) &= \log \rho_0(s_0) + \sum^T_{t=0} \log P(s_{t+1}|s_t, a_t) \pi_\theta(a_t|s_t),\\ & \because \log \prod_i x_i = \sum_i \log x_i , \\
+& = \log \rho_0(s_0) + \sum^T_{t=0} \log P(s_{t+1}|s_t, a_t) + \log\pi_\theta(a_t|s_t), \\
+\Rightarrow \nabla_\theta \log P(\tau | \theta) &= \nabla_\theta  \log \rho_0(s_0) + \sum^T_{t=0} \nabla_\theta  \log P(s_{t+1}|s_t, a_t) + \nabla_\theta  \log\pi_\theta(a_t|s_t).
+\end{align*}
+$$
+
+Since both $\rho_0$ and $P$ are independent of $\theta$ their gradients are zero,
+
+$$
+\nabla_\theta \log P(\tau | \theta) =  \sum^T_{t=0}  \nabla_\theta  \log\pi_\theta(a_t|s_t).
+$$
+
+Substituting back into Eq. 5 produces the final result,
+
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta} \left[\sum^T_{t=0}  \nabla_\theta  \log\pi_\theta(a_t|s_t)R(\tau)\right].
+$$
+
+Whilst this servers as the foundation for a general policy gradient, there are many variants which minimise variance through different choices of $\Psi_t$,
+
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta} \left[\sum^T_{t=0}  \nabla_\theta  \log\pi_\theta(a_t|s_t)\Psi_t\right].
+$$
+
+[Schulman et al](https://arxiv.org/abs/1707.06347) summarised the following options for $\Psi_t$,
+
+1. $\sum_{t=0}^\infty r_{t}$ total reward for the trajectory
+2. $\sum_{t'=t}^\infty r_{t'}$ reward following action $a_t$
+3. $\sum_{t'=t}^\infty r_{t'} - b(s_t)$ baselined version of (2)
+4. $Q^{\pi}(s_t,a_t) = \mathbb E_{\substack{s_{t+1}:\infin, a_{t+1}:\infin}}\left[
+\sum_{l=0}^{\infin}r_{t+l}
+\right]$ state-action value function
+5. $A^\pi(s_t,a_t) = Q^{\pi}(s_t,a_t) - V^{\pi}(s_t)$  advantage function
+6. $r_t + V^\pi(s_{t+1}) - V^\pi(s_t)$ TD residual where $V^{\pi}(s_t) = \mathbb E_{\substack{s_{t+1}:\infin, a_{t}:\infin}}\left[
+\sum_{l=0}^{\infin}r_{t+l}
+\right]$
