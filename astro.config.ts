@@ -70,5 +70,5 @@ export default defineConfig({
       forward: ["dataLayer.push"],
     }
   })],
-  // adapter: cloudflare()
+  adapter: cloudflare()
 });
