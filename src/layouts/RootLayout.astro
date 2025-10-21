@@ -8,42 +8,82 @@ import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
-  showSlider?: boolean;
+  hideParticlesOnMobile?: boolean;
 }
 
-const { title, showSlider = true } = Astro.props;
+const { title, hideParticlesOnMobile = false } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Personal website and blog. Opinions are my own." />
+    <meta
+      name="description"
+      content="Personal website and blog. Opinions are my own."
+    />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f5f5f5" id="theme-color" />
     <meta name="mobile-web-app-capable" content="yes" />
     <title>{title}</title>
-    
+
     <!-- DNS prefetch for external domains -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-    
+
     <!-- Preload critical fonts -->
-    <link rel="preload" href="/fonts/NeueMontreal/NeueMontreal-Regular.otf" as="font" type="font/otf" crossorigin />
-    <link rel="preload" href="/fonts/Signifier/Signifier-Light.otf" as="font" type="font/otf" crossorigin />
-    <link rel="preload" href="/fonts/Signifier/Signifier-Black.otf" as="font" type="font/otf" crossorigin />
-    
+    <link
+      rel="preload"
+      href="/fonts/NeueMontreal/NeueMontreal-Regular.otf"
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Signifier/Signifier-Light.otf"
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Signifier/Signifier-Black.otf"
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
+
     <!-- Preload and defer KaTeX CSS -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" as="style" onload="this.onload=null;this.rel='stylesheet';" />
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" /></noscript>
-    
+    <link
+      rel="preload"
+      href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet';"
+    />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css"
+      /></noscript
+    >
+
     <GAnalytics />
     <ClientRouter />
-    <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon-96x96.png"
+      sizes="96x96"
+    />
     <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-touch-icon.png"
+    />
     <meta name="apple-mobile-web-app-title" content="maybelucas" />
     <link rel="manifest" href="/icons/site.webmanifest" />
     <script is:inline>
@@ -90,7 +130,7 @@ const { title, showSlider = true } = Astro.props;
 
           // Get fresh reference to meta tag
           const themeColorMetaTag = document.querySelector(
-            'meta[name="theme-color"]',
+            'meta[name="theme-color"]'
           );
 
           function updateThemeColor() {
@@ -98,7 +138,7 @@ const { title, showSlider = true } = Astro.props;
               document.documentElement.classList.contains("dark");
             themeColorMetaTag?.setAttribute(
               "content",
-              isDarkMode ? "#121212" : "#f5f5f5",
+              isDarkMode ? "#121212" : "#f5f5f5"
             );
           }
 
@@ -146,6 +186,16 @@ const { title, showSlider = true } = Astro.props;
       // Reattach on every ViewTransitions navigation
       document.addEventListener("astro:page-load", attachDarkModeListener);
     </script>
+    <script is:inline>
+      // Mobile detection
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        ) || window.innerWidth < 768;
+      if (isMobile) {
+        document.documentElement.classList.add("is-mobile");
+      }
+    </script>
   </head>
   <body>
     <div
@@ -159,6 +209,14 @@ const { title, showSlider = true } = Astro.props;
       </div>
     </div>
     <slot />
-    <Particles transition:persist showSlider={showSlider} />
+    {
+      hideParticlesOnMobile ? (
+        <div class="hidden md:block">
+          <Particles transition:persist />
+        </div>
+      ) : (
+        <Particles transition:persist />
+      )
+    }
   </body>
 </html>

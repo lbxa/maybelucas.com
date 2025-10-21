@@ -4,7 +4,7 @@ import { $C } from '@/utils';
 // Helper function to get initial particle count from localStorage or default
 function getInitialParticleCount(): number {
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('particleCount');
+    const stored = localStorage.getItem('tetrisParticleCount');
     if (stored) {
       const count = parseInt(stored, 10);
       // Validate the stored value is within bounds
@@ -27,7 +27,7 @@ export function setParticleCount(count: number) {
   
   // Persist to localStorage
   if (typeof window !== 'undefined') {
-    localStorage.setItem('particleCount', clampedCount.toString());
+    localStorage.setItem('tetrisParticleCount', clampedCount.toString());
   }
 }
 
@@ -36,13 +36,9 @@ export function getParticleCount(): number {
   return particleCount.get();
 }
 
-// Helper function to initialize with visitor count if no user preference exists
-export function initializeWithVisitorCount(visitorCount: number) {
-  // Only set visitor count if no user preference exists in localStorage
-  if (typeof window !== 'undefined') {
-    const hasUserPreference = localStorage.getItem('particleCount') !== null;
-    if (!hasUserPreference) {
-      setParticleCount(visitorCount);
-    }
-  }
+// Update particles based on cumulative high score
+export function updateParticlesFromScore(cumulativeHighScore: number) {
+  const baseCount = $C.MIN_PARTICLES;
+  const scoreBasedCount = baseCount + Math.floor(cumulativeHighScore / 10);
+  setParticleCount(scoreBasedCount);
 } 

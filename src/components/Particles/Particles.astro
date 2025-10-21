@@ -1,15 +1,8 @@
 ---
-export interface Props {
-  showSlider?: boolean;
-}
-
-const { showSlider = true } = Astro.props;
-import { ParticleSlider } from "@components/Particles/ParticleSlider";
 import { ParticlesRenderer } from "@components/Particles/ParticlesRenderer";
 ---
 
 <canvas id="webgl" transition:persist></canvas>
-{showSlider && <ParticleSlider client:visible />}
 <ParticlesRenderer client:idle />
 
 <style>

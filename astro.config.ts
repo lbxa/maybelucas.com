@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import mdx from "@astrojs/mdx";
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
+import rehypeExternalLinks from 'rehype-external-links';
 import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
 import icon from "astro-icon";
@@ -43,7 +44,16 @@ export default defineConfig({
   integrations: [
     mdx({
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [
+      rehypeKatex,
+      [
+        rehypeExternalLinks,
+        {
+          target: '_blank',
+          rel: ['noopener', 'noreferrer']
+        }
+      ]
+    ],
     syntaxHighlight: 'shiki',
     shikiConfig: {
       themes: { 
@@ -60,5 +70,5 @@ export default defineConfig({
       forward: ["dataLayer.push"],
     }
   })],
-  adapter: cloudflare()
+  // adapter: cloudflare()
 });

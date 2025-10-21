@@ -1,17 +1,22 @@
 ---
 import RootLayout from "@layouts/RootLayout.astro";
+import Tetris from "@components/Tetris/Tetris.astro";
 ---
 
-<RootLayout title="Lucas Barbosa">
+<RootLayout title="Lucas Barbosa" hideParticlesOnMobile={true}>
   <div
     class="splash flex items-center justify-center overflow-hidden min-h-dvh"
   >
-    <div
+    <div class="absolute z-10 flex items-center justify-center w-full h-full">
+      <Tetris />
+    </div>
+
+    <!-- <div
       class="text-center italic text-5xl sm:text-6xl lg:text-8xl uppercase m-auto font-serif font-black"
     >
       <div>Scale</div>
       <div>Curiosity</div>
       <div>Abstraction</div>
-    </div>
+    </div> -->
   </div>
 </RootLayout>
