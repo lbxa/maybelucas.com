@@ -123,6 +123,8 @@ export const TetrisGame = () => {
         status: GameStatus.PLAYING,
         aiEnabled: mobile // Keep AI enabled on mobile, disable on desktop
       }));
+      // Reset input state to clear any AI actions (e.g., soft drop)
+      setInputState(initializeInput());
     }
   }
   
@@ -132,6 +134,8 @@ export const TetrisGame = () => {
       setGameState(prev => ({ ...prev, status: GameStatus.PAUSED }));
     } else if (state.status === GameStatus.PAUSED) {
       setGameState(prev => ({ ...prev, status: GameStatus.PLAYING }));
+      // Reset input state when resuming to clear any lingering input
+      setInputState(initializeInput());
     }
   }
   
@@ -639,8 +643,8 @@ export const TetrisGame = () => {
         {!mobile() && state().status === GameStatus.IDLE && (
           <div class="absolute inset-0 flex flex-col items-center justify-center bg-ivory/60 dark:bg-shark-950/60 backdrop-blur-sm border border-shark-950/10 dark:border-ivory/10 transition-opacity duration-300">
             <div class="text-center px-8">
-              <h1 class="font-serif text-4xl font-black uppercase tracking-wider mb-6">
-                NES Tetris<sup class="ml-sm text-xs opacity-50">®</sup>
+              <h1 class="font-serif text-4xl font-black uppercase tracking-wider mb-6 relative">
+                NES Tetris<sup class="absolute top-0 right-md text-xs opacity-50">®</sup>
               </h1>
               <p class="font-mono text-sm opacity-70 mb-4">
                 Press ENTER to start
@@ -716,7 +720,7 @@ export const TetrisGame = () => {
       {!mobile() && state().status === GameStatus.PLAYING && (
         <div class="flex gap-4 items-stretch mt-4">
           {/* Game stats */}
-          <div class="flex gap-6 font-mono text-xs bg-ivory/30 dark:bg-shark-950/30 backdrop-blur-md rounded-lg border border-shark-950/10 dark:border-ivory/10 p-4">
+          <div class="flex gap-6 font-mono text-xs bg-ivory/30 dark:bg-shark-950/30 backdrop-blur-md rounded-lg border border-shark-950/10 dark:border-ivory/10 p-4 min-h-[100px]">
             <div class="text-center flex flex-col justify-center">
               <div class="opacity-70 mb-1">Score</div>
               <div class="font-medium text-lg">{state().score.toLocaleString()}</div>
@@ -732,10 +736,34 @@ export const TetrisGame = () => {
           </div>
           
           {/* Next piece preview */}
-          {state().showNextPiece && state().nextPiece && (
-            <div class="bg-ivory/30 dark:bg-shark-950/30 backdrop-blur-md rounded-lg border border-shark-950/10 dark:border-ivory/10 p-4 flex flex-col justify-center items-center">
-              <div class="font-mono text-xs opacity-70 mb-2 text-center">Next</div>
-              <NextPiecePreview pieceType={state().nextPiece!} />
+          {state().nextPiece && (
+            <div 
+              class="bg-ivory/30 dark:bg-shark-950/30 backdrop-blur-md rounded-lg border border-shark-950/10 dark:border-ivory/10 p-4 flex flex-col justify-center items-center transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+              style={{
+                opacity: state().showNextPiece ? '1' : '0',
+                transform: state().showNextPiece ? 'scale(1) translateX(0)' : 'scale(0.8) translateX(-20px)',
+                'pointer-events': state().showNextPiece ? 'auto' : 'none',
+                width: state().showNextPiece ? 'auto' : '0',
+                padding: state().showNextPiece ? '1rem' : '0',
+                'border-width': state().showNextPiece ? '1px' : '0',
+                overflow: 'hidden'
+              }}
+            >
+              <div 
+                class="font-mono text-xs opacity-70 mb-2 text-center transition-opacity duration-300 delay-100"
+                style={{ opacity: state().showNextPiece ? '0.7' : '0' }}
+              >
+                Next
+              </div>
+              <div
+                class="transition-all duration-400 delay-75"
+                style={{
+                  transform: state().showNextPiece ? 'scale(1)' : 'scale(0.5)',
+                  opacity: state().showNextPiece ? '1' : '0'
+                }}
+              >
+                <NextPiecePreview pieceType={state().nextPiece!} />
+              </div>
             </div>
           )}
         </div>
