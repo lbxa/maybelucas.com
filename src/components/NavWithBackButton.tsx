@@ -29,12 +29,25 @@ export default function NavWithBackButton() {
   type MiniNavLinkProps = { href: string; label: string };
 
   function MiniNavLink(props: MiniNavLinkProps) {
+    const isExternal = props.href.startsWith("http") || props.href.startsWith("https");
+    
     return (
       <a
         href={props.href}
-        class={`font-mono no-underline ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''}`}
+        target={isExternal ? "_blank" : undefined}
+        class={`font-mono no-underline inline-flex items-center gap-1 ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''}`}
       >
-        {"["}<span>{props.label}</span>{"]"}
+        {"["}<span>{props.label}</span>
+        {isExternal && (
+          <svg
+            class="h-3 w-3 inline-block ml-1 fill-current"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        )}
+        {"]"}
       </a>
     );
   }
@@ -58,6 +71,9 @@ export default function NavWithBackButton() {
       <div class={`flex gap-md transition-all duration-300 ${isScrolled() ? 'ml-20' : 'ml-0'}`}>
         <MiniNavLink href="/" label="Home" />
         <MiniNavLink href="/posts" label="Posts" />
+        <div class="hidden md:block">
+          <MiniNavLink href="https://vla.lbxa.net" label="VLA-RLX" />
+        </div>
         <MiniNavLink href="/about" label="About" />
       </div>
     </nav>
