@@ -133,6 +133,7 @@ export interface GameState {
   softDropScore: number;
   aiEnabled: boolean;
   aiTarget: { x: number; rotation: number } | null;
+  aiVersion: 'v1' | 'v2';
 }
 
 // Input state for DAS tracking

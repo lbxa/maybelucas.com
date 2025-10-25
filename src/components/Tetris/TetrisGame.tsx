@@ -23,9 +23,46 @@ import {
   saveGameState,
   loadCumulativeHighScore,
   saveCumulativeHighScore,
-  TetrisAI
+  TetrisAIv1,
+  TetrisAIv2
 } from './tetris-engine';
 import { updateParticlesFromScore } from '@/stores/particleStore';
+
+// QA Metrics Interface
+interface GameMetrics {
+  gamesPlayed: number;
+  totalScore: number;
+  totalLines: number;
+  totalFrames: number;
+  tetrisCount: number; // 4-line clears
+  totalLineClears: number;
+  maxScore: number;
+  maxLines: number;
+  maxFrames: number;
+}
+
+interface QATestResults {
+  v1: GameMetrics;
+  v2: GameMetrics;
+  isRunning: boolean;
+  currentTest: number;
+  totalTests: number;
+  currentVersion: 'v1' | 'v2' | null;
+}
+
+function createEmptyMetrics(): GameMetrics {
+  return {
+    gamesPlayed: 0,
+    totalScore: 0,
+    totalLines: 0,
+    totalFrames: 0,
+    tetrisCount: 0,
+    totalLineClears: 0,
+    maxScore: 0,
+    maxLines: 0,
+    maxFrames: 0
+  };
+}
 
 // Figma-style key cap component
 function KeyCap(props: { children: string }) {
@@ -59,10 +96,24 @@ export const TetrisGame = () => {
   const [gameState, setGameState] = createSignal<GameState>(initializeGame());
   const [inputState, setInputState] = createSignal<InputState>(initializeInput());
   const [isMobile, setIsMobile] = createSignal(false);
+  const [qaResults, setQaResults] = createSignal<QATestResults>({
+    v1: createEmptyMetrics(),
+    v2: createEmptyMetrics(),
+    isRunning: false,
+    currentTest: 0,
+    totalTests: 0,
+    currentVersion: null
+  });
   
   let canvasRef: HTMLCanvasElement | undefined;
   let animationFrameId: number | null = null;
   let lastFrameTime = 0;
+  let currentGameMetrics = {
+    startFrame: 0,
+    linesAtStart: 0,
+    tetrisCount: 0,
+    totalLineClears: 0
+  };
   
   function initializeGame(): GameState {
     const seed = initRNGSeed();
@@ -90,7 +141,8 @@ export const TetrisGame = () => {
       softDropping: false,
       softDropScore: 0,
       aiEnabled: false,
-      aiTarget: null
+      aiTarget: null,
+      aiVersion: 'v2'
     };
   }
   
@@ -110,6 +162,151 @@ export const TetrisGame = () => {
       dasDirection: null,
       dasCounter: 0
     };
+  }
+  
+  // QA Test Functions
+  function startQATest(numGames: number = 5) {
+    setQaResults({
+      v1: createEmptyMetrics(),
+      v2: createEmptyMetrics(),
+      isRunning: true,
+      currentTest: 0,
+      totalTests: numGames * 2, // Both v1 and v2
+      currentVersion: 'v1'
+    });
+    
+    // Start first test with v1
+    const mobile = isMobile();
+    setGameState(initializeGame());
+    setGameState(prev => ({
+      ...prev,
+      status: mobile ? GameStatus.PLAYING : GameStatus.IDLE,
+      aiEnabled: true,
+      aiVersion: 'v1'
+    }));
+    
+    currentGameMetrics = {
+      startFrame: 0,
+      linesAtStart: 0,
+      tetrisCount: 0,
+      totalLineClears: 0
+    };
+    
+    console.log('Starting QA Test: v1 game 1');
+  }
+  
+  function onGameOver(finalScore: number, finalLines: number, finalFrames: number) {
+    const qa = qaResults();
+    if (!qa.isRunning) return;
+    
+    const version = qa.currentVersion!;
+    const metrics = qa[version];
+    
+    // Update metrics
+    const updatedMetrics: GameMetrics = {
+      gamesPlayed: metrics.gamesPlayed + 1,
+      totalScore: metrics.totalScore + finalScore,
+      totalLines: metrics.totalLines + finalLines,
+      totalFrames: metrics.totalFrames + finalFrames,
+      tetrisCount: metrics.tetrisCount + currentGameMetrics.tetrisCount,
+      totalLineClears: metrics.totalLineClears + currentGameMetrics.totalLineClears,
+      maxScore: Math.max(metrics.maxScore, finalScore),
+      maxLines: Math.max(metrics.maxLines, finalLines),
+      maxFrames: Math.max(metrics.maxFrames, finalFrames)
+    };
+    
+    console.log(`${version} game ${updatedMetrics.gamesPlayed} complete:`, {
+      score: finalScore,
+      lines: finalLines,
+      frames: finalFrames,
+      tetrisRate: currentGameMetrics.totalLineClears > 0 
+        ? (currentGameMetrics.tetrisCount / currentGameMetrics.totalLineClears * 100).toFixed(1) + '%'
+        : '0%'
+    });
+    
+    const currentTest = qa.currentTest + 1;
+    const gamesPerVersion = qa.totalTests / 2;
+    
+    setQaResults(prev => ({
+      ...prev,
+      [version]: updatedMetrics,
+      currentTest
+    }));
+    
+    // Determine next test
+    if (currentTest >= qa.totalTests) {
+      // All tests complete
+      finishQATest();
+    } else if (version === 'v1' && updatedMetrics.gamesPlayed >= gamesPerVersion) {
+      // Switch to v2
+      console.log('Switching to v2 tests');
+      setQaResults(prev => ({ ...prev, currentVersion: 'v2' }));
+      setTimeout(() => startNextTest('v2', 1), 500);
+    } else {
+      // Continue with current version
+      const nextGameNum = updatedMetrics.gamesPlayed + 1;
+      setTimeout(() => startNextTest(version, nextGameNum), 500);
+    }
+  }
+  
+  function startNextTest(version: 'v1' | 'v2', gameNum: number) {
+    const mobile = isMobile();
+    setGameState(initializeGame());
+    setGameState(prev => ({
+      ...prev,
+      status: mobile ? GameStatus.PLAYING : GameStatus.IDLE,
+      aiEnabled: true,
+      aiVersion: version
+    }));
+    
+    currentGameMetrics = {
+      startFrame: 0,
+      linesAtStart: 0,
+      tetrisCount: 0,
+      totalLineClears: 0
+    };
+    
+    console.log(`Starting QA Test: ${version} game ${gameNum}`);
+  }
+  
+  function finishQATest() {
+    setQaResults(prev => ({ ...prev, isRunning: false, currentVersion: null }));
+    
+    const qa = qaResults();
+    console.log('\n=== QA TEST RESULTS ===\n');
+    
+    const printMetrics = (version: 'v1' | 'v2', metrics: GameMetrics) => {
+      const avgScore = metrics.gamesPlayed > 0 ? metrics.totalScore / metrics.gamesPlayed : 0;
+      const avgLines = metrics.gamesPlayed > 0 ? metrics.totalLines / metrics.gamesPlayed : 0;
+      const avgFrames = metrics.gamesPlayed > 0 ? metrics.totalFrames / metrics.gamesPlayed : 0;
+      const tetrisRate = metrics.totalLineClears > 0 
+        ? (metrics.tetrisCount / metrics.totalLineClears * 100).toFixed(1)
+        : '0';
+      
+      console.log(`\n${version.toUpperCase()}:`);
+      console.log(`  Games Played: ${metrics.gamesPlayed}`);
+      console.log(`  Avg Score: ${avgScore.toFixed(0)} (max: ${metrics.maxScore})`);
+      console.log(`  Avg Lines: ${avgLines.toFixed(1)} (max: ${metrics.maxLines})`);
+      console.log(`  Avg Survival: ${(avgFrames / 60).toFixed(1)}s (max: ${(metrics.maxFrames / 60).toFixed(1)}s)`);
+      console.log(`  Tetris Rate: ${tetrisRate}% (${metrics.tetrisCount}/${metrics.totalLineClears})`);
+    };
+    
+    printMetrics('v1', qa.v1);
+    printMetrics('v2', qa.v2);
+    
+    // Calculate improvements
+    const v1AvgScore = qa.v1.gamesPlayed > 0 ? qa.v1.totalScore / qa.v1.gamesPlayed : 0;
+    const v2AvgScore = qa.v2.gamesPlayed > 0 ? qa.v2.totalScore / qa.v2.gamesPlayed : 0;
+    const scoreImprovement = v1AvgScore > 0 ? ((v2AvgScore - v1AvgScore) / v1AvgScore * 100) : 0;
+    
+    const v1AvgLines = qa.v1.gamesPlayed > 0 ? qa.v1.totalLines / qa.v1.gamesPlayed : 0;
+    const v2AvgLines = qa.v2.gamesPlayed > 0 ? qa.v2.totalLines / qa.v2.gamesPlayed : 0;
+    const linesImprovement = v1AvgLines > 0 ? ((v2AvgLines - v1AvgLines) / v1AvgLines * 100) : 0;
+    
+    console.log(`\nIMPROVEMENT:`);
+    console.log(`  Score: ${scoreImprovement > 0 ? '+' : ''}${scoreImprovement.toFixed(1)}%`);
+    console.log(`  Lines: ${linesImprovement > 0 ? '+' : ''}${linesImprovement.toFixed(1)}%`);
+    console.log('\n======================\n');
   }
   
   function startGame() {
@@ -169,6 +366,9 @@ export const TetrisGame = () => {
       // Save game state
       saveGameState(state.score, state.level, state.lines);
       
+      // Notify QA system if running
+      onGameOver(state.score, state.lines, state.frameCount);
+      
       return { ...state, status: GameStatus.GAME_OVER, highScore: newHighScore };
     }
     
@@ -219,8 +419,10 @@ export const TetrisGame = () => {
     // AI Controller (runs every ~15 frames for watchable speed)
     if (newState.aiEnabled && newState.frameCount % 15 === 0) {
       if (!newState.aiTarget) {
-        // Calculate new target
-        const bestMove = TetrisAI.findBestMove(newState.grid, newState.currentPiece);
+        // Calculate new target using selected AI version
+        const bestMove = newState.aiVersion === 'v2'
+          ? TetrisAIv2.findBestMove(newState.grid, newState.currentPiece, newState.nextPiece)
+          : TetrisAIv1.findBestMove(newState.grid, newState.currentPiece);
         if (bestMove) {
           newState.aiTarget = bestMove;
         }
@@ -315,6 +517,14 @@ export const TetrisGame = () => {
         // Check for lines
         const completedLines = findCompletedLines(lockedGrid);
         const clearedGrid = completedLines.length > 0 ? clearLines(lockedGrid, completedLines) : lockedGrid;
+        
+        // Track metrics for QA
+        if (completedLines.length > 0) {
+          currentGameMetrics.totalLineClears++;
+          if (completedLines.length === 4) {
+            currentGameMetrics.tetrisCount++;
+          }
+        }
         
         // Calculate score
         const earnedScore = calculateScore(completedLines.length, newState.level, newState.softDropScore);
@@ -580,6 +790,13 @@ export const TetrisGame = () => {
       // Desktop: AI plays in background, status IDLE (shows overlay)
       setGameState(prev => ({ ...prev, aiEnabled: true, status: GameStatus.IDLE }));
     }
+    
+    // Expose QA testing to console for internal benchmarking
+    (window as any).tetrisQA = {
+      startTest: (numGames: number = 5) => startQATest(numGames),
+      setAIVersion: (version: 'v1' | 'v2') => setGameState(prev => ({ ...prev, aiVersion: version }))
+    };
+    console.log('Tetris AI QA available: tetrisQA.startTest(numGames), tetrisQA.setAIVersion("v1"|"v2")');
     
     // Add keyboard listeners
     window.addEventListener('keydown', handleKeyDown);
