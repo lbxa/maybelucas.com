@@ -1,14 +1,96 @@
----
-import { Icon } from "astro-icon/components"
----
-
-<button id="themeToggle" class="flex relative w-xl h-xl" aria-label="Dark Mode">
-  <Icon 
-    name="sun" 
-    class="m-auto h-xl fill-ivory invisible dark:visible absolute top-0"
-  />
-  <Icon 
-    name="moon" 
-    class="m-auto h-xl fill-shark-950 dark:invisible absolute top-0" 
-  />
+<button
+  id="themeToggle"
+  type="button"
+  role="switch"
+  aria-checked="false"
+  data-state="unchecked"
+  aria-label="Toggle dark mode"
+  class="relative inline-flex h-[20px] w-[37px] items-center rounded-full border bg-ivory border-shark-950 data-[state=checked]:bg-shark-950 data-[state=checked]:border-ivory focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 motion-safe:transition-colors duration-300"
+>
+  <span class="sr-only">Toggle dark mode</span>
+  <span
+    id="themeToggleKnob"
+    data-state="unchecked"
+    class="absolute left-[1px] top-[1px] inline-block h-[16px] w-[16px] rounded-full bg-shark-950 data-[state=checked]:bg-ivory translate-x-0 data-[state=checked]:translate-x-[17px] motion-safe:transition-transform duration-300 ease-in-out"
+  ></span>
 </button>
+
+<script is:inline>
+  (function () {
+    function initToggle() {
+      const root = document.documentElement;
+
+      function syncButtonState() {
+        // Get fresh references each time
+        const el = document.getElementById("themeToggle");
+        const knob = document.getElementById("themeToggleKnob");
+        if (!el || !knob) return;
+
+        // Sync button to match current DOM state
+        const isDark = root.classList.contains("dark");
+        const state = isDark ? "checked" : "unchecked";
+        el.setAttribute("aria-checked", String(isDark));
+        el.setAttribute("data-state", state);
+        knob.setAttribute("data-state", state);
+      }
+
+      function toggleTheme() {
+        const isDark = root.classList.contains("dark");
+        const newState = !isDark;
+
+        root.classList.toggle("dark", newState);
+        localStorage.setItem("theme", newState ? "dark" : "light");
+        syncButtonState();
+
+        // Update theme-color meta tag for mobile browsers
+        const themeColorMeta = document.querySelector(
+          'meta[name="theme-color"]'
+        );
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute(
+            "content",
+            newState ? "#121212" : "#f5f5f5"
+          );
+        }
+      }
+
+      // Get initial reference
+      const el = document.getElementById("themeToggle");
+      if (!el) return;
+
+      // Sync initial state
+      syncButtonState();
+
+      // Remove existing listeners to prevent duplicates
+      el.replaceWith(el.cloneNode(true));
+      const newEl = document.getElementById("themeToggle");
+
+      // Add event listeners
+      newEl.addEventListener("click", toggleTheme);
+      newEl.addEventListener("keydown", (e) => {
+        if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          toggleTheme();
+        }
+      });
+    }
+
+    // Initialize on DOMContentLoaded
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initToggle);
+    } else {
+      initToggle();
+    }
+
+    // Re-initialize on Astro page load
+    document.addEventListener("astro:page-load", initToggle);
+  })();
+</script>
+
+<style is:inline>
+  /* Optional: opt out of View Transitions to prevent crossfade */
+  #themeToggle,
+  #themeToggle * {
+    view-transition-name: none;
+  }
+</style>

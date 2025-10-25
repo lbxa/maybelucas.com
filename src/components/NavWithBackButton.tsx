@@ -35,7 +35,7 @@ export default function NavWithBackButton() {
       <a
         href={props.href}
         target={isExternal ? "_blank" : undefined}
-        class={`font-mono no-underline inline-flex items-center gap-1 ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''}`}
+        class={`font-mono no-underline inline-flex items-center ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''}`}
       >
         {"["}<span>{props.label}</span>
         {isExternal && (
