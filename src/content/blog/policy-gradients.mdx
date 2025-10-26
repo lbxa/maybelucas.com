@@ -65,7 +65,7 @@ R(\tau) =\begin{cases}
 \end{cases}
 $$
 
-The big $\mathbb{E}$  represents the expected value $\mathbb{E}_{\tau\sim\pi }[R(\tau)]$ of a certain policy $\pi$. It’s useful for determining how effective the policy is performing. We can use it to formally solve for the optimal policy,
+The big $\mathbb{E}$  represents the expected value $\mathbb{E}_{\tau\sim\pi }[R(\tau)]$ of a certain policy $\pi$; at its core RL is basically an optimisation problem around this equation. It’s useful for determining how effective the policy is performing. We can use it to formally solve for the optimal policy,
 
 $$
 \pi^* = \argmax_\pi \mathbb{E}_{\tau\sim\pi }[R(\tau)].
