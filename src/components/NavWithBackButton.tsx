@@ -35,19 +35,9 @@ export default function NavWithBackButton() {
       <a
         href={props.href}
         target={isExternal ? "_blank" : undefined}
-        class={`font-mono no-underline inline-flex items-center ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''}`}
+        class={`font-mono no-underline inline-flex items-center ${isActive(props.href) ? 'text-blue-700 dark:text-blue-300 transition-colors duration-200' : ''} ${isExternal ? 'link-icon' : ''}`}
       >
-        {"["}<span>{props.label}</span>
-        {isExternal && (
-          <svg
-            class="h-3 w-3 inline-block ml-1 fill-current"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        )}
-        {"]"}
+        {"["}<span>{props.label}</span>{"]"}
       </a>
     );
   }

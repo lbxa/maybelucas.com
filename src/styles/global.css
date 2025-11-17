@@ -115,7 +115,8 @@ a {
   opacity: 0.8;
 }
 
-.content a::after {
+.content a::after,
+.link-icon::after {
   content: "↗";
   margin-left: 0.2em;
   display: inline-block;

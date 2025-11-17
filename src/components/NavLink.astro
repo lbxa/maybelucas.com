@@ -10,17 +10,9 @@ const isExternal = href.startsWith("http") || href.startsWith("https");
 <a
   href={href}
   target={isExternal ? "_blank" : undefined}
-  class={`font-mono no-underline inline-flex items-center ${isActive ? "text-blue-700 dark:text-blue-300 transition-colors duration-200" : ""}`}
+  class={`font-mono no-underline inline-flex items-center ${isActive ? "text-blue-700 dark:text-blue-300 transition-colors duration-200" : ""} ${isExternal ? "link-icon" : ""}`}
 >
   {"["}
   <span>{label}</span>
-  {
-    isExternal && (
-      <Icon
-        name="external-link"
-        class="h-3 w-3 inline-block ml-1 fill-current"
-      />
-    )
-  }
   {"]"}
 </a>
