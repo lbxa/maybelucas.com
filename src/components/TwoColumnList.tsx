@@ -20,7 +20,7 @@ export default function TwoColumnList(props: TwoColumnListProps) {
               {item.url ? (
                 <a
                   href={item.url}
-                  class="text-blue-500 hover:underline"
+                  class="text-blue-500 hover:underline py-md"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
