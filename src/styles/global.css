@@ -115,6 +115,14 @@ a {
   opacity: 0.8;
 }
 
+.content a::after {
+  content: "↗";
+  margin-left: 0.2em;
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+
 ul,
 ol {
   @apply mb-md pl-md md:pl-lg;
