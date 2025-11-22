@@ -156,7 +156,7 @@ blockquote {
 
 code {
   @apply font-mono;
-  @apply bg-ivory/60 dark:bg-shark-600/60 backdrop-blur-sm;
+  @apply bg-ivory/60 dark:bg-shark-900/80 backdrop-blur-sm;
   @apply text-red-400;
   padding: 0.2em 0.4em;
   border-radius: 6px;
