@@ -1,0 +1,44 @@
+---
+interface TwoColumnItem {
+  left: string;
+  right: string;
+  url?: string;
+  rightIsHtml?: boolean;
+}
+
+interface Props {
+  items: TwoColumnItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="w-full">
+  {
+    items.map((item) => (
+      <div class="flex gap-4 py-3 md:gap-8 md:py-2">
+        <div class="min-w-[100px] md:min-w-[120px]">
+          {item.url ? (
+            <a
+              href={item.url}
+              class="text-blue-500 hover:underline py-md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.left}
+            </a>
+          ) : (
+            <span>{item.left}</span>
+          )}
+        </div>
+        <div class="flex-1">
+          {item.rightIsHtml ? (
+            <span set:html={item.right} />
+          ) : (
+            <span>{item.right}</span>
+          )}
+        </div>
+      </div>
+    ))
+  }
+</div>
