@@ -31,7 +31,13 @@ export async function getStaticPaths() {
 }
 ---
 
-<ContentLayout title={entry.data.title}>
+<ContentLayout
+  title={entry.data.title}
+  description={entry.data.description ?? undefined}
+  url={`/posts/${entry.slug}`}
+  publishedTime={entry.data.date.toISOString?.()}
+  type="article"
+>
   <header class="mb-xl">
     <div class="my-lg">
       <a

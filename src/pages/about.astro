@@ -17,7 +17,12 @@ if (!manifesto) {
 const { Content: ManifestoContent } = await manifesto.render();
 ---
 
-<ContentLayout title="About">
+<ContentLayout
+  title="About"
+  description="About Lucas Barbosa"
+  url="/about"
+  type="profile"
+>
   <section>
     <Title>About me...</Title>
   </section>

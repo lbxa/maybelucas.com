@@ -2,30 +2,35 @@
 import DarkMode from "@components/DarkMode/DarkMode.astro";
 import Nav from "@components/Nav.astro";
 import Particles from "@components/Particles/Particles.astro";
+import Seo from "@components/Seo.astro";
 import "../styles/global.css";
 import GAnalytics from "@components/GAnalytics.astro";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
+  description?: string;
+  url?: string;
+  publishedTime?: string;
+  updatedTime?: string;
+  image?: string;
+  type?: string;
+  noIndex?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, ...seoProps } = Astro.props as Props;
+const pageUrl = seoProps.url ?? Astro.url?.pathname ?? "/";
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="description"
-      content="Personal website and blog. Opinions are my own."
-    />
+    <Seo title={title} {...seoProps} url={pageUrl} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f5f5f5" id="theme-color" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <title>{title}</title>
 
     <!-- DNS prefetch for external domains -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
