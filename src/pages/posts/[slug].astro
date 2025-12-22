@@ -21,6 +21,28 @@ if (!entry) {
 }
 
 const { Content } = await entry.render();
+const publishedDate = entry.data.date;
+const modifiedDate =
+  (entry.data as { updated?: Date }).updated ?? publishedDate;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+
+const jsonLd = JSON.stringify(
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: entry.data.title,
+    description: entry.data.description,
+    author: {
+      "@type": "Person",
+      name: entry.data.author,
+    },
+    datePublished: publishedDate.toISOString(),
+    dateModified: modifiedDate.toISOString(),
+    url: canonicalUrl.toString(),
+  },
+  null,
+  2
+);
 
 // Define getStaticPaths to generate paths for all blog posts
 export async function getStaticPaths() {
@@ -59,6 +81,7 @@ export async function getStaticPaths() {
       </div>
     </p>
   </header>
+  <script type="application/ld+json" is:inline>{jsonLd}</script>
   <section class="blog-content content">
     <Content />
   </section>
