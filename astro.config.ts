@@ -7,6 +7,7 @@ import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
 import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
+import sitemap from "@astrojs/sitemap";
 
 import cloudflare from '@astrojs/cloudflare';
 
@@ -69,6 +70,7 @@ export default defineConfig({
     config: {
       forward: ["dataLayer.push"],
     }
-  })],
+  }),
+  sitemap()],
   adapter: cloudflare()
 });
