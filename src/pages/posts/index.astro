@@ -10,7 +10,12 @@ dayjs.extend(relativeTime);
 const posts = await getCollection("blog");
 ---
 
-<ContentLayout title="Posts">
+<ContentLayout
+  title="Posts"
+  description="All posts by Lucas Barbosa"
+  url="/posts"
+  type="website"
+>
   <section class="font-mono">
     <Title>Posts</Title>
     <p class="mb-3xl">Toward escape velocity</p>

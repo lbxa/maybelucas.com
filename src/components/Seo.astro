@@ -1,0 +1,76 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  url?: string;
+  publishedTime?: string;
+  updatedTime?: string;
+  image?: string;
+  type?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description,
+  url,
+  publishedTime,
+  updatedTime,
+  image,
+  type = "website",
+  noIndex = false,
+} = Astro.props as Props;
+
+const metaDescription =
+  description ?? "Personal website and blog. Opinions are my own.";
+
+const fallbackImage = "/icons/favicon-96x96.png";
+const imagePath = image ?? fallbackImage;
+
+const canonicalUrl = (() => {
+  const base = Astro.site ?? Astro.url;
+
+  if (url) {
+    try {
+      return new URL(url, base ?? undefined).toString();
+    } catch {
+      return undefined;
+    }
+  }
+
+  return Astro.url?.href ?? Astro.site?.toString();
+})();
+
+const openGraphImage = (() => {
+  const base = Astro.site ?? Astro.url;
+  try {
+    return new URL(imagePath, base ?? undefined).toString();
+  } catch {
+    return imagePath;
+  }
+})();
+---
+<title>{title}</title>
+{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+<meta name="description" content={metaDescription} />
+{noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={metaDescription} />
+{canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+<meta property="og:type" content={type} />
+{openGraphImage && <meta property="og:image" content={openGraphImage} />}
+{publishedTime && (
+  <meta property="article:published_time" content={publishedTime} />
+)}
+{updatedTime && (
+  <meta property="article:modified_time" content={updatedTime} />
+)}
+
+<meta
+  name="twitter:card"
+  content={openGraphImage ? "summary_large_image" : "summary"}
+/>
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={metaDescription} />
+{openGraphImage && <meta name="twitter:image" content={openGraphImage} />}
