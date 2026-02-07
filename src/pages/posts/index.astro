@@ -1,17 +1,16 @@
 ---
 import { getCollection } from "astro:content";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import Title from "@components/Title.astro";
 import ReadingTime from "@components/ReadingTime.astro";
-dayjs.extend(relativeTime);
 
 const pageTitle = "All Posts | Lucas Barbosa";
 const pageDescription =
   "Browse the full archive of Lucas Barbosa's writing, sorted by recency with reading times.";
 // Keep canonicalPath per page (e.g., /posts/page/2) if pagination/filters are added.
 const canonicalPath = "/posts";
+const dateFormat = "MMMM D, YYYY";
 
 const posts = (await getCollection("blog")).sort((a, b) =>
   dayjs(a.data.date).isBefore(dayjs(b.data.date)) ? 1 : -1
@@ -41,7 +40,7 @@ const posts = (await getCollection("blog")).sort((a, b) =>
           <div class="text-gray-700 dark:text-gray-400 text-xs">
             <ReadingTime content={p.body} />
             <span class="font-sans">•</span>
-            <span>{dayjs(p.data.date).toNow(true)} ago</span>
+            <span>{dayjs(p.data.date).format(dateFormat)}</span>
           </div>
         </div>
       ))

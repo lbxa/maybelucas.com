@@ -2,11 +2,9 @@
 import { getCollection, getEntry } from "astro:content";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import Title from "@components/Title.astro";
 import ReadingTime from "@/components/ReadingTime.astro";
 import WordCount from "@/components/WordCount.astro";
-dayjs.extend(relativeTime);
 
 type Props = {
   title: string;
@@ -25,6 +23,7 @@ const publishedDate = entry.data.date;
 const modifiedDate =
   (entry.data as { updated?: Date }).updated ?? publishedDate;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const dateFormat = "MMMM D, YYYY";
 
 const jsonLd = JSON.stringify(
   {
@@ -77,7 +76,7 @@ export async function getStaticPaths() {
         <span>•</span>
         <ReadingTime content={entry.body} />
         <span>•</span>
-        <span>Written {dayjs(entry.data.date).toNow(true)} ago</span>
+        <span>Written {dayjs(entry.data.date).format(dateFormat)}</span>
       </div>
     </p>
   </header>
