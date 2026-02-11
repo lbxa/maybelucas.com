@@ -57,67 +57,39 @@ export const ParticlesRenderer = () => {
         existingLoading.remove();
       }
 
-      // Optional: Add loading UI elements
+      const isDark = document.documentElement.classList.contains('dark');
+      const barColor = isDark ? '#f5f5f5' : '#1d4ed8';
+
       const loadingElement = document.createElement('div');
       loadingElement.id = 'particle-loading';
       loadingElement.innerHTML = `
-        <div style="
+        <div id="loading-bar" style="
           position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
+          top: 0;
+          left: 0;
+          width: 0%;
+          height: 1px;
+          background: ${barColor};
           z-index: 100;
-          color: #f5f5f5;
-          font-family: ui-monospace, monospace;
-          text-align: center;
           pointer-events: none;
-          background: rgba(18, 18, 18, 0.8);
-          backdrop-filter: blur(8px);
-          padding: 24px 32px;
-          border-radius: 16px;
-          border: 1px solid rgba(245, 245, 245, 0.1);
-        ">
-          <div id="loading-text" style="font-size: 16px; margin-bottom: 12px;">Loading Particles</div>
-          <div id="loading-progress" style="font-size: 12px; color: #888;">0%</div>
-          <div style="
-            width: 200px;
-            height: 2px;
-            background: rgba(245, 245, 245, 0.1);
-            border-radius: 1px;
-            margin: 12px auto 0;
-            overflow: hidden;
-          ">
-            <div id="loading-bar" style="
-              height: 100%;
-              background: #f5f5f5;
-              width: 0%;
-              transition: width 0.3s ease;
-            "></div>
-          </div>
-        </div>
+          transition: width 0.3s ease;
+        "></div>
       `;
       document.body.appendChild(loadingElement);
 
-      const loadingText = document.getElementById('loading-text');
-      const loadingProgress = document.getElementById('loading-progress');
       const loadingBar = document.getElementById('loading-bar');
 
       // Use the stored particle count instead of MIN_PARTICLES
       const initialCount = getParticleCount();
       mobiusSwarm = new MobiusSwarm(canvas, initialCount, {
         onLoadingStart: () => {
-          console.log('🌌 Mobius particle system loading started');
           if (loadingElement) loadingElement.style.display = 'block';
         },
         onLoadingProgress: (progress: number) => {
-          console.log(`🔄 Loading progress: ${progress}%`);
-          if (loadingProgress) loadingProgress.textContent = `${progress}%`;
           if (loadingBar) loadingBar.style.width = `${progress}%`;
         },
         onLoadingComplete: () => {
-          console.log('✨ Mobius particle system loaded successfully');
           if (loadingElement) {
-            // Small delay to show 100% completion
             setTimeout(() => {
               loadingElement.style.opacity = '0';
               loadingElement.style.transition = 'opacity 0.5s ease-out';
