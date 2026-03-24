@@ -5,9 +5,9 @@ date: 2026-03-24
 description: Why don't all languages speak C natively?
 ---
 
-## Contents
-
 Every new systems language eventually has to answer the same question: can you *actually* talk to C, the way two adults talk over coffee? Rust's answer is `bindgen` plus `extern "C"` plus `#[no_mangle]`. Go's answer is `cgo`, which works until it doesn't, and when it doesn't you're debugging two runtimes at once. [Zig's](https://ziglang.org/) answer is: C headers are already valid input to the compiler. No intermediate step. I built a small project to stress-test both directions of this claim. Zig calling C, and C calling Zig.
+
+## Contents
 
 ## The C Side
 
