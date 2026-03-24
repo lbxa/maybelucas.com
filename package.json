@@ -32,6 +32,7 @@
     "rehype-external-links": "^3.0.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
+    "remark-toc": "^9.0.0",
     "solid-js": "^1.8.21",
     "tailwindcss": "^3.4.10",
     "three": "^0.167.1",

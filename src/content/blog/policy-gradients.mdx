@@ -4,7 +4,9 @@ author: Lucas
 date: 2025-09-27T10:30:00+11:00
 ---
 
-# The Nuts and Bolts
+## Contents
+
+## The Nuts and Bolts
 
 The ultimate goal in RL is to learn a policy $\pi: \mathcal{S} \rightarrow \Delta(\mathcal{A})$ that maximises the expected return in an MDP $\mathcal{M} = (\mathcal{S}, \mathcal{A}, P, r, \rho_0, \gamma)$ with reward $r: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow \R$ provided by the environment. At time $t$ the agent samples $a_t \sim \pi(\cdot|s_t)$ and the environment transitions to $s_{t+1} \sim P(\cdot|s_t,a_t)$ where $a_t\in\mathcal{A}$ and $s_t\in\mathcal{S}$.
 
@@ -22,7 +24,7 @@ So far I described the stochastic setting. There also exists a deterministic spe
 
 From the oversimplified RL algorithm above 2) is the chief concern of most RL research. Since this post is titled “Policy Gradients” I’m going to focus on action selection. There’s plenty of room for later posts on reward functions (stay tuned).
 
-## Markov Decision Processes
+### Markov Decision Processes
 
 Before we start its useful to formally define a Markov Decision Process (MDP). It is a stochastic system where the future depends only on the present and not the past. Mathematically, 
 
@@ -32,7 +34,7 @@ $$
 
 If you’re familiar with [greedy algorithms](https://www.reddit.com/r/explainlikeimfive/comments/sdu2g7/eli5_what_is_greedy_algorithm/), it follows the same *general* principles.
 
-# Action Selection
+## Action Selection
 
 > 2. Select the action $a_t$
 > 
@@ -102,7 +104,7 @@ Hence why pure  $\arg\max_a Q^\pi(s,a)$ is often impractical, motivating other m
 
 However, we’re here to talk about *policy gradients*.
 
-# Policy Gradients
+## Policy Gradients
 
 The real world is high dimensional and continuous, so we cannot sample $V(s)$ densely enough to find a global best action without catastrophe like having a robot arm swing at you, or drone fly through a wall.
 
@@ -157,7 +159,7 @@ $$
 \nabla_\theta J(\theta) = \nabla_\theta \mathbb E_{ \tau\sim \pi_{\theta}}\left[\sum_{t=0}^T \gamma^tr(s_t,a_t, s_{t+1})\right] = \mathbb{E}_{\tau \sim \pi_\theta} \left[\sum^T_{t=0}  \nabla_\theta  \log\pi_\theta(a_t|s_t)R(\tau)\right].
 $$
 
-## Policy Gradient Theorem
+### Policy Gradient Theorem
 
 We can instead augment the definition of $P(\tau | \theta)$  where $\rho_0$ is the initial state distribution with the log-derivative trick to *remove* *terms* with unknown dynamics,
 

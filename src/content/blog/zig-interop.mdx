@@ -1,0 +1,222 @@
+---
+title: Zig Doesn't Need an FFI 
+author: Lucas
+date: 2026-03-24
+description: Why don't all languages speak C natively?
+---
+
+## Contents
+
+Every new systems language eventually has to answer the same question: can you *actually* talk to C, the way two adults talk over coffee? Rust's answer is `bindgen` plus `extern "C"` plus `#[no_mangle]`. Go's answer is `cgo`, which works until it doesn't, and when it doesn't you're debugging two runtimes at once. [Zig's](https://ziglang.org/) answer is: C headers are already valid input to the compiler. No intermediate step. I built a small project to stress-test both directions of this claim. Zig calling C, and C calling Zig.
+
+## The C Side
+
+The C code implements [Newton-Raphson](https://en.wikipedia.org/wiki/Newton%27s_method) square root. One function, one header, one consumer.
+
+`c-src/sqrt_nr.h`:
+
+```c
+float sqrt_nr(float x);
+```
+
+`c-src/sqrt_nr.c`:
+
+```c
+#include "sqrt_nr.h"
+
+float sqrt_nr(float x) {
+    if (x < 0.0f) return -1.0f;
+    if (x == 0.0f) return 0.0f;
+
+    float guess = x * 0.5f;
+    for (int i = 0; i < 20; i++) {
+        guess = (guess + x / guess) * 0.5f;
+    }
+    return guess;
+}
+```
+
+`c-src/main.c`:
+
+```c
+#include <stdio.h>
+#include "sqrt_nr.h"
+
+int main(void) {
+    float x = 612.0f;
+    float result = sqrt_nr(x);
+    printf("sqrt(%f) = %f\n", x, result);
+    return 0;
+}
+```
+
+Newton-Raphson is a good test case because it involves floating point arithmetic, iteration, and a branch for the degenerate input. Not complex, but enough structure that you'd notice if something went wrong at the language boundary. The formula itself is just the iterative refinement $g_{n+1} = \frac{1}{2}(g_n + \frac{x}{g_n})$ converging on $\sqrt{x}$. Twenty iterations is overkill for `float` precision but guarantees convergence for any positive input [see appendix](#appendix).
+
+## Direction A: Zig Calling C
+
+Here's the important file, `src/main.zig`:
+
+```zig
+const std = @import("std");
+const sqrt_nr_c = @cImport({
+    @cInclude("sqrt_nr.c");
+});
+
+fn sqrt_nr(x: f32) f32 {
+    return sqrt_nr_c.sqrt_nr(x);
+}
+```
+
+Two lines. `@cImport` runs C translation at compile time and hands you back a normal Zig namespace. `@cInclude` appends an include directive to that translation unit. You then call `sqrt_nr_c.sqrt_nr` like it was always Zig. No codegen step. The compiler *is* the binding generator.
+
+The repo includes `sqrt_nr.c` directly (not just the header), which works because C's inclusion model is textual preprocessing. Zig's translator sees the preprocessed result and emits equivalent Zig declarations. You do need to tell the build system where to find the file:
+
+```zig
+exe.addIncludePath(b.path("c-src"));
+```
+
+Without that line, `@cInclude("sqrt_nr.c")` fails to resolve. Straightforward, but the kind of thing that eats 20 minutes the first time.
+
+### The Type Boundary
+
+The Zig wrapper uses `f32`. The translated C signature uses `f32` too (Zig maps C `float` directly). This is cleaner than the integer case where `int` becomes `c_int` with platform-dependent width. Floating point is standardised by IEEE 754, so `f32` is `float` everywhere. One less thing to worry about at the boundary.
+
+## Under the Zig Hood
+
+If you dig into `.zig-cache`, you'll find the translated C output:
+
+```zig
+pub export fn sqrt_nr(arg_x: f32) f32 {
+    var x = arg_x;
+    _ = &x;
+    if (x < @as(f32, 0)) return -@as(f32, 1);
+    if (x == @as(f32, 0)) return @as(f32, 0);
+    var guess: f32 = x * @as(f32, 0.5);
+    _ = &guess;
+    {
+        var i: c_int = 0;
+        _ = &i;
+        while (i < 20) : (i += 1) {
+            guess = (guess + x / guess) * @as(f32, 0.5);
+        }
+    }
+    return guess;
+}
+```
+
+A few things worth noting.
+
+`pub export fn` preserves C ABI semantics and linkage. The `var x = arg_x; _ = &x;` pattern looks weird but it's the translator preserving mutable C local semantics while satisfying Zig's analysis rules. The dummy address-take reflects potential C lvalue behaviour safely. The `for` loop becomes a `while` with explicit counter management because Zig doesn't have C-style `for`. Every float literal gets wrapped in `@as(f32, ...)` to maintain exact type semantics.
+
+The generated file is also *huge* because `@cImport` captures the entire preprocessor-expanded environment: builtin mappings, macro translations, target feature constants (`__APPLE__`, `__aarch64__`, `__ARM_NEON`), and some intentionally non-translatable macro stubs as `@compileError(...)`. This is expected. Zig is acting as a full C front-end at compile time, not a lightweight header scraper.
+
+## Direction B: Exporting Zig to C
+
+`src/root.zig`:
+
+```zig
+pub export fn sqrt_nr(x: f32) f32 {
+    if (x < 0.0) return -1.0;
+    if (x == 0.0) return 0.0;
+
+    var guess: f32 = x * 0.5;
+    for (0..20) |_| {
+        guess = (guess + x / guess) * 0.5;
+    }
+    return guess;
+}
+```
+
+The `export` keyword does two things: makes the symbol externally visible in the object output, and forces [C ABI calling convention](https://wiki.osdev.org/System_V_ABI). This is not the same as `pub fn`. `pub` is source-level visibility within Zig's module system. `export` is a binary interface concept. One is about what other Zig code can see. The other is about what the linker can see.
+
+If you confuse these, you'll write a function that compiles fine, then wonder why your C code can't find the symbol. Ask me how I know.
+
+Notice the Zig version gets to use `for (0..20)` instead of the manual `while` counter. Same algorithm, less bookkeeping. This is one of those small ergonomic wins that makes writing Zig-native implementations feel cleaner than just wrapping C.
+
+## The Build Graph
+
+`build.zig` creates two modules and two artefacts. The interesting bits:
+
+```zig
+const lib_mod = b.createModule(.{
+    .root_source_file = b.path("src/root.zig"),
+    .target = target,
+    .optimize = optimize,
+});
+
+const exe_mod = b.createModule(.{
+    .root_source_file = b.path("src/main.zig"),
+    .target = target,
+    .optimize = optimize,
+});
+```
+
+The executable is *not* linked against the static library. `exe.linkLibrary(lib)` is absent. These are two parallel outputs exercising both interop directions independently: the executable uses translated C, and the library exports Zig for C consumers. That separation is actually pedagogically useful because "calling C from Zig" and "calling Zig from C" rely on different mechanisms, even though both depend on the same ABI compatibility.
+
+There's also a `exe_mod.addImport("zig_c_interop_lib", lib_mod)` line wiring up a Zig-to-Zig import path that's currently unused. Infrastructure for later.
+
+## ABI
+
+Interop works when both sides agree on calling convention, type layout, and symbol naming. This project stays in the safe path: IEEE 754 `float` arguments, consistent C ABI export, same target architecture across all artefacts.
+
+When interop grows beyond a single function:
+
+- Prefer fixed-width types in headers (`int32_t` over `int`)
+- Use explicit `extern struct` with deliberate packed/align attributes
+- Keep language-specific aggregates out of the ABI surface
+- Never let a Zig panic cross a C ABI boundary
+
+This demo avoids all of that complexity on purpose. Real interop code won't.
+
+## Testing Both Directions
+
+Two tests, each covering a different path:
+
+```zig
+// src/main.zig — tests the Zig → translated C call path
+test "sqrt via C Newton-Raphson" {
+    const result = sqrt_nr(612.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 24.7386), result, 0.001);
+}
+
+// src/root.zig — tests the exported Zig function
+test "sqrt Newton-Raphson" {
+    const result = sqrt_nr(2.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.41421), result, 0.0001);
+}
+```
+
+Floating point means you need `expectApproxEqAbs` instead of exact equality. One validates the consumer path, one validates the producer path. `zig build test` runs both. 
+
+```
+Build Summary: 5/5 steps succeeded; 2/2 tests passed
+test success
+├─ run test 1 passed 2ms MaxRSS:1M
+│  └─ zig test Debug native cached 68ms MaxRSS:34M
+└─ run test 1 passed 2ms MaxRSS:1M
+   └─ zig test Debug native cached 68ms MaxRSS:34M
+```
+
+## So What?
+
+Most languages treat C interop as a runtime bridge with overhead. Zig's position is that C interop should be a compiler capability, not an ecosystem bolt-on. `@cImport` makes C declarations available at compile time. `export fn` makes Zig symbols available to C at link time. `build.zig` models mixed-language artefacts in one declarative graph.
+
+No intermediate files. No separate FFI subsystem.
+
+## Appendix
+
+### Why 20 Steps Will Do for Float Precision
+
+Define the iteration $g_{n+1} = \frac{1}{2}\left(g_n + \frac{x}{g_n}\right)$ for $x > 0$ and initial guess $g_0 = \frac{x}{2}$.
+
+Suppose the sequence converges to some $g^*$. Then $g^* = \frac{1}{2}(g^* + x/g^*)$, which rearranges to $(g^*)^2 = x$, so $g^* = \sqrt{x}$. If it converges, it converges to the right thing.
+
+Now let $e_n = g_n - \sqrt{x}$ be the error at step $n$. Then:
+
+$$
+e_{n+1} = \frac{1}{2}\left(g_n + \frac{x}{g_n}\right) - \sqrt{x} = \frac{g_n^2 + x - 2g_n\sqrt{x}}{2g_n} = \frac{(g_n - \sqrt{x})^2}{2g_n} = \frac{e_n^2}{2g_n}
+$$
+
+Two things fall out of this. First, $e_{n+1} \geq 0$ for all $n \geq 1$, so $g_n \geq \sqrt{x}$ after the first step. The sequence approaches from above, is monotonically decreasing, and is bounded below by $\sqrt{x}$. By the monotone convergence theorem, it converges.
+
+Second, the error is quadratic: $e_{n+1} \propto e_n^2$. The number of correct digits roughly doubles every iteration. `float` gives you ~7 decimal digits of precision. Quadratic convergence eats that in about 4 steps once the error is small: 1 $\to$ 2 $\to$ 4 $\to$ 8. In practice 8 to 10 iterations saturates `float` for any positive input. Twenty just removes any reason to think about it.
