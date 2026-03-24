@@ -5,7 +5,7 @@ date: 2026-03-24
 description: Why don't all languages speak C natively?
 ---
 
-Every new systems language eventually has to answer the same question: can you *actually* talk to C, the way two adults talk over coffee? Rust's answer is `bindgen` plus `extern "C"` plus `#[no_mangle]`. Go's answer is `cgo`, which works until it doesn't, and when it doesn't you're debugging two runtimes at once. [Zig's](https://ziglang.org/) answer is: C headers are already valid input to the compiler. No intermediate step. I built a small project to stress-test both directions of this claim. Zig calling C, and C calling Zig.
+Every new systems language eventually has to answer the same question: can you *actually* talk to C, the way two adults talk over coffee? Rust's answer is `bindgen` plus `extern "C"` plus `#[no_mangle]`. Go's answer is `cgo`, which works until it doesn't, and when it doesn't you're debugging two runtimes at once. [Zig's](https://ziglang.org/) answer is: C headers are already valid input to the compiler. No manual binding step. I built a small project to stress-test both directions of this claim. Zig calling C, and C calling Zig.
 
 ## Contents
 
@@ -50,7 +50,7 @@ int main(void) {
 }
 ```
 
-Newton-Raphson is a good test case because it involves floating point arithmetic, iteration, and a branch for the degenerate input. Not complex, but enough structure that you'd notice if something went wrong at the language boundary. The formula itself is just the iterative refinement $g_{n+1} = \frac{1}{2}(g_n + \frac{x}{g_n})$ converging on $\sqrt{x}$. Twenty iterations is overkill for `float` precision but guarantees convergence for any positive input [see appendix](#appendix).
+Newton-Raphson is a good test case because it involves floating point arithmetic, iteration, and a branch for the degenerate input. Not complex, but enough structure that you'd notice if something went wrong at the language boundary. The formula itself is just the iterative refinement $g_{n+1} = \frac{1}{2}(g_n + \frac{x}{g_n})$ converging on $\sqrt{x}$. Twenty iterations is overkill for typical `float` inputs in this demo, but it's not a universal guarantee for every positive `float` value [see appendix](#appendix).
 
 ## Direction A: Zig Calling C
 
@@ -79,7 +79,7 @@ Without that line, `@cInclude("sqrt_nr.c")` fails to resolve. Straightforward, b
 
 ### The Type Boundary
 
-The Zig wrapper uses `f32`. The translated C signature uses `f32` too (Zig maps C `float` directly). This is cleaner than the integer case where `int` becomes `c_int` with platform-dependent width. Floating point is standardised by IEEE 754, so `f32` is `float` everywhere. One less thing to worry about at the boundary.
+The Zig wrapper uses `f32`. The translated C signature uses `f32` too (Zig maps C `float` directly on this target). This is cleaner than the integer case where `int` becomes `c_int` with platform-dependent width. For this build target and toolchain, `f32` and C `float` line up directly. One less thing to worry about at the boundary.
 
 ## Under the Zig Hood
 
@@ -127,7 +127,7 @@ pub export fn sqrt_nr(x: f32) f32 {
 }
 ```
 
-The `export` keyword does two things: makes the symbol externally visible in the object output, and forces [C ABI calling convention](https://wiki.osdev.org/System_V_ABI). This is not the same as `pub fn`. `pub` is source-level visibility within Zig's module system. `export` is a binary interface concept. One is about what other Zig code can see. The other is about what the linker can see.
+The `export` keyword does two things: makes the symbol externally visible in the object output, and uses Zig's default [C calling convention for exported functions](https://ziglang.org/documentation/master/#export). This is not the same as `pub fn`. `pub` is source-level visibility within Zig's module system. `export` is a binary interface concept. One is about what other Zig code can see. The other is about what the linker can see.
 
 If you confuse these, you'll write a function that compiles fine, then wonder why your C code can't find the symbol. Ask me how I know.
 
@@ -157,7 +157,7 @@ There's also a `exe_mod.addImport("zig_c_interop_lib", lib_mod)` line wiring up 
 
 ## ABI
 
-Interop works when both sides agree on calling convention, type layout, and symbol naming. This project stays in the safe path: IEEE 754 `float` arguments, consistent C ABI export, same target architecture across all artefacts.
+Interop works when both sides agree on calling convention, type layout, and symbol naming. This project stays in the safe path: `float` arguments on a single target/toolchain, consistent C ABI export, and the same target architecture across all artefacts.
 
 When interop grows beyond a single function:
 
@@ -201,11 +201,11 @@ test success
 
 Most languages treat C interop as a runtime bridge with overhead. Zig's position is that C interop should be a compiler capability, not an ecosystem bolt-on. `@cImport` makes C declarations available at compile time. `export fn` makes Zig symbols available to C at link time. `build.zig` models mixed-language artefacts in one declarative graph.
 
-No intermediate files. No separate FFI subsystem.
+No manually maintained intermediate binding files. No separate FFI subsystem.
 
 ## Appendix
 
-### Why 20 Steps Will Do for Float Precision
+### Why 20 Steps Are Enough Here 
 
 Define the iteration $g_{n+1} = \frac{1}{2}\left(g_n + \frac{x}{g_n}\right)$ for $x > 0$ and initial guess $g_0 = \frac{x}{2}$.
 
@@ -214,9 +214,9 @@ Suppose the sequence converges to some $g^*$. Then $g^* = \frac{1}{2}(g^* + x/g^
 Now let $e_n = g_n - \sqrt{x}$ be the error at step $n$. Then:
 
 $$
-e_{n+1} = \frac{1}{2}\left(g_n + \frac{x}{g_n}\right) - \sqrt{x} = \frac{g_n^2 + x - 2g_n\sqrt{x}}{2g_n} = \frac{(g_n - \sqrt{x})^2}{2g_n} = \frac{e_n^2}{2g_n}
+e_{n+1} = \frac{1}{2}\left(g_n + \frac{x}{g_n}\right) - \sqrt{x} = \frac{g_n^2 + x - 2 g_n \sqrt{x}}{2g_n} = \frac{(g_n - \sqrt{x})^2}{2g_n} = \frac{e_n^2}{2g_n}
 $$
 
 Two things fall out of this. First, $e_{n+1} \geq 0$ for all $n \geq 1$, so $g_n \geq \sqrt{x}$ after the first step. The sequence approaches from above, is monotonically decreasing, and is bounded below by $\sqrt{x}$. By the monotone convergence theorem, it converges.
 
-Second, the error is quadratic: $e_{n+1} \propto e_n^2$. The number of correct digits roughly doubles every iteration. `float` gives you ~7 decimal digits of precision. Quadratic convergence eats that in about 4 steps once the error is small: 1 $\to$ 2 $\to$ 4 $\to$ 8. In practice 8 to 10 iterations saturates `float` for any positive input. Twenty just removes any reason to think about it.
+Second, the error is quadratic: $e_{n+1} \propto e_n^2$. The number of correct digits roughly doubles every iteration once you're close. In finite-precision arithmetic, that asymptotic story does not imply a fixed iteration bound for every positive `float`: with a poor initial guess, very large or tiny values can need many more steps, and subnormal values can behave badly. For the moderate inputs used in this demo, 20 iterations is comfortably enough.
