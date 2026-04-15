@@ -22,7 +22,6 @@
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/solid-js": "^5.1.0",
     "@astrojs/tailwind": "^6.0.2",
-    "@libsql/client": "^0.14.0",
     "@nanostores/solid": "^1.0.0",
     "@types/three": "^0.173.0",
     "astro": "^5.12.3",

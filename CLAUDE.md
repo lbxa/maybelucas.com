@@ -27,11 +27,11 @@ This is a personal website and blog built with **Astro 5** using:
 - **Content Collections**: Blog posts in `src/content/blog/`, about pages in `src/content/about/`
 - **Components**: Astro components in `src/components/`, SolidJS components use `.tsx` extension
 - **Layouts**: `RootLayout.astro` (base layout), `ContentLayout.astro` (content pages)
-- **Particle System**: Complex Three.js-based particle animation in `src/components/Particles/`
+- **Möbius Background**: GPU-efficient Three.js filled Möbius strip in `src/components/Particles/`, rendered only on the home page
 
 ### Key Features
 - **Dark Mode**: Persistent theme switching with no flash, uses Tailwind's `selector` strategy
-- **3D Particles**: Interactive Three.js Möbius strip particle system with user controls
+- **3D Background**: GPU-efficient filled Möbius strip with gentle rotation (home page only)
 - **Math Rendering**: KaTeX integration for mathematical expressions in blog posts
 - **View Transitions**: Astro's built-in page transitions for smooth navigation
 - **Performance Optimized**: Font preloading, code splitting, CSS optimization
@@ -50,7 +50,7 @@ This is a personal website and blog built with **Astro 5** using:
 - **SSR Context**: SolidJS components check `typeof document !== 'undefined'` for browser-only code
 - **Astro Islands**: Interactive components are selectively hydrated
 - **Theme Persistence**: Dark mode state survives page transitions using `transition:persist`
-- **Particle Performance**: Particle count is stored in nanostores and persisted across navigation
+- **Background Performance**: Möbius mesh built once with low segment count and capped pixel ratio; no per-frame geometry updates
 
 ### Content Schema
 Blog posts require: `title`, `author`, `date`, optional `description`. About pages have no schema requirements.

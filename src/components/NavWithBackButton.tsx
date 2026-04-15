@@ -61,10 +61,6 @@ export default function NavWithBackButton() {
       <div class={`flex gap-md transition-all duration-300 ${isScrolled() ? 'ml-20' : 'ml-0'}`}>
         <MiniNavLink href="/" label="Home" />
         <MiniNavLink href="/posts" label="Posts" />
-        {/* <div class="hidden md:block">
-          <MiniNavLink href="https://vla.lbxa.net" label="VLA-RLX" />
-        </div> */}
-        <MiniNavLink href="/about" label="About" />
       </div>
     </nav>
   );

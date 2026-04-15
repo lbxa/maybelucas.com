@@ -63,10 +63,6 @@
  * - Glass morphism aesthetic matching site design
  * - Dark/light mode support
  * 
- * ## Particle Integration
- * - Particle count increases with score: baseCount + floor(score / 10)
- * - Creates visual chaos effect as gameplay intensifies
- * - Particles persist across game restarts
  */
 
 import { TetrisGame } from './TetrisGame';

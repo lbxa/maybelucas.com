@@ -1,27 +1,31 @@
 ---
-import RootLayout from "@layouts/RootLayout.astro";
-import Tetris from "@components/Tetris/Tetris.astro";
+import Socials from "@components/Socials.astro";
+import Particles from "@components/Particles/Particles.astro";
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry } from "astro:content";
+
+const bio = await getEntry("about", "bio");
+if (!bio) {
+  throw new Error("Bio content not found");
+}
+const { Content: BioContent } = await bio.render();
+
+const manifesto = await getEntry("about", "manifesto");
+if (!manifesto) {
+  throw new Error("Manifesto content not found");
+}
+const { Content: ManifestoContent } = await manifesto.render();
 ---
 
-<RootLayout
+<ContentLayout
   title="Lucas Barbosa"
   description="Personal website and blog of Lucas Barbosa."
   url="/"
-  type="website"
+  type="profile"
 >
-  <div
-    class="splash flex items-center justify-center overflow-hidden min-h-dvh"
-  >
-    <div class="absolute z-10 flex items-center justify-center w-full h-full">
-      <Tetris />
-    </div>
-
-    <!-- <div
-      class="text-center italic text-5xl sm:text-6xl lg:text-8xl uppercase m-auto font-serif font-black"
-    >
-      <div>Scale</div>
-      <div>Curiosity</div>
-      <div>Abstraction</div>
-    </div> -->
-  </div>
-</RootLayout>
+  <Socials />
+  <section class="blog-content mb-3xl content">
+    <BioContent />
+  </section>
+  <Particles slot="background" />
+</ContentLayout>

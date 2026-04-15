@@ -6,13 +6,15 @@ const { title, ...seoProps } = Astro.props;
 ---
 
 <RootLayout title={title} {...seoProps}>
+  <slot name="background" />
+
   <div
-    class="fixed inset-0 backdrop-blur-md bg-ivory/60 dark:bg-shark-950/60 md:bg-ivory/85 md:dark:bg-shark-950/85 z-10"
+    class="fixed inset-0 backdrop-blur-md bg-ivory/60 dark:bg-shark-950/60 md:bg-ivory/65 md:dark:bg-shark-950/80 z-10 pointer-events-none"
   >
   </div>
 
   <main
-    class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-sm min-h-dvh pt-[60px] relative z-10"
+    class="flex flex-col mx-auto px-lg lg:px-0 max-w-screen-sm min-h-dvh pt-[60px] relative z-20"
   >
     <article class="grow">
       <slot />

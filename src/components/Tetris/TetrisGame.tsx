@@ -21,12 +21,10 @@ import {
   initRNGSeed,
   loadGameState,
   saveGameState,
-  loadCumulativeHighScore,
   saveCumulativeHighScore,
   TetrisAIv1,
   TetrisAIv2
 } from './tetris-engine';
-import { updateParticlesFromScore } from '@/stores/particleStore';
 
 // QA Metrics Interface
 interface GameMetrics {
@@ -358,10 +356,7 @@ export const TetrisGame = () => {
       const newHighScore = Math.max(state.score, state.highScore);
       saveHighScore(newHighScore);
       
-      // Update cumulative high score and particles
       saveCumulativeHighScore(state.score);
-      const cumulativeHighScore = loadCumulativeHighScore();
-      updateParticlesFromScore(cumulativeHighScore);
       
       // Save game state
       saveGameState(state.score, state.level, state.lines);
@@ -537,11 +532,8 @@ export const TetrisGame = () => {
         newState.lines = newLines;
         newState.level = newLevel;
         
-        // Save game state and update particles based on cumulative high score
         saveGameState(newScore, newLevel, newLines);
         saveCumulativeHighScore(newScore);
-        const cumulativeHighScore = loadCumulativeHighScore();
-        updateParticlesFromScore(cumulativeHighScore);
         
         // Spawn new piece
         newState = spawnNewPiece(newState);
@@ -829,17 +821,14 @@ export const TetrisGame = () => {
   return (
     <div 
       class="flex flex-col items-center justify-center"
-      style={mobile() ? { height: '100dvh', overflow: 'hidden' } : { 'padding-top': '1rem' }}
     >
-      {/* Main game container */}
-      <div class="relative" style={mobile() ? { height: 'calc(100dvh)', display: 'flex', 'align-items': 'center', 'justify-content': 'center' } : {}}>
-        {/* Canvas for game rendering */}
+      <div class="relative">
         <canvas
           ref={canvasRef}
           width={300}
           height={600}
           class="border border-shark-950/10 dark:border-ivory/10 bg-ivory/30 dark:bg-shark-950/30 backdrop-blur-md"
-          style={mobile() ? { width: '100vw', height: 'auto', 'max-height': 'calc(100dvh)' } : {}}
+          style={mobile() ? { width: '100vw', height: 'auto', 'max-height': 'calc(100dvh - 31px)' } : {}}
         />
         
         {/* Mobile AI overlay */}
