@@ -2,7 +2,9 @@
 import Socials from "@components/Socials.astro";
 import Particles from "@components/Particles/Particles.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
+import { Image } from "astro:assets";
 import { getEntry } from "astro:content";
+import profileImage from "../assets/images/profile.webp";
 
 const bio = await getEntry("about", "bio");
 if (!bio) {
@@ -23,6 +25,17 @@ const { Content: ManifestoContent } = await manifesto.render();
   url="/"
   type="profile"
 >
+  <div class="mb-xl w-28 sm:w-36 md:w-44">
+    <Image
+      src={profileImage}
+      alt="Portrait photo"
+      width={176}
+      height={176}
+      loading="eager"
+      fetchpriority="high"
+      quality={70}
+    />
+  </div>
   <Socials />
   <section class="blog-content mb-3xl content">
     <BioContent />
