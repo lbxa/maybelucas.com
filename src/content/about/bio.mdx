@@ -1,4 +1,5 @@
 import TwoColumnList from '../../components/TwoColumnList.astro';
+import Toggle from '../../components/Toggle.astro';
 
 Hey I'm Lucas.
 
@@ -6,45 +7,52 @@ I'm an *engineer*,
 *researcher* and 
 *product designer*. 
 
-Since you're here, let's [chat](https://cal.com/lucas-barbosa-8c6ajd). Here's what I've been up to:
+If you found this page interesting, let's [chat](https://cal.com/lucas-barbosa-8c6ajd). 
+
+I've been working on a broad range of projects from robotics and AI to design tools. Here's a few of them:
 
 <TwoColumnList items={[
   {
+    left: 'Spectra',
+    url: '',
+    right: "Stop describing UI, just show it with embedded design tools directly in your browser."
+  },
+  {
     left: 'VLA-RLX',
     url: 'https://vla.lbxa.net',
-    right: 'Completing my honours on deep reinforcement learning for robotics at UNSW under Prof. W. Midgley'
+    right: 'Completing my honours on deep reinforcement learning for robotics at UNSW under Prof. W. Midgley.'
   },
   {
     left: 'oNex',
     url: 'http://onexhq.com',
-    right: 'Capturing and classifying motion data at an unprecedented scale'
+    right: 'Capturing and classifying motion data at an unprecedented scale - creating a new way to capture the moment.'
   },
   {
     left: 'Veracity',
     url: 'https://www.pwc.com.au/services/artificial-intelligence/why-deepfakes-are-trust-infrastructure-problem.html',
-    right: 'Designing scalable trust infrastructure for deepfakes featured on <a href="https://www.pwc.com.au/services/artificial-intelligence/why-deepfakes-are-trust-infrastructure-problem.html" target="_blank">PwC </a>, <a href="https://www.accountingtimes.com.au/technology/pwc-unsw-team-up-to-combat-content-creation-fraud" target="_blank">Accounting Times</a> and <a href="https://www.businessthink.unsw.edu.au/articles/deepfake-fraud-veracity-bonds-content-trust-model" target="_blank">UNSW BusinessThink</a>',
+    right: 'Designing scalable trust infrastructure for deepfakes featured on <a href="https://www.pwc.com.au/services/artificial-intelligence/why-deepfakes-are-trust-infrastructure-problem.html" target="_blank">PwC </a>, <a href="https://www.accountingtimes.com.au/technology/pwc-unsw-team-up-to-combat-content-creation-fraud" target="_blank">Accounting Times</a> and <a href="https://www.businessthink.unsw.edu.au/articles/deepfake-fraud-veracity-bonds-content-trust-model" target="_blank">UNSW BusinessThink</a>.',
     rightIsHtml: true
   },
   {
     left: 'Capsol',
     url: 'https://capsol.ai',
-    right: 'Bringing dusty photos to life with vision language models'
+    right: 'Bringing dusty photos to life with vision language models.'
   },
   {
     left: 'Nowhere',
     url: 'https://wherearepeople.com',
-    right: 'Crowdsourcing real-time human location data'
+    right: 'Crowdsourcing real-time human location data.'
   },
   {
     left: 'Geophytes',
     url: 'https://www.geophytes.com',
-    right: 'Grassroots activism for displaced mining communities'
+    right: 'Grassroots activism for displaced mining communities.'
   }
 ]} />
 <br />
 
 
-Other stuff:
+Some other stuff I've been up to:
 - [Technion Yom Ha'Atzmaut '25](https://www.instagram.com/p/DJXyeKxyNvL/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==) hackathon winner
 - [UNIHACK '24](https://devpost.com/software/voxurf) hackathon winner
 - Scaled reusable coffee cups across Australia at [Cercle](https://www.cercle.com.au/)
@@ -53,6 +61,46 @@ Other stuff:
 - You can find my resume <a href="/files/resume.pdf" target="_blank">here</a>
 - View the <a href="/mobius">Mobius strip behind</a>
 - I never got my pen license
+
+## Musings
+
+<Toggle>
+<span slot="summary">My core philosophy</span>
+
+Scale, abstraction and curiosity are the essential primitives for understanding anything. 
+
+_Abstraction_ is the framework that allows us to zoom in and out of different _scales_. 
+
+Quarks and leptons, when combined, form the atomic scaffolding of organic matter. Organic molecules, when combined, form the cellular scaffolding for bacteria, plants, animals, and ultimately, conscious systems capable of reflecting on the structure that made them. 
+
+Groking large scales down to the primitives requires traversal through long and dense abstraction chains - something only possible with relentless _curiosity_.
+</Toggle>
+
+<Toggle>
+<span slot="summary">_How_ problems are easier than _what_ problems</span>
+
+*“What are we going to build?”* versus *“How are we going to build it?”*
+
+This might read as a misnomer since it's difficult to arrive at *how* without deciding on something to work on - the *what*.
+
+The ideal problem is one where the *how* is more difficult to solve for than the *what*. Ruling out the edge cases where both are either trivial or intractable.
+
+*How* problems are those where the *what* is easy to understand. For example, cryosleep chambers, anti-matter propulsion engines and nuclear fusion. Their impact on society is non-trivial but how do we do it?
+
+Contrast this with the quintessential *what* problem: Blockchain. The how has been well understood for years now, distributed consensus, cryptographic verification, programmable ledges. But what should this actually be used for, where it’s better than conventional systems?
+</Toggle>
+
+<Toggle>
+<span slot="summary">What happened to wonder?</span>
+
+Where did the large marble columns and painted ceilings go? Where can we seek modern grandeur?
+
+Greco-futurism is an inspiring style. It invokes awe.
+
+Brutalism, despite its melancholic undertone, still invokes permanence. A durable structure that will outlast you, no matter your opinion towards it.
+
+Today’s buildings, don’t look like they stand a chance against Godzilla.
+</Toggle>
 
 {/*
 ## Bio
@@ -68,6 +116,9 @@ Studied Eng/CS at UNSW (USyd didn't offer it) and now fast-forward to 2025, I'm 
 - **Barbosa, L.**, Kirshner, S., Kopel, R., Lim, E.T.K. & Pagram, T., 2025. Toward trustworthy content: the role of challengers, juries and veracity bonds in digital media platforms. Industrial Management & Data Systems [[Link](https://www.emerald.com/insight/content/doi/10.1108/imds-11-2024-1177/full/html)]
 
 ## Course Work
+
+<Toggle>
+<span slot="summary">Introduction</span>
 
 [MATH1141](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/MATH1141) Higher Mathematics 1A
 
@@ -90,8 +141,10 @@ Studied Eng/CS at UNSW (USyd didn't offer it) and now fast-forward to 2025, I'm 
 [MATH2089](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/MATH2089) Numerical Methods & Statistics
 
 [COMP2521](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/COMP2521) Data Structures and Algorithms
+</Toggle>
 
----
+<Toggle>
+<span slot="summary">A taste of maths</span>
 
 [ENGG1300](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/ENGG1300) Engineering Mechanics
 
@@ -114,8 +167,10 @@ Studied Eng/CS at UNSW (USyd didn't offer it) and now fast-forward to 2025, I'm 
 [MMAN2300](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/MMAN2300) Engineering Mechanics 2
 
 [COMP3331](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/COMP3331) Computer Networks and Applications
+</Toggle>
 
----
+<Toggle>
+<span slot="summary">Applied techniques</span>
 
 [COMP3431](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/COMP3431) Robotic Software Architecture
 
@@ -138,8 +193,10 @@ Studied Eng/CS at UNSW (USyd didn't offer it) and now fast-forward to 2025, I'm 
 [ECON1101](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/ECON1101) Microeconomics 1
 
 [COMP3411](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/COMP3411) Artificial Intelligence
+</Toggle>
 
----
+<Toggle>
+<span slot="summary">Specialisation</span>
 
 [COMP3121](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/COMP3121) Algorithms & Programming Tech
 
@@ -160,3 +217,4 @@ Studied Eng/CS at UNSW (USyd didn't offer it) and now fast-forward to 2025, I'm 
 [COMP3900](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/COMP3900) Computer Science Project
 
 [MMAN4951](https://www.handbook.unsw.edu.au/undergraduate/courses/2021/MMAN4951) Research Thesis A, B and C
+</Toggle>

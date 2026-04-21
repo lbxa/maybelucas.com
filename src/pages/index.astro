@@ -1,6 +1,6 @@
 ---
 import Socials from "@components/Socials.astro";
-import Particles from "@components/Particles/Particles.astro";
+import MobiusStrip from "@components/MobiusStrip/MobiusStrip.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import { Image } from "astro:assets";
 import { getEntry } from "astro:content";
@@ -40,5 +40,5 @@ const { Content: ManifestoContent } = await manifesto.render();
   <section class="blog-content mb-3xl content">
     <BioContent />
   </section>
-  <Particles slot="background" />
+  <MobiusStrip slot="background" />
 </ContentLayout>

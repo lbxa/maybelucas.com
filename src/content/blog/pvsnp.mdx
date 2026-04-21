@@ -1,0 +1,44 @@
+---
+title: P = NP
+author: Lucas
+date: 2026-04-21
+---
+
+The honourable George Pólya had [a great strategy](https://www.amazon.com.au/How-Solve-Aspect-Mathematical-Method/dp/069111966X) for dealing with tough problems, which was to solve an auxiliary problem first. A simpler surrogate can inch you closer to solving the grander problem.
+
+That’s one way to view the [boolean satisfiability problem (SAT)](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem) in relation to P versus NP.  SAT asks
+
+> Given a logical formula made of variables, ANDs, ORs and NOTs, is there some assignment of true or false values that make the whole formula true?
+> 
+
+By the [Cook–Levin theorem](https://en.wikipedia.org/wiki/Cook%E2%80%93Levin_theorem), SAT is NP-complete. So if SAT can be solved in polynomial time, then every problem in NP can be solved in polynomial time. In that case, P = NP.
+
+Suppose the formula is written in conjunctive normal form (CNF)
+
+$$
+\bigwedge_{j=1}^m (\ell_{j1}\lor\ell_{j2}\lor\cdots\lor\ell_{jk_j}).
+$$
+
+where each $\ell_{jt}$ is a literal, meaning either a variable $x_i$ or its negation $\neg x_i$.
+
+To turn this into a polynomial system, represent Boolean values by $x_i\in\{0,1\}$, and encode each literal numerically as
+
+$$
+v(\ell)=
+\begin{cases}
+x_i & \text{if } \ell=x_i,\\
+1-x_i & \text{if } \ell=\neg x_i.
+\end{cases}
+$$
+
+A clause is false exactly when all of its literals are false. So clause j is satisfied exactly when
+
+$$
+\prod_{t=1}^{k_j}(1-\ell_{jt})=0 \quad \text{and} \quad x_i^2 - x_i = 0 \quad \forall_i.
+$$
+
+So a SAT instance is satisfiable if and only if this polynomial system has a solution. Therefore SAT reduces in polynomial time to deciding whether a Boolean polynomial system has a solution.
+
+Hence, if that polynomial feasibility problem were in P, then SAT would also be in P. Since SAT is NP-complete, this would imply
+
+P = NP.

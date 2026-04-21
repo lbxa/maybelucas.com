@@ -17,6 +17,28 @@ html {
   height: -webkit-fill-available;
 }
 
+/* Tetris tetromino palette. Darker shades in light mode for contrast
+   against the ivory background; engine-default shades in dark mode. */
+:root {
+  --tetris-i: #2563eb; /* blue-600  (dark: blue-400  #60a5fa) */
+  --tetris-o: #d97706; /* amber-600 (dark: amber-400 #fbbf24) */
+  --tetris-t: #7c3aed; /* violet-600(dark: violet-400 #a78bfa) */
+  --tetris-j: #1d4ed8; /* blue-700  (dark: blue-500  #3b82f6) */
+  --tetris-l: #ea580c; /* orange-600(dark: orange-500 #f97316) */
+  --tetris-s: #16a34a; /* green-600 (dark: green-500 #22c55e) */
+  --tetris-z: #dc2626; /* red-600   (dark: red-500   #ef4444) */
+}
+
+html.dark {
+  --tetris-i: #60a5fa;
+  --tetris-o: #fbbf24;
+  --tetris-t: #a78bfa;
+  --tetris-j: #3b82f6;
+  --tetris-l: #f97316;
+  --tetris-s: #22c55e;
+  --tetris-z: #ef4444;
+}
+
 body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;

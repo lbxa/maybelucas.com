@@ -1,0 +1,70 @@
+---
+interface Props {
+  summary?: string;
+  open?: boolean;
+}
+
+const { summary, open = false } = Astro.props;
+---
+
+<details class="toggle" open={open}>
+  <summary class="flex items-center gap-sm cursor-pointer select-none mb-lg">
+    <svg
+      viewBox="0 0 10 10"
+      width="14"
+      height="14"
+      aria-hidden="true"
+      focusable="false"
+      class="toggle-marker text-shark-500 dark:text-shark-400 shrink-0"
+    >
+      <path d="M 3.5 2 L 7.5 5 L 3.5 8 Z" fill="currentColor"></path>
+    </svg>
+    <span class="toggle-summary-text">
+      <slot name="summary">{summary}</slot>
+    </span>
+  </summary>
+  <div class="toggle-content ml-[2.0rem] mt-sm">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .toggle > summary {
+    list-style: none;
+  }
+  .toggle > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .toggle-marker {
+    transform-origin: center;
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .toggle[open] > summary .toggle-marker {
+    transform: rotate(90deg);
+  }
+
+  .toggle[open] > .toggle-content {
+    animation: toggle-fade 220ms ease-out;
+  }
+
+  @keyframes toggle-fade {
+    from {
+      opacity: 0;
+      transform: translateY(-2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toggle-marker {
+      transition: none;
+    }
+    .toggle[open] > .toggle-content {
+      animation: none;
+    }
+  }
+</style>

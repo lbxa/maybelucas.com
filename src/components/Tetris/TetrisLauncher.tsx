@@ -53,7 +53,7 @@ export default function TetrisLauncher() {
           class="font-semibold bg-clip-text text-transparent"
           style={{
             'background-image':
-              'linear-gradient(90deg, #60a5fa 0%, #fbbf24 20%, #a78bfa 40%, #3b82f6 55%, #f97316 70%, #22c55e 85%, #ef4444 100%)',
+              'linear-gradient(90deg, var(--tetris-i) 0%, var(--tetris-o) 20%, var(--tetris-t) 40%, var(--tetris-j) 55%, var(--tetris-l) 70%, var(--tetris-s) 85%, var(--tetris-z) 100%)',
           }}
         >
           [Tetris]

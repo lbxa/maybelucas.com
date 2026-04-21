@@ -4,61 +4,38 @@ import { Icon } from "astro-icon/components";
 
 <section class="flex gap-md mb-xl">
   <a
-    class="social-icon flex gap-sm"
+    class="flex gap-sm text-[var(--tetris-t)]"
     href="https://github.com/lbxa"
     target="_blank"
-    style="animation-delay: 0s;"
   >
-    <Icon name="github" class="h-xl dark:fill-ivory fill-shark-950" />
-    <!-- <span>Github</span> -->
+    <Icon name="github" class="h-xl" />
   </a>
   <a
-    class="social-icon flex gap-sm"
+    class="flex gap-sm text-[var(--tetris-i)]"
     href="https://linkedin.com/in/lucasbrsa/"
     target="_blank"
-    style="animation-delay: 0.3s;"
   >
-    <Icon name="linkedin" class="h-xl dark:fill-ivory fill-shark-950" />
-    <!-- <span>LinkedIn</span> -->
+    <Icon name="linkedin" class="h-xl" />
   </a>
   <a
-    class="social-icon flex gap-sm"
+    class="flex gap-sm text-[var(--tetris-o)]"
     href="https://x.com/lucasbrsa"
     target="_blank"
-    style="animation-delay: 0.6s;"
   >
-    <Icon name="x" class="h-xl dark:fill-ivory fill-shark-950" />
+    <Icon name="x" class="h-xl" />
   </a>
   <a
-    class="social-icon flex gap-sm"
+    class="flex gap-sm text-[var(--tetris-s)]"
     href="mailto:me@lucasbarbosa.net"
     target="_blank"
-    style="animation-delay: 0.6s;"
   >
-    <Icon name="mail" class="h-xl dark:fill-ivory fill-shark-950" />
+    <Icon name="mail" class="h-xl" />
   </a>
   <!-- <a
-    class="social-icon flex gap-sm"
+    class="flex gap-sm text-[var(--tetris-l)]"
     href="/files/resume.pdf"
     target="_blank"
-    style="animation-delay: 0.6s;"
   >
-    <Icon name="file" class="h-xl dark:fill-ivory fill-shark-950" />
+    <Icon name="file" class="h-xl" />
   </a> -->
 </section>
-
-<style>
-  @keyframes breathe {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.4;
-    }
-  }
-
-  .social-icon {
-    animation: breathe 2s ease-in-out infinite;
-  }
-</style>
