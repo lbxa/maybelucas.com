@@ -1,12 +1,6 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-interface SurfaceSample {
-  center: THREE.Vector3;
-  normal: THREE.Vector3;
-  halfThickness: number;
-}
-
 interface ChromeProfile {
   color: number;
   roughness: number;
@@ -24,6 +18,12 @@ interface ChromeProfile {
   specularColor: number;
   shimmerAmplitude: number;
   shimmerFrequency: number;
+}
+
+interface GeometryDetail {
+  cacheKey: string;
+  columns: number;
+  rows: number;
 }
 
 const LIGHT_CHROME_PROFILE: ChromeProfile = {
@@ -65,6 +65,8 @@ const DARK_CHROME_PROFILE: ChromeProfile = {
 };
 
 export class MobiusStrip {
+  private static readonly geometryCache = new Map<string, THREE.BufferGeometry>();
+
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
@@ -87,12 +89,16 @@ export class MobiusStrip {
   private motionScale = 1;
   private readonly animationStartTime = performance.now();
   private chromeProfile: ChromeProfile = LIGHT_CHROME_PROFILE;
+  private readonly introDurationMs = 1750;
+  private readonly introBezier: [number, number, number, number] = [0.22, 0.72, 0.2, 1];
+  private readonly introOrbitX = 0.62;
+  private readonly introOrbitZ = -0.38;
+  private readonly introStartYOffset: number;
+  private readonly geometryCacheKey: string;
 
   private readonly radius = 2.3;
   private readonly stripWidth = 1.05;
   private readonly stripThickness = 0.16;
-  private readonly segments = 88;
-  private readonly widthSegments = 18;
 
   constructor(canvas: HTMLCanvasElement) {
     this.scene = new THREE.Scene();
@@ -103,6 +109,7 @@ export class MobiusStrip {
 
     this.camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 100);
     this.camera.position.z = 5;
+    this.introStartYOffset = this.computeIntroStartYOffset();
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -116,7 +123,12 @@ export class MobiusStrip {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.92;
 
-    this.geometry = this.buildGeometry();
+    this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.isReducedMotion = this.reducedMotionQuery.matches;
+    const geometryDetail = this.resolveGeometryDetail(this.viewportWidth, window.devicePixelRatio, this.isReducedMotion);
+    this.geometryCacheKey = geometryDetail.cacheKey;
+    this.geometry = this.getOrCreateGeometry(geometryDetail);
+
     this.material = new THREE.MeshPhysicalMaterial({
       color: 0x6f7885,
       side: THREE.DoubleSide,
@@ -138,7 +150,6 @@ export class MobiusStrip {
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
 
-    this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     this.reducedMotionHandler = (event: MediaQueryListEvent) => {
       this.isReducedMotion = event.matches;
       this.updateMotionScale();
@@ -150,7 +161,6 @@ export class MobiusStrip {
         this.updateThemeMaterial();
       }
     };
-    this.isReducedMotion = this.reducedMotionQuery.matches;
     this.bindMotionSignals();
     this.updateMotionScale();
 
@@ -220,120 +230,165 @@ export class MobiusStrip {
     }
   }
 
-  private buildGeometry(): THREE.BufferGeometry {
+  private resolveGeometryDetail(viewportWidth: number, devicePixelRatio: number, prefersReducedMotion: boolean): GeometryDetail {
+    if (viewportWidth < 640) {
+      if (prefersReducedMotion) {
+        return { cacheKey: 'mobile-compact-reduced', columns: 44, rows: 9 };
+      }
+      return { cacheKey: 'mobile-compact', columns: 48, rows: 10 };
+    }
+
+    if (viewportWidth < 900 || devicePixelRatio > 1.8) {
+      if (prefersReducedMotion) {
+        return { cacheKey: 'mobile-balanced-reduced', columns: 52, rows: 11 };
+      }
+      return { cacheKey: 'mobile-balanced', columns: 56, rows: 12 };
+    }
+
+    if (prefersReducedMotion) {
+      return { cacheKey: 'desktop-reduced', columns: 72, rows: 15 };
+    }
+
+    return { cacheKey: 'desktop-full', columns: 88, rows: 18 };
+  }
+
+  private getOrCreateGeometry(detail: GeometryDetail): THREE.BufferGeometry {
+    const cached = MobiusStrip.geometryCache.get(detail.cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const geometry = this.buildGeometry(detail.columns, detail.rows);
+    MobiusStrip.geometryCache.set(detail.cacheKey, geometry);
+    return geometry;
+  }
+
+  private buildGeometry(cols: number, rows: number): THREE.BufferGeometry {
     const geometry = new THREE.BufferGeometry();
-    const positions: number[] = [];
-    const indices: number[] = [];
-
-    const cols = this.segments;
-    const rows = this.widthSegments;
     const rowStride = rows + 1;
-
-    const frontVertices: THREE.Vector3[] = [];
-    const backVertices: THREE.Vector3[] = [];
+    const vertexCountPerSide = (cols + 1) * rowStride;
+    const totalVertexCount = vertexCountPerSide * 2;
+    const positions = new Float32Array(totalVertexCount * 3);
+    const tau = Math.PI * 2;
 
     for (let i = 0; i <= cols; i++) {
-      const t = (i / cols) * Math.PI * 2;
+      const t = (i / cols) * tau;
+      const halfT = t * 0.5;
+      const sinT = Math.sin(t);
+      const cosT = Math.cos(t);
+      const sinHalfT = Math.sin(halfT);
+      const cosHalfT = Math.cos(halfT);
 
       for (let j = 0; j <= rows; j++) {
         const widthT = j / rows;
-        const sample = this.sampleSurface(t, widthT);
+        const s = (widthT - 0.5) * this.stripWidth;
+        const radiusComponent = this.radius + s * cosHalfT;
 
-        frontVertices.push(sample.center.clone().addScaledVector(sample.normal, sample.halfThickness));
-        backVertices.push(sample.center.clone().addScaledVector(sample.normal, -sample.halfThickness));
+        const centerX = radiusComponent * cosT;
+        const centerY = radiusComponent * sinT;
+        const centerZ = s * sinHalfT;
+
+        const duX = (-0.5 * s * sinHalfT * cosT) - (radiusComponent * sinT);
+        const duY = (-0.5 * s * sinHalfT * sinT) + (radiusComponent * cosT);
+        const duZ = 0.5 * s * cosHalfT;
+
+        const dvX = cosHalfT * cosT;
+        const dvY = cosHalfT * sinT;
+        const dvZ = sinHalfT;
+
+        const crossX = duY * dvZ - duZ * dvY;
+        const crossY = duZ * dvX - duX * dvZ;
+        const crossZ = duX * dvY - duY * dvX;
+        const crossLength = Math.sqrt((crossX * crossX) + (crossY * crossY) + (crossZ * crossZ));
+        const normalScale = crossLength > 1e-8 ? 1 / crossLength : 0;
+
+        const normalX = crossX * normalScale;
+        const normalY = crossY * normalScale;
+        const normalZ = crossZ * normalScale;
+
+        const centerBias = 1 - Math.abs(widthT - 0.5) * 2;
+        const roundedProfile = 0.78 + 0.22 * Math.sqrt(Math.max(0, centerBias));
+        const halfThickness = this.stripThickness * roundedProfile;
+
+        const frontVertexIndex = i * rowStride + j;
+        const backVertexIndex = frontVertexIndex + vertexCountPerSide;
+        const frontOffset = frontVertexIndex * 3;
+        const backOffset = backVertexIndex * 3;
+
+        positions[frontOffset] = centerX + normalX * halfThickness;
+        positions[frontOffset + 1] = centerY + normalY * halfThickness;
+        positions[frontOffset + 2] = centerZ + normalZ * halfThickness;
+
+        positions[backOffset] = centerX - normalX * halfThickness;
+        positions[backOffset + 1] = centerY - normalY * halfThickness;
+        positions[backOffset + 2] = centerZ - normalZ * halfThickness;
       }
     }
 
-    for (const v of frontVertices) {
-      positions.push(v.x, v.y, v.z);
-    }
-
-    for (const v of backVertices) {
-      positions.push(v.x, v.y, v.z);
-    }
-
     const frontOffset = 0;
-    const backOffset = frontVertices.length;
+    const backOffset = vertexCountPerSide;
 
     const frontIndex = (i: number, j: number) => frontOffset + i * rowStride + j;
     const backIndex = (i: number, j: number) => backOffset + i * rowStride + j;
+    const shellQuadCount = cols * rows;
+    const boundaryLength = 2 * (cols + 1);
+    const shellIndexCount = shellQuadCount * 12;
+    const boundaryIndexCount = (boundaryLength - 1) * 6;
+    const indices = new Uint16Array(shellIndexCount + boundaryIndexCount);
+    let indexCursor = 0;
 
-    // Front and back shells.
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
         const a = frontIndex(i, j);
         const b = frontIndex(i + 1, j);
         const c = frontIndex(i, j + 1);
         const d = frontIndex(i + 1, j + 1);
-        indices.push(a, b, c);
-        indices.push(c, b, d);
+        indices[indexCursor++] = a;
+        indices[indexCursor++] = b;
+        indices[indexCursor++] = c;
+        indices[indexCursor++] = c;
+        indices[indexCursor++] = b;
+        indices[indexCursor++] = d;
 
         const ba = backIndex(i, j);
         const bb = backIndex(i + 1, j);
         const bc = backIndex(i, j + 1);
         const bd = backIndex(i + 1, j + 1);
-        indices.push(ba, bc, bb);
-        indices.push(bc, bd, bb);
+        indices[indexCursor++] = ba;
+        indices[indexCursor++] = bc;
+        indices[indexCursor++] = bb;
+        indices[indexCursor++] = bc;
+        indices[indexCursor++] = bd;
+        indices[indexCursor++] = bb;
       }
     }
 
-    // Boundary wall to make the strip physically thick.
-    const boundary: Array<{ i: number; j: number }> = [];
-    for (let i = 0; i <= cols; i++) {
-      boundary.push({ i, j: 0 });
-    }
-    for (let i = 0; i <= cols; i++) {
-      boundary.push({ i, j: rows });
-    }
+    for (let k = 0; k < boundaryLength - 1; k++) {
+      const currentI = k <= cols ? k : k - (cols + 1);
+      const currentJ = k <= cols ? 0 : rows;
+      const nextK = k + 1;
+      const nextI = nextK <= cols ? nextK : nextK - (cols + 1);
+      const nextJ = nextK <= cols ? 0 : rows;
 
-    for (let k = 0; k < boundary.length - 1; k++) {
-      const current = boundary[k];
-      const next = boundary[k + 1];
+      const fa = frontIndex(currentI, currentJ);
+      const fb = frontIndex(nextI, nextJ);
+      const ba = backIndex(currentI, currentJ);
+      const bb = backIndex(nextI, nextJ);
 
-      const fa = frontIndex(current.i, current.j);
-      const fb = frontIndex(next.i, next.j);
-      const ba = backIndex(current.i, current.j);
-      const bb = backIndex(next.i, next.j);
-
-      indices.push(fa, ba, fb);
-      indices.push(fb, ba, bb);
+      indices[indexCursor++] = fa;
+      indices[indexCursor++] = ba;
+      indices[indexCursor++] = fb;
+      indices[indexCursor++] = fb;
+      indices[indexCursor++] = ba;
+      indices[indexCursor++] = bb;
     }
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setIndex(indices);
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.computeVertexNormals();
     geometry.computeBoundingSphere();
 
     return geometry;
-  }
-
-  private sampleSurface(t: number, widthT: number): SurfaceSample {
-    const s = (widthT - 0.5) * this.stripWidth;
-    const center = new THREE.Vector3(
-      (this.radius + s * Math.cos(t / 2)) * Math.cos(t),
-      (this.radius + s * Math.cos(t / 2)) * Math.sin(t),
-      s * Math.sin(t / 2),
-    );
-
-    const du = new THREE.Vector3(
-      -0.5 * s * Math.sin(t / 2) * Math.cos(t) - (this.radius + s * Math.cos(t / 2)) * Math.sin(t),
-      -0.5 * s * Math.sin(t / 2) * Math.sin(t) + (this.radius + s * Math.cos(t / 2)) * Math.cos(t),
-      0.5 * s * Math.cos(t / 2),
-    );
-
-    const dv = new THREE.Vector3(
-      Math.cos(t / 2) * Math.cos(t),
-      Math.cos(t / 2) * Math.sin(t),
-      Math.sin(t / 2),
-    );
-
-    const normal = new THREE.Vector3().crossVectors(du, dv).normalize();
-
-    const centerBias = 1 - Math.abs(widthT - 0.5) * 2;
-    const roundedProfile = 0.78 + 0.22 * Math.sqrt(Math.max(0, centerBias));
-    const halfThickness = this.stripThickness * roundedProfile;
-
-    return { center, normal, halfThickness };
   }
 
   private onResize(): void {
@@ -361,6 +416,55 @@ export class MobiusStrip {
     const width = document.documentElement.clientWidth || window.innerWidth;
     const height = document.documentElement.clientHeight || window.innerHeight;
     return { width, height };
+  }
+
+  private computeIntroStartYOffset(): number {
+    const halfVerticalFovRad = THREE.MathUtils.degToRad(this.camera.fov * 0.5);
+    const halfVisibleHeight = Math.tan(halfVerticalFovRad) * this.camera.position.z;
+    const stripHalfExtent = this.radius + this.stripWidth * 0.5 + this.stripThickness;
+    return -(halfVisibleHeight + stripHalfExtent + 0.75);
+  }
+
+  private sampleCubicBezier(controlPoint1: number, controlPoint2: number, t: number): number {
+    const oneMinusT = 1 - t;
+    return (3 * oneMinusT * oneMinusT * t * controlPoint1) + (3 * oneMinusT * t * t * controlPoint2) + (t * t * t);
+  }
+
+  private sampleCubicBezierDerivative(controlPoint1: number, controlPoint2: number, t: number): number {
+    const oneMinusT = 1 - t;
+    return (3 * oneMinusT * oneMinusT * controlPoint1) + (6 * oneMinusT * t * (controlPoint2 - controlPoint1)) + (3 * t * t * (1 - controlPoint2));
+  }
+
+  private evaluateCubicBezier(progress: number, p1x: number, p1y: number, p2x: number, p2y: number): number {
+    const clamped = THREE.MathUtils.clamp(progress, 0, 1);
+    if (clamped === 0 || clamped === 1) {
+      return clamped;
+    }
+
+    let t = clamped;
+    for (let i = 0; i < 5; i++) {
+      const xEstimate = this.sampleCubicBezier(p1x, p2x, t) - clamped;
+      const slope = this.sampleCubicBezierDerivative(p1x, p2x, t);
+      if (Math.abs(slope) < 1e-6) {
+        break;
+      }
+      t -= xEstimate / slope;
+      t = THREE.MathUtils.clamp(t, 0, 1);
+    }
+
+    let lower = 0;
+    let upper = 1;
+    for (let i = 0; i < 8; i++) {
+      const xEstimate = this.sampleCubicBezier(p1x, p2x, t);
+      if (xEstimate < clamped) {
+        lower = t;
+      } else {
+        upper = t;
+      }
+      t = (lower + upper) * 0.5;
+    }
+
+    return this.sampleCubicBezier(p1y, p2y, t);
   }
 
   private bindMotionSignals(): void {
@@ -401,10 +505,32 @@ export class MobiusStrip {
       return;
     }
 
-    const elapsedSeconds = (performance.now() - this.animationStartTime) * 0.001;
+    const elapsedMs = performance.now() - this.animationStartTime;
+    const elapsedSeconds = elapsedMs * 0.001;
     this.applyDynamicChrome(elapsedSeconds);
 
     const animationScale = this.isReducedMotion ? this.motionScale * 0.3 : this.motionScale;
+    if (this.isReducedMotion) {
+      this.mesh.position.set(0, 0, 0);
+    } else {
+      const linearIntroProgress = Math.min(elapsedMs / this.introDurationMs, 1);
+      const [p1x, p1y, p2x, p2y] = this.introBezier;
+      const easedIntroProgress = this.evaluateCubicBezier(linearIntroProgress, p1x, p1y, p2x, p2y);
+      const introRemaining = 1 - easedIntroProgress;
+      const orbitalArc = Math.sin(easedIntroProgress * Math.PI);
+      const orbitalSway = Math.sin(easedIntroProgress * Math.PI * 2);
+
+      this.mesh.position.set(
+        (this.introOrbitX * orbitalArc) + (this.introOrbitX * 0.2 * orbitalSway),
+        this.introStartYOffset * introRemaining,
+        (this.introOrbitZ * orbitalArc) - (this.introOrbitZ * 0.2 * orbitalSway),
+      );
+
+      const introSpinScale = introRemaining * introRemaining;
+      this.mesh.rotation.x += 0.0007 * introSpinScale * animationScale;
+      this.mesh.rotation.z += 0.0009 * introSpinScale * animationScale;
+    }
+
     this.mesh.rotation.x += (0.00056 + Math.sin(elapsedSeconds * 0.21) * 0.00004) * animationScale;
     this.mesh.rotation.y += (0.00106 + Math.sin(elapsedSeconds * 0.31) * 0.00006) * animationScale;
     this.mesh.rotation.z += (0.0033 + Math.sin(elapsedSeconds * 0.43) * 0.00016) * animationScale;
@@ -428,7 +554,10 @@ export class MobiusStrip {
     this.sourceEnvironmentTexture?.dispose();
     this.sourceEnvironmentTexture = null;
 
-    this.geometry.dispose();
+    const cachedGeometry = MobiusStrip.geometryCache.get(this.geometryCacheKey);
+    if (cachedGeometry !== this.geometry) {
+      this.geometry.dispose();
+    }
     this.material.dispose();
     this.renderer.dispose();
   }
