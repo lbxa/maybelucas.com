@@ -27,7 +27,7 @@ const posts = (await getCollection("blog")).sort((a, b) =>
     <Title>Posts</Title>
     <p class="mb-3xl">Toward escape velocity</p>
   </section> -->
-  <section class="font-mono">
+  <section>
     {
       posts.map((p) => (
         <div class="flex flex-col gap-sm mb-xl">

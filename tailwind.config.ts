@@ -23,7 +23,7 @@ export default {
 			},
 			fontFamily: {
 				mono: ["ui-monospace", ...defaultTheme.fontFamily.mono],
-				sans: ["Neue Montreal", ...defaultTheme.fontFamily.sans],
+				sans: ["Helvetica", "Neue Montreal", ...defaultTheme.fontFamily.sans],
 				serif: ["Signifier", ...defaultTheme.fontFamily.serif],
 			},
 			spacing: {
