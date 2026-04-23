@@ -10,6 +10,8 @@ import { ClientRouter } from "astro:transitions";
 interface Props {
   title: string;
   description?: string;
+  ogTitle?: string;
+  ogDescription?: string;
   url?: string;
   publishedTime?: string;
   updatedTime?: string;
@@ -20,6 +22,22 @@ interface Props {
 
 const { title, ...seoProps } = Astro.props as Props;
 const pageUrl = seoProps.url ?? Astro.url?.pathname ?? "/";
+const siteUrl = (Astro.site ?? new URL("https://maybelucas.com")).toString();
+const structuredData = JSON.stringify([
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Lucas Barbosa",
+    url: siteUrl,
+    inLanguage: "en",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Lucas Barbosa",
+    url: siteUrl,
+  },
+]);
 ---
 
 <!doctype html>
@@ -27,6 +45,7 @@ const pageUrl = seoProps.url ?? Astro.url?.pathname ?? "/";
   <head>
     <meta charset="UTF-8" />
     <Seo title={title} {...seoProps} url={pageUrl} />
+    <script type="application/ld+json" is:inline>{structuredData}</script>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f5f5f5" id="theme-color" />

@@ -22,6 +22,8 @@ const { Content: ManifestoContent } = await manifesto.render();
 <ContentLayout
   title="Lucas Barbosa"
   description="Personal website and blog of Lucas Barbosa."
+  ogTitle="Lucas Barbosa - Software, AI, and Life"
+  ogDescription="Thoughtful essays on software engineering, AI, startups, and personal growth. Explore ideas, practical lessons, and experiments from Lucas Barbosa."
   url="/"
   type="profile"
 >
@@ -36,9 +38,11 @@ const { Content: ManifestoContent } = await manifesto.render();
       quality={70}
     />
   </div>
-  <Socials />
-  <section class="blog-content mb-3xl content">
+  <section class="blog-content content mb-xl">
     <BioContent />
+  </section>
+  <section class="mb-3xl">
+    <Socials />
   </section>
   <MobiusStrip slot="background" />
 </ContentLayout>
