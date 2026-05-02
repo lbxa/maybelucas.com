@@ -233,7 +233,7 @@ export default function NavbarReact() {
           >
             <div className="min-h-0 overflow-hidden">
               <div
-                className="px-4 pb-4 md:pt-2"
+                className="px-4 pb-4 md:pt-0"
                 style={{
                   opacity: isOpen ? 1 : 0,
                   transition: isOpen

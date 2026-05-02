@@ -27,6 +27,8 @@
     "@types/three": "^0.173.0",
     "astro": "^5.12.3",
     "astro-icon": "^1.1.1",
+    "baseline-browser-mapping": "^2.10.25",
+    "caniuse-lite": "^1.0.30001791",
     "dayjs": "^1.11.13",
     "nanostores": "^1.0.1",
     "react": "^19.2.5",
