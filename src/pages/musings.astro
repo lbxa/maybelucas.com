@@ -1,0 +1,16 @@
+---
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry } from "astro:content";
+
+const musings = await getEntry("about", "musings");
+if (!musings) {
+  throw new Error("Musings content not found");
+}
+const { Content: MusingsContent } = await musings.render();
+---
+
+<ContentLayout title="Musings">
+  <section class="blog-content content mb-xl">
+    <MusingsContent />
+  </section>
+</ContentLayout>

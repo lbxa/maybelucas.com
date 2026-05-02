@@ -5,6 +5,7 @@ import remarkMath from "remark-math";
 import rehypeExternalLinks from "rehype-external-links";
 import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
+import react from "@astrojs/react";
 import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
@@ -70,7 +71,13 @@ export default defineConfig({
       },
     }),
     tailwind(),
-    solidJs(),
+    solidJs({
+      include: ["**/*.tsx", "**/*.solid.tsx"],
+      exclude: ["**/*.react.tsx"],
+    }),
+    react({
+      include: ["**/*.react.tsx"],
+    }),
     icon({ iconDir: "src/assets/icons" }),
     partytown({
       config: {

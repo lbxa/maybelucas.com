@@ -2,13 +2,25 @@ import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { Tetris } from './Tetris';
 
-export default function TetrisLauncher() {
+interface TetrisLauncherProps {
+  hideTrigger?: boolean;
+}
+
+export default function TetrisLauncher(props: TetrisLauncherProps) {
   const [isOpen, setIsOpen] = createSignal(false);
   const [isMobile, setIsMobile] = createSignal(false);
   const [animating, setAnimating] = createSignal(false);
 
   onMount(() => {
-    setIsMobile('ontouchstart' in window);
+    const mobileViewportQuery = window.matchMedia('(max-width: 767px)');
+    const updateIsMobile = () => setIsMobile(mobileViewportQuery.matches);
+
+    updateIsMobile();
+    mobileViewportQuery.addEventListener('change', updateIsMobile);
+
+    onCleanup(() => {
+      mobileViewportQuery.removeEventListener('change', updateIsMobile);
+    });
   });
 
   createEffect(() => {
@@ -42,23 +54,33 @@ export default function TetrisLauncher() {
     setTimeout(() => setIsOpen(false), 300);
   };
 
+  onMount(() => {
+    const handleExternalOpen = () => open();
+    window.addEventListener('open-tetris', handleExternalOpen);
+    onCleanup(() => {
+      window.removeEventListener('open-tetris', handleExternalOpen);
+    });
+  });
+
   return (
     <>
-      <button
-        onClick={open}
-        class="font-mono no-underline inline-flex items-center cursor-pointer"
-        aria-label="Open Tetris"
-      >
-        <span
-          class="font-semibold bg-clip-text text-transparent"
-          style={{
-            'background-image':
-              'linear-gradient(90deg, var(--tetris-i) 0%, var(--tetris-o) 20%, var(--tetris-t) 40%, var(--tetris-j) 55%, var(--tetris-l) 70%, var(--tetris-s) 85%, var(--tetris-z) 100%)',
-          }}
+      <Show when={!props.hideTrigger}>
+        <button
+          onClick={open}
+          class="font-mono no-underline inline-flex items-center cursor-pointer"
+          aria-label="Open Tetris"
         >
-          [Tetris]
-        </span>
-      </button>
+          <span
+            class="font-semibold bg-clip-text text-transparent"
+            style={{
+              'background-image':
+                'linear-gradient(90deg, var(--tetris-i) 0%, var(--tetris-o) 20%, var(--tetris-t) 40%, var(--tetris-j) 55%, var(--tetris-l) 70%, var(--tetris-s) 85%, var(--tetris-z) 100%)',
+            }}
+          >
+            [Tetris]
+          </span>
+        </button>
+      </Show>
 
       <Show when={isOpen()}>
         <Portal>

@@ -1,11 +1,9 @@
 ---
-import DarkMode from "@components/DarkMode/DarkMode.astro";
-import Nav from "@components/Nav.astro";
-import TetrisLauncher from "@components/Tetris/TetrisLauncher";
 import Seo from "@components/Seo.astro";
 import "../styles/global.css";
 import GAnalytics from "@components/GAnalytics.astro";
-import { ClientRouter } from "astro:transitions";
+import NavbarReact from "@components/Navbar.react";
+import TetrisLauncher from "@components/Tetris/TetrisLauncher";
 
 interface Props {
   title: string;
@@ -93,30 +91,6 @@ const structuredData = JSON.stringify([
     >
 
     <GAnalytics />
-    <ClientRouter />
-    <style is:inline>
-      #themeToggle,
-      #themeToggle * {
-        view-transition-name: none;
-      }
-
-      html[data-route-changing] #themeToggle,
-      html[data-route-changing] #themeToggle *,
-      html.preload #themeToggle,
-      html.preload #themeToggle * {
-        transition: none !important;
-        animation: none !important;
-      }
-    </style>
-    <script is:inline>
-      document.documentElement.classList.add("preload");
-      addEventListener("astro:page-load", () =>
-        document.documentElement.classList.remove("preload"),
-      );
-      addEventListener("load", () =>
-        document.documentElement.classList.remove("preload"),
-      );
-    </script>
     <link
       rel="icon"
       type="image/png"
@@ -179,9 +153,6 @@ const structuredData = JSON.stringify([
         // Apply theme immediately
         applyTheme();
 
-        // Reapply theme on ViewTransitions navigation
-        document.addEventListener("astro:page-load", applyTheme);
-
         // Theme color management for mobile browsers
         let themeColorObserver = null;
 
@@ -219,18 +190,7 @@ const structuredData = JSON.stringify([
         // Setup theme color initially
         setupThemeColor();
 
-        // Re-setup theme color on ViewTransitions navigation
-        document.addEventListener("astro:page-load", setupThemeColor);
       })();
-    </script>
-    <script is:inline>
-      // Suppress switch transitions during navigation
-      document.addEventListener("astro:before-preparation", () => {
-        document.documentElement.setAttribute("data-route-changing", "");
-      });
-      document.addEventListener("astro:page-load", () => {
-        document.documentElement.removeAttribute("data-route-changing");
-      });
     </script>
     <script is:inline>
       // Mobile detection
@@ -244,19 +204,8 @@ const structuredData = JSON.stringify([
     </script>
   </head>
   <body>
-    <div
-      class="z-50 fixed top-0 left-0 m-auto h-[50px] py-md w-full bg-ivory/50 dark:bg-shark-950/50 backdrop-blur-sm after:content-[''] after:absolute after:left-0 after:right-0 after:top-full after:h-8 after:bg-gradient-to-b after:from-ivory/50 after:to-transparent dark:after:from-shark-950/50 after:pointer-events-none"
-    >
-      <div class="flex mx-auto px-lg lg:px-0 max-w-screen-sm items-center">
-        <Nav />
-        <div class="ml-md">
-          <TetrisLauncher client:load transition:persist />
-        </div>
-        <div class="ml-auto flex items-center">
-          <DarkMode transition:persist />
-        </div>
-      </div>
-    </div>
+    <NavbarReact client:only="react" />
+    <TetrisLauncher client:load hideTrigger />
     <slot />
   </body>
 </html>

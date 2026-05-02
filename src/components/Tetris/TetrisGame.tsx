@@ -758,9 +758,15 @@ export const TetrisGame = () => {
     // Only run in browser
     if (typeof window === 'undefined') return;
     
-    // Check if mobile
-    const mobile = 'ontouchstart' in window;
-    setIsMobile(mobile);
+    const mobileViewportQuery = window.matchMedia('(max-width: 767px)');
+    const updateIsMobile = () => setIsMobile(mobileViewportQuery.matches);
+
+    updateIsMobile();
+    mobileViewportQuery.addEventListener('change', updateIsMobile);
+    onCleanup(() => {
+      mobileViewportQuery.removeEventListener('change', updateIsMobile);
+    });
+    const mobile = mobileViewportQuery.matches;
     
     // Load localStorage data after hydration to prevent mismatch
     const savedState = loadGameState();
