@@ -10,7 +10,6 @@ import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
-import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
@@ -86,5 +85,4 @@ export default defineConfig({
     }),
     sitemap(),
   ],
-  adapter: cloudflare(),
 });
