@@ -1,5 +1,6 @@
 ---
 import { Image as AstroImage } from "astro:assets";
+import { thumbhashHexToDataUrl } from "../lib/thumbhashPlaceholder";
 
 type ImageLike = string | { src: string; width?: number; height?: number };
 
@@ -10,6 +11,12 @@ interface Props {
   width?: number;
   height?: number;
   class?: string;
+  /** ThumbHash as hex from `bun run gen-thumbhash <image-path>` — decoded at build time */
+  thumbhash?: string;
+  loading?: "eager" | "lazy";
+  decoding?: "async" | "auto" | "sync";
+  fetchpriority?: "high" | "low" | "auto";
+  quality?: number;
 }
 
 const {
@@ -19,14 +26,95 @@ const {
   width,
   height,
   class: className,
+  thumbhash,
+  loading,
+  decoding,
+  fetchpriority,
+  quality,
 } = Astro.props as Props;
 const isOptimizable = typeof src === "object" && src !== null && "src" in src;
+
+const placeholderDataUrl = thumbhash
+  ? thumbhashHexToDataUrl(thumbhash)
+  : undefined;
+
+const placeholderFigureId = thumbhash ? `ph-${crypto.randomUUID()}` : undefined;
+
+const aspectStyle =
+  thumbhash && width != null && height != null
+    ? `aspect-ratio: ${width} / ${height}`
+    : undefined;
+
+const mainImgClass = thumbhash
+  ? "relative z-10 h-auto w-full opacity-0 transition-opacity duration-500"
+  : undefined;
+
+const mainOnLoad = thumbhash
+  ? "this.classList.add('opacity-100')"
+  : undefined;
 ---
 
-<figure class={`not-prose my-6 ${className ?? ""}`}>
+<figure
+  class:list={[
+    "not-prose my-6",
+    thumbhash && "thumbhash-placeholder",
+    className,
+  ]}
+  id={placeholderFigureId}
+>
   {
-    isOptimizable ? (
-      <AstroImage src={src as any} alt={alt} width={width} height={height} />
+    thumbhash ? (
+      <div
+        class="placeholder-shell relative w-full overflow-hidden rounded-lg"
+        style={aspectStyle}
+      >
+        <img
+          src={placeholderDataUrl}
+          alt=""
+          width={width}
+          height={height}
+          class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+          aria-hidden="true"
+        />
+        {isOptimizable ? (
+          <AstroImage
+            src={src as any}
+            alt={alt}
+            width={width}
+            height={height}
+            class={mainImgClass}
+            data-main-image
+            onload={mainOnLoad}
+            loading={loading}
+            decoding={decoding}
+            fetchpriority={fetchpriority}
+            quality={quality}
+          />
+        ) : (
+          <img
+            src={src as string}
+            alt={alt}
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            class={mainImgClass}
+            data-main-image
+            onload={mainOnLoad}
+          />
+        )}
+      </div>
+    ) : isOptimizable ? (
+      <AstroImage
+        src={src as any}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding={decoding}
+        fetchpriority={fetchpriority}
+        quality={quality}
+      />
     ) : (
       <img
         src={src as string}
@@ -45,13 +133,32 @@ const isOptimizable = typeof src === "object" && src !== null && "src" in src;
       </figcaption>
     )
   }
+  {
+    thumbhash && placeholderFigureId && (
+      <script is:inline define:vars={{ placeholderFigureId }}>
+        requestAnimationFrame(() => {
+          const root = document.getElementById(placeholderFigureId);
+          const img = root?.querySelector("[data-main-image]");
+          if (img instanceof HTMLImageElement && img.complete) {
+            img.classList.add("opacity-100");
+          }
+        });
+      </script>
+    )
+  }
 </figure>
 
 <style>
-  figure :where(img) {
+  figure:not(.thumbhash-placeholder) :where(img) {
     display: block;
     margin-left: auto;
     margin-right: auto;
     border-radius: 0.5rem;
+  }
+
+  figure.thumbhash-placeholder .placeholder-shell :where(img:not([aria-hidden="true"])) {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
 </style>
