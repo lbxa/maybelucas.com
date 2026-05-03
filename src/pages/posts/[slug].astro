@@ -69,19 +69,21 @@ export async function getStaticPaths() {
       </a>
     </div>
     <Title>{entry.data.title}</Title>
-    <p>
+    <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
       {entry.data.description ?? null}
-      <div class="text-gray-700 dark:text-gray-400">
-        <WordCount content={entry.body} />
-        <span>•</span>
-        <ReadingTime content={entry.body} />
-        <span>•</span>
-        <span>Written {dayjs(entry.data.date).format(dateFormat)}</span>
-      </div>
     </p>
+    <div class="font-mono text-sm text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-md">
+      <WordCount content={entry.body} />
+      <span>•</span>
+      <ReadingTime content={entry.body} />
+      <span>•</span>
+      <span>Written {dayjs(entry.data.date).format(dateFormat)}</span>
+    </div>
   </header>
   <script type="application/ld+json" is:inline>{jsonLd}</script>
-  <section class="blog-content content">
+  <section
+    class="blog-content content mx-auto [&_p]:text-[1.125rem] md:[&_p]:text-[1.25rem] [&_p]:leading-[1.85] [&_li]:text-[1.0625rem] md:[&_li]:text-[1.125rem] [&_li]:leading-[1.8]"
+  >
     <Content />
   </section>
 </ContentLayout>

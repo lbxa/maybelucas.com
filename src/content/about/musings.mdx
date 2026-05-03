@@ -1,4 +1,6 @@
 import Toggle from '../../components/Toggle.astro';
+import Image from '@components/Image.astro';
+import fullstackButton from '../../assets/images/fullstack-button.webp';
 
 ## Musings
 
@@ -29,7 +31,7 @@ Contrast this with the quintessential *what* problem: Blockchain. The how has be
 </Toggle>
 
 <Toggle>
-<span slot="summary">What happened to wonder?</span>
+<span slot="summary">What happened to grandeur?</span>
 
 Where did the large marble columns and painted ceilings go? Where can we seek modern grandeur?
 
@@ -46,4 +48,25 @@ Today’s buildings, don’t look like they'd stand a chance against Godzilla.
 When it doubt act. Action produces information. New information is something we can act on, so on and so forth.
 
 A moving man will meet his luck.
+</Toggle>
+
+<Toggle>
+<span slot="summary">The case for full-stack+</span>
+
+In the context of internet-based product and services, if full-stack refers to frontend + backend, then full-stack+ includes data science and machine learning.
+
+In hardware, it has been widely accepted that to provide the best possible user experience, you have to vertically
+integrate. It should be no different with pure software products.
+
+<Image
+  src={fullstackButton}
+  class="w-full max-w-2xl mx-auto sm:max-w-xl md:max-w-lg lg:max-w-md"
+  width={1122}
+  height={1402}
+  alt="Isometric stack diagram: from UI design and button states through API, backend services, database, and ML training data beneath a single Make a suggestion button"
+  caption="Design through structure, API, data, and models. Generalizing across the stack is how you steer the experience."
+/>
+
+Following this logic, full-stack++ should include physical infra, which you rarely need these days.
+
 </Toggle>
