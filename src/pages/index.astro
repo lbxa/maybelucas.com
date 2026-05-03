@@ -2,7 +2,7 @@
 import Socials from "@components/Socials.astro";
 import MobiusStrip from "@components/MobiusStrip/MobiusStrip.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
-import { Image } from "astro:assets";
+import Image from "@components/Image.astro";
 import { getEntry } from "astro:content";
 import profileImage from "../assets/images/profile.webp";
 
@@ -45,6 +45,8 @@ const { Content: CourseWorkContent } = await courseWork.render();
       alt="Portrait photo"
       width={176}
       height={176}
+      class="!my-0 w-full"
+      thumbhash="5b180e1704cf97679d97876887c7678667769740460a6404"
       loading="eager"
       fetchpriority="high"
       quality={70}
