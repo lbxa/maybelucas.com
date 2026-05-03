@@ -2,8 +2,8 @@
 interface TwoColumnItem {
   left: string;
   right: string;
+  subtitle?: string;
   url?: string;
-  rightIsHtml?: boolean;
 }
 
 interface Props {
@@ -31,12 +31,14 @@ const { items } = Astro.props;
             <span>{item.left}</span>
           )}
         </div>
-        <div class="flex-1">
-          {item.rightIsHtml ? (
-            <span set:html={item.right} />
-          ) : (
-            <span>{item.right}</span>
-          )}
+        <div class="flex flex-1 flex-col gap-xs">
+          <span set:html={item.right} />
+          {item.subtitle ? (
+            <span
+              class="text-sm font-normal leading-snug text-shark-600 dark:text-shark-300"
+              set:html={item.subtitle}
+            />
+          ) : null}
         </div>
       </div>
     ))

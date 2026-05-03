@@ -6,17 +6,29 @@ import { Image } from "astro:assets";
 import { getEntry } from "astro:content";
 import profileImage from "../assets/images/profile.webp";
 
-const bio = await getEntry("about", "bio");
-if (!bio) {
-  throw new Error("Bio content not found");
+const bioIntro = await getEntry("about", "bio-intro");
+if (!bioIntro) {
+  throw new Error("Bio intro content not found");
 }
-const { Content: BioContent } = await bio.render();
+const { Content: BioIntroContent } = await bioIntro.render();
 
-const manifesto = await getEntry("about", "manifesto");
-if (!manifesto) {
-  throw new Error("Manifesto content not found");
+const musings = await getEntry("about", "musings");
+if (!musings) {
+  throw new Error("Musings content not found");
 }
-const { Content: ManifestoContent } = await manifesto.render();
+const { Content: MusingsContent } = await musings.render();
+
+const publications = await getEntry("about", "publications");
+if (!publications) {
+  throw new Error("Publications content not found");
+}
+const { Content: PublicationsContent } = await publications.render();
+
+const courseWork = await getEntry("about", "course-work");
+if (!courseWork) {
+  throw new Error("Course work content not found");
+}
+const { Content: CourseWorkContent } = await courseWork.render();
 ---
 
 <ContentLayout
@@ -27,7 +39,7 @@ const { Content: ManifestoContent } = await manifesto.render();
   url="/"
   type="profile"
 >
-  <div class="mb-xl w-28 sm:w-36 md:w-44">
+  <div class="mt-md mb-xl w-32 sm:w-38 md:w-44">
     <Image
       src={profileImage}
       alt="Portrait photo"
@@ -39,7 +51,16 @@ const { Content: ManifestoContent } = await manifesto.render();
     />
   </div>
   <section class="blog-content content mb-xl">
-    <BioContent />
+    <BioIntroContent />
+  </section>
+  <!-- <section class="blog-content content mb-xl">
+    <MusingsContent />
+  </section> -->
+  <section class="blog-content content mb-xl">
+    <PublicationsContent />
+  </section>
+  <section class="blog-content content mb-xl">
+    <CourseWorkContent />
   </section>
   <section class="mb-3xl">
     <Socials />

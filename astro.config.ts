@@ -5,11 +5,11 @@ import remarkMath from "remark-math";
 import rehypeExternalLinks from "rehype-external-links";
 import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
+import react from "@astrojs/react";
 import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
-import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
@@ -70,7 +70,13 @@ export default defineConfig({
       },
     }),
     tailwind(),
-    solidJs(),
+    solidJs({
+      include: ["**/*.tsx", "**/*.solid.tsx"],
+      exclude: ["**/*.react.tsx"],
+    }),
+    react({
+      include: ["**/*.react.tsx"],
+    }),
     icon({ iconDir: "src/assets/icons" }),
     partytown({
       config: {
@@ -79,5 +85,4 @@ export default defineConfig({
     }),
     sitemap(),
   ],
-  adapter: cloudflare(),
 });
