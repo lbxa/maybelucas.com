@@ -4,17 +4,16 @@
 
 ### Overview
 
-Personal website and blog built with Astro 5, SolidJS, Tailwind CSS, and deployed to Cloudflare Pages. See `CLAUDE.md` for full architecture details and standard development commands.
+Personal website and blog built with Astro 5, SolidJS, Tailwind CSS, and deployed to Cloudflare Workers static assets. See `CLAUDE.md` for full architecture details and standard development commands.
 
 ### Running the Dev Server
 
 - `bun dev` starts the Astro dev server on `http://localhost:4321/`
-- The dev server works without any environment variables — the only feature that requires env vars is the `/api/visitor-count` endpoint (needs `TURSO_DB_URL` and `TURSO_DB_AUTH_TOKEN`)
+- The dev server works without environment variables.
 
 ### Building
 
 - `bun run build` runs `astro check` (type checking) followed by `astro build`
-- The build will fail without Turso env vars because `src/pages/api/visitor-count.ts` throws at module level if they are missing. To build locally without a real Turso database, set placeholder values: `TURSO_DB_URL="libsql://placeholder.turso.io" TURSO_DB_AUTH_TOKEN="placeholder" bun run build`
 - Type checking alone passes cleanly (0 errors, only hints for unused variables)
 
 ### Linting / Testing

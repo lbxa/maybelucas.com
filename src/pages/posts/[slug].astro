@@ -1,16 +1,16 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getCollection, getEntry, render } from "astro:content";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import dayjs from "dayjs";
 import Title from "@components/Title.astro";
 import ReadingTime from "@/components/ReadingTime.astro";
 import WordCount from "@/components/WordCount.astro";
 
-type Props = {
-  title: string;
-};
-
 const { slug } = Astro.params;
+if (!slug) {
+  throw new Error("Missing blog slug parameter");
+}
+
 const entry = await getEntry("blog", slug);
 
 // TODO Redirect to 404 page
@@ -18,7 +18,7 @@ if (!entry) {
   throw new Error(`Blog post with slug "${slug}" not found`);
 }
 
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 const publishedDate = entry.data.date;
 const modifiedDate =
   (entry.data as { updated?: Date }).updated ?? publishedDate;
@@ -47,7 +47,7 @@ const jsonLd = JSON.stringify(
 export async function getStaticPaths() {
   const blogPosts = await getCollection("blog");
   return blogPosts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
   }));
 }
 ---
@@ -55,7 +55,7 @@ export async function getStaticPaths() {
 <ContentLayout
   title={entry.data.title}
   description={entry.data.description ?? undefined}
-  url={`/posts/${entry.slug}`}
+  url={`/posts/${entry.id}`}
   publishedTime={entry.data.date.toISOString?.()}
   type="article"
 >
@@ -73,9 +73,9 @@ export async function getStaticPaths() {
       {entry.data.description ?? null}
     </p>
     <div class="font-mono text-sm text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-md">
-      <WordCount content={entry.body} />
+      <WordCount content={entry.body ?? ""} />
       <span>•</span>
-      <ReadingTime content={entry.body} />
+      <ReadingTime content={entry.body ?? ""} />
       <span>•</span>
       <span>Written {dayjs(entry.data.date).format(dateFormat)}</span>
     </div>

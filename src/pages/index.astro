@@ -3,32 +3,26 @@ import Socials from "@components/Socials.astro";
 import MobiusStrip from "@components/MobiusStrip/MobiusStrip.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import Image from "@components/Image.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import profileImage from "../assets/images/profile.webp";
 
 const bioIntro = await getEntry("about", "bio-intro");
 if (!bioIntro) {
   throw new Error("Bio intro content not found");
 }
-const { Content: BioIntroContent } = await bioIntro.render();
-
-const musings = await getEntry("about", "musings");
-if (!musings) {
-  throw new Error("Musings content not found");
-}
-const { Content: MusingsContent } = await musings.render();
+const { Content: BioIntroContent } = await render(bioIntro);
 
 const publications = await getEntry("about", "publications");
 if (!publications) {
   throw new Error("Publications content not found");
 }
-const { Content: PublicationsContent } = await publications.render();
+const { Content: PublicationsContent } = await render(publications);
 
 const courseWork = await getEntry("about", "course-work");
 if (!courseWork) {
   throw new Error("Course work content not found");
 }
-const { Content: CourseWorkContent } = await courseWork.render();
+const { Content: CourseWorkContent } = await render(courseWork);
 ---
 
 <ContentLayout

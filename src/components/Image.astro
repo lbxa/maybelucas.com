@@ -45,9 +45,12 @@ const aspectStyle =
     ? `aspect-ratio: ${width} / ${height}`
     : undefined;
 
+const interactiveMainImageClass =
+  "cursor-zoom-in outline-none transition-transform duration-200 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-shark-700/60 focus-visible:ring-offset-2 focus-visible:ring-offset-ivory dark:focus-visible:ring-ivory/60 dark:focus-visible:ring-offset-shark-950";
+
 const mainImgClass = thumbhash
-  ? "relative z-10 h-auto w-full opacity-0 transition-opacity duration-500"
-  : undefined;
+  ? `relative z-10 h-auto w-full opacity-0 transition-opacity duration-500 ${interactiveMainImageClass}`
+  : interactiveMainImageClass;
 
 const mainOnLoad = thumbhash
   ? "this.classList.add('opacity-100')"
@@ -84,6 +87,11 @@ const mainOnLoad = thumbhash
             height={height}
             class={mainImgClass}
             data-main-image
+            data-image-viewer-trigger="true"
+            data-image-viewer-alt={alt}
+            data-image-viewer-caption={caption}
+            tabindex="0"
+            aria-haspopup="dialog"
             onload={mainOnLoad}
             loading={loading}
             decoding={decoding}
@@ -100,6 +108,11 @@ const mainOnLoad = thumbhash
             decoding="async"
             class={mainImgClass}
             data-main-image
+            data-image-viewer-trigger="true"
+            data-image-viewer-alt={alt}
+            data-image-viewer-caption={caption}
+            tabindex="0"
+            aria-haspopup="dialog"
             onload={mainOnLoad}
           />
         )}
@@ -110,6 +123,12 @@ const mainOnLoad = thumbhash
         alt={alt}
         width={width}
         height={height}
+        class={mainImgClass}
+        data-image-viewer-trigger="true"
+        data-image-viewer-alt={alt}
+        data-image-viewer-caption={caption}
+        tabindex="0"
+        aria-haspopup="dialog"
         loading={loading}
         decoding={decoding}
         fetchpriority={fetchpriority}
@@ -123,6 +142,12 @@ const mainOnLoad = thumbhash
         height={height}
         loading="lazy"
         decoding="async"
+        class={mainImgClass}
+        data-image-viewer-trigger="true"
+        data-image-viewer-alt={alt}
+        data-image-viewer-caption={caption}
+        tabindex="0"
+        aria-haspopup="dialog"
       />
     )
   }
