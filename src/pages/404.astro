@@ -1,0 +1,35 @@
+---
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { Tetris } from "@components/Tetris/Tetris";
+---
+
+<ContentLayout
+  title="404"
+  description="Route not found. Play a round of Tetris while you get back on track."
+  noIndex={true}
+>
+  <section class="mb-xl pt-xl">
+    <p
+      class="mb-md font-mono text-xs uppercase tracking-[0.16em] text-shark-500 dark:text-shark-400"
+    >
+      [404 / misplaced route]
+    </p>
+    <h1 class="!mt-0 !mb-lg">This route fell off the stack</h1>
+    <p class="max-w-prose text-shark-700 dark:text-shark-200">
+      You reached a page that no longer exists.
+    </p>
+  </section>
+
+  <section class="tetris-404-shell mb-xl" aria-label="Tetris game area">
+    <Tetris client:load />
+  </section>
+</ContentLayout>
+
+<style>
+  @media (max-width: 767px) {
+    :global(.tetris-404-shell canvas) {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+</style>

@@ -1,10 +1,17 @@
 ---
 import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry } from "astro:content";
+
+const questionsPage = await getEntry("questions", "index");
+if (!questionsPage) {
+  throw new Error("Questions content not found");
+}
+const { Content: QuestionsContent } = await questionsPage.render();
 ---
 
 <ContentLayout title="Questions">
   <section class="blog-content content mb-xl">
     <h1>Questions</h1>
-    <p>Placeholder page. Real content coming soon.</p>
+    <QuestionsContent />
   </section>
 </ContentLayout>

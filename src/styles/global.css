@@ -157,6 +157,22 @@ ol {
   list-style-type: decimal;
 }
 
+ul ul {
+  list-style-type: circle;
+}
+
+ul ul ul {
+  list-style-type: square;
+}
+
+ol ol {
+  list-style-type: lower-alpha;
+}
+
+ol ol ol {
+  list-style-type: lower-roman;
+}
+
 ul ul,
 ol ul,
 ul ol,
@@ -217,19 +233,30 @@ hr {
 }
 
 table {
-  border-collapse: collapse;
-  @apply mb-lg w-full;
+  border-collapse: separate;
+  border-spacing: 0;
+  @apply mb-lg w-full max-w-full text-sm rounded-lg border border-shark-200 dark:border-shark-700;
+  line-height: 1.45;
+  overflow: hidden;
 }
 
 th,
 td {
-  @apply border border-gray-300 dark:border-gray-700;
-  @apply p-sm text-left;
+  @apply border-b border-r border-shark-200 px-sm py-xs text-left align-top dark:border-shark-700;
+}
+
+tr th:last-child,
+tr td:last-child {
+  border-right-width: 0;
+}
+
+tr:last-child th,
+tr:last-child td {
+  border-bottom-width: 0;
 }
 
 th {
-  @apply bg-gray-100 dark:bg-gray-800;
-  font-weight: bold;
+  @apply bg-shark-100 font-medium text-shark-800 dark:bg-shark-900 dark:text-shark-100;
 }
 
 /* Accessibility */
