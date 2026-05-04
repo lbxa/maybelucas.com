@@ -207,6 +207,7 @@ pre {
   border-radius: 8px;
   overflow-x: auto;
   margin-bottom: 1rem;
+  position: relative;
 }
 
 pre code {
@@ -215,6 +216,36 @@ pre code {
   font-size: 0.9em;
   border: none;
   @apply text-inherit;
+}
+
+.copy-code-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: rgba(245, 245, 245, 0.92);
+  color: #121212;
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.18s ease;
+}
+
+.copy-code-button:hover,
+.copy-code-button:focus-visible {
+  opacity: 1;
+}
+
+html.dark .copy-code-button {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(24, 24, 24, 0.92);
+  color: #f5f5f5;
 }
 
 /* Dark mode code highlighting */

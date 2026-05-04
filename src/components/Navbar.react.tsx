@@ -11,6 +11,7 @@ const EXPANDED_LINKS = [
   { label: "Musings", href: "/musings" },
   { label: "Questions", href: "/questions" },
   { label: "Research", href: "/research" },
+  { label: "Coding", href: "/coding" },
 ];
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";

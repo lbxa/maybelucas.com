@@ -1,0 +1,17 @@
+---
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry, render } from "astro:content";
+
+const codingPage = await getEntry("coding", "index");
+if (!codingPage) {
+  throw new Error("Coding content not found");
+}
+const { Content: CodingContent } = await render(codingPage);
+---
+
+<ContentLayout title="Coding">
+  <section class="blog-content content mb-xl">
+    <h1>Coding</h1>
+    <CodingContent />
+  </section>
+</ContentLayout>

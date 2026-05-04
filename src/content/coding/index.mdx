@@ -1,0 +1,1004 @@
+import Toggle from "@components/Toggle.astro";
+
+I'm averaging ~100k lines/week of coherent code thanks to a very large agent skill repertoire
+but these do most of the heavy lifting.
+
+<Toggle>
+<span slot="summary">Elon's Algorithm</span>
+
+Use this when you're tempted to optimize something before you've actually proven it needs to exist.
+
+````mdc
+---
+name: elon-algorithm
+description: Applies the Elon algorithm to reduce unnecessary requirements and process before optimization. Use when planning work, prioritizing scope, improving workflows, reviewing operating processes, or deciding what to automate.
+---
+
+# Elon Algorithm
+
+## Purpose
+
+Use this skill to remove waste before improving speed or adding tooling.
+
+## Required Order
+
+Follow all five steps in order. Do not skip ahead.
+
+1. Question every requirement.
+2. Delete any part of the process you can.
+3. Simplify and optimize only what remains.
+4. Accelerate cycle time.
+5. Automate last.
+
+## Step Workflow
+
+### 1) Question Every Requirement
+
+- Treat each requirement as a suggestion until justified.
+- Ask who owns the requirement and what failure it prevents.
+- Label each item as `required`, `assumed`, or `historical`.
+
+### 2) Delete Aggressively
+
+- Remove steps, approvals, handoffs, artifacts, and constraints that are not clearly required.
+- Prefer subtraction over redesign.
+- If nothing is removed, challenge the scope again before moving on.
+
+### 3) Simplify and Optimize
+
+- Only optimize steps that survive deletion.
+- Collapse handoffs, reduce dependencies, and keep interfaces minimal.
+- Do not optimize anything likely to be deleted next pass.
+
+### 4) Accelerate Cycle Time
+
+- Shorten feedback loops, batch sizes, and decision latency.
+- Use smaller iterations and faster checkpoints.
+- Measure elapsed time from request to validated result.
+
+### 5) Automate Last
+
+- Automate only stable, repeated, high-value steps.
+- Keep newly changed flows manual until they are proven minimal and correct.
+- Avoid automating exceptions before the main path is clean.
+
+## Guardrails
+
+- Do not treat inherited process as truth.
+- Do not introduce tooling before deletion and simplification are complete.
+- Do not scale complexity for hypothetical future needs.
+- If a requirement forces complexity, name that requirement explicitly.
+
+## Output Format
+
+Use this compact structure when applying the algorithm:
+
+```markdown
+Goal: <one sentence>
+
+Step 1 - Questioned requirements:
+- required:
+- assumed:
+- historical:
+
+Step 2 - Deleted:
+- removed:
+- kept (with reason):
+
+Step 3 - Simplified/optimized:
+- changes:
+- why these are worth keeping:
+
+Step 4 - Cycle-time acceleration:
+- bottleneck:
+- faster loop:
+
+Step 5 - Automation decision:
+- automate now:
+- keep manual:
+
+Final scope:
+- smallest viable process:
+- requirement forcing any remaining complexity:
+```
+
+## Triggers
+
+Apply this skill when:
+- requirements look over-specified or assumption-heavy
+- workflow feels slow or process-heavy
+- the team is choosing what to cut, simplify, or automate
+- a plan needs first-principles reduction before execution
+````
+</Toggle>
+
+<Toggle>
+    <span slot="summary">Occam's Razor</span>
+
+Use this when there are multiple ways to build something and the simplest safe path is probably the right one.
+
+````mdc
+---
+name: occams-razor
+description: Chooses the simplest viable solution when multiple implementation options exist by applying first-principles questioning and requirement reduction. Use when designing features, making architectural choices, refactoring, or evaluating competing approaches.
+---
+
+# Occam's Razor
+
+## Purpose
+
+Apply this rule whenever there are two or more valid options:
+
+> When deciding between alternatives, pick the simplest solution that still satisfies the real requirement.
+
+This skill is balanced, not rigid:
+- Prefer the simplest viable option by default.
+- Accept added complexity only when a concrete requirement cannot be met by the simpler path.
+
+## Decision Workflow
+
+Use this sequence before implementation:
+
+1. Define the real goal in one sentence.
+2. List constraints that are truly required vs assumed.
+3. Generate 2-3 viable options (including the simplest one).
+4. Eliminate options that do not meet hard requirements.
+5. From the remaining options, choose the one with:
+   - fewer moving parts
+   - lower maintenance burden
+   - smaller change surface
+   - easier debugging and rollback
+6. If choosing the more complex option, state exactly which requirement forces it.
+
+## First-Principles Questions
+
+Ask these questions explicitly:
+- What problem are we actually solving?
+- Which requirement is non-negotiable, and which is preference?
+- Can we remove a layer, dependency, or abstraction?
+- Can existing code be extended instead of introducing new structure?
+- What is the smallest change that works safely?
+
+## Output Format
+
+When presenting options, use this format:
+
+```markdown
+Goal: <one sentence>
+
+Option A (simplest):
+- approach:
+- trade-offs:
+- meets requirements: yes/no
+
+Option B:
+- approach:
+- trade-offs:
+- meets requirements: yes/no
+
+Decision:
+- chosen option:
+- why this is simplest viable:
+- if not simplest, requirement forcing complexity:
+```
+
+## Guardrails
+
+- Do not add abstractions "for future flexibility" without a present requirement.
+- Do not introduce new dependencies when existing tooling can solve the problem clearly.
+- Do not broaden scope beyond the stated objective.
+- Prefer local, reversible, low-risk changes over systemic rewrites.
+
+## Triggers
+
+Apply this skill when:
+- there are competing implementation approaches
+- architecture or refactor choices are being made
+- requirements appear over-specified or assumption-heavy
+- a solution feels more complex than the problem
+````
+</Toggle>
+
+<Toggle>
+<span slot="summary">Anti-slop Architecture</span>
+
+LLMs generate extremely average code by default. Sometimes you can get lucky
+and get a good zero-shot result, but overtime its almost guaranteed your
+project will snowball into an inferno without anti-slop superalignment.
+
+This skills attempts to encode the general best practices for architecting
+production-grade code, especially in the face of complexity.
+
+````mdc
+---
+name: anti-slop-code-architecture
+description: Enforces production-grade code architecture before implementation. Use when creating, refactoring, or reviewing non-trivial application code involving domain logic, integrations, persistence, workflows, retries, state, or long-term maintainability.
+---
+
+# Anti-Slop Architecture Mode
+
+You are not allowed to write implementation code until you have produced an architecture contract.
+
+The goal is not to maximize abstraction.
+The goal is to preserve boundaries, invariants, ownership, and change-resistance.
+
+Do not force OOP for its own sake. A class is valuable only when it gives a meaningful decision, invariant, policy, integration, or lifecycle a clear home.
+
+## Mandatory Architecture Contract
+
+Before coding, produce:
+
+1. System boundary
+2. Core business capability
+3. Likely axes of change
+4. Domain concepts
+5. Invariants
+6. Ports and adapters
+7. Use cases
+8. Failure model
+9. Transaction and consistency model
+10. Test strategy
+
+If the requested change is small, keep this contract brief.
+If the change touches domain logic, persistence, external APIs, retries, async jobs, statuses, workflows, or public behavior, the contract is mandatory.
+
+## Ten Anti-Slop Primitives
+
+Every non-trivial architecture contract must explicitly account for all ten primitives:
+
+1. Ownership before abstraction: every meaningful decision has a named owner.
+2. Orchestration separate from policy: steps, rules, persistence, and side effects stay distinct.
+3. Explicit invariants: state what must always remain true, where it is enforced, and how it is tested.
+4. Hostile external systems: vendor APIs sit behind gateways or adapters and return internal result types.
+5. State machines for status flows: models with 3 or more statuses define legal transitions.
+6. Idempotency before retries: retried operations define keys, deduplication, and duplicate classification.
+7. Explicit transactions: side-effecting workflows define consistency and recovery behavior.
+8. Semantic repositories: repositories expose application language, not generic database wrappers.
+9. Use cases, not dumping grounds: application services coordinate without owning every rule.
+10. Vertical slices over horizontal mush: organize by business capability before generic technical buckets.
+
+## System Boundary
+
+Define:
+
+- What is inside this module
+- What is outside this module
+- What this module owns
+- What this module explicitly does not own
+
+Do not begin implementation while ownership is ambiguous.
+
+## Change Forecast
+
+Identify:
+
+- What is likely to change
+- What is unlikely to change
+- What would be expensive to change later
+
+Protect likely change points. Do not abstract things just because they exist.
+
+Common marketplace and workflow axes of change:
+
+- Marketplaces will change
+- Vendor APIs will fail differently
+- Merchant rules will vary
+- Listing statuses will multiply
+- Retry behavior will become more nuanced
+- Operators will need better diagnostics
+- Pricing logic will become more strategic
+- Sync jobs will need resumability
+- Rate limits will become a first-class concern
+
+## Ownership Rules
+
+Every meaningful decision must belong to one of:
+
+- Entity
+- Value Object
+- Policy
+- Domain Service
+- Application Service
+- Repository
+- Gateway
+- Adapter
+- State Machine
+- Process Manager
+
+Do not hide business decisions in:
+
+- Controllers
+- Route handlers
+- CLI commands
+- React components
+- Utility functions
+- Anonymous callbacks
+- Inline scripts
+
+Every meaningful decision must have a named owner.
+
+## Layering Rules
+
+Use this dependency direction:
+
+```markdown
+Presentation -> Application -> Domain
+Infrastructure -> Application
+Infrastructure -> Domain interfaces only
+```
+
+Domain must not import:
+
+- ORM clients
+- HTTP clients
+- SDKs
+- Framework objects
+- Environment variables
+- Logging libraries
+- Queue clients
+
+Application may orchestrate but must not contain complex business rules.
+
+Infrastructure implements ports. It does not own business policy.
+
+## Orchestration vs Policy
+
+Orchestration answers:
+
+> What steps happen, in what order?
+
+Policy answers:
+
+> What should happen, given this state?
+
+All workflows must separate:
+
+- Decision logic
+- Side effects
+- Persistence
+- External API calls
+
+A use case may coordinate these pieces but must not contain business rules directly.
+
+## Domain Model
+
+Before implementation, identify relevant:
+
+- Entities
+- Value Objects
+- Policies
+- State Machines
+- Domain Events
+- Invariants
+
+Name domain concepts after business meaning, not technical convenience.
+
+## Invariant Rules
+
+Before implementation, list the invariants this code must preserve.
+
+For each invariant, specify:
+
+- Where it is enforced
+- What test proves it
+- What happens when it is violated
+
+Examples:
+
+- A listing cannot be removed if it is already sold
+- A merchant sync run cannot complete if child marketplace jobs are still pending
+- A product price cannot go below landed cost unless liquidation mode is explicitly enabled
+- A retry cannot create duplicate external side effects
+- A status transition must be valid from the current state
+
+## Use Case Rules
+
+Each meaningful operation gets an application service.
+
+A use case may:
+
+- Load state
+- Call policies
+- Call domain methods
+- Call gateways
+- Persist results
+- Emit events
+- Return application result objects
+
+A use case may not:
+
+- Contain pricing rules
+- Contain vendor error classification
+- Contain status transition rules
+- Contain retry algorithms inline
+- Directly construct complex dependency graphs
+
+## Policy Rules
+
+If business logic answers "should we", "can we", "how much", "which option", or "what happens next", prefer a named Policy.
+
+Examples:
+
+- RemovalEligibilityPolicy
+- PriceFloorPolicy
+- RetryEligibilityPolicy
+- MerchantSyncPriorityPolicy
+- ListingPublicationPolicy
+
+Policies must be deterministic where possible and easy to unit test.
+
+## State Rules
+
+If a model has 3 or more statuses, define explicit state transitions.
+
+The design must specify:
+
+- Allowed states
+- Allowed transitions
+- Illegal transitions
+- Terminal states
+- Retryable states
+
+Do not scatter status conditionals across services.
+
+## Integration Rules
+
+External systems must be accessed only through Gateway or Adapter classes.
+
+Adapters must:
+
+- Convert vendor DTOs into internal types
+- Classify known errors
+- Preserve raw payloads for debugging
+- Hide SDK-specific objects
+- Avoid leaking vendor terminology inward unless it is truly domain language
+
+Never leak vendor response shapes into domain or application logic.
+
+## Persistence Rules
+
+Repositories must expose intention-revealing methods.
+
+Prefer:
+
+- claimNextPendingJob()
+- markListingAlreadyClosed()
+- recordRemovalFailure()
+- loadActiveSyncRun()
+
+Avoid:
+
+- update(id, data)
+- findMany(where)
+- save(entity)
+- raw ORM access outside repositories
+
+Do not create repositories that only wrap generic ORM calls without adding persistence semantics.
+
+## Transaction Rules
+
+Before coding side-effecting workflows, define the consistency model.
+
+Choose one:
+
+- Single database transaction
+- Transaction plus outbox
+- Idempotent external call then persistence
+- Persist intent first then execute side effect
+- Saga / process manager with compensating action
+
+Never mix external API calls and database writes without defining recovery behavior.
+
+## Idempotency Rules
+
+If an operation can be retried, define:
+
+- Idempotency key
+- Deduplication store
+- Safe retry boundary
+- Whether the external API is naturally idempotent
+- Duplicate success behavior
+- Duplicate failure behavior
+
+Retries without idempotency are forbidden.
+
+## Failure Model
+
+Before implementation, define:
+
+- Known failures
+- Retryable failures
+- Terminal failures
+- Partial success cases
+- Compensation behavior
+- Observability requirements
+
+External integrations should return internal result types that classify known outcomes and preserve raw unknown payloads.
+
+## Pattern Selection Rules
+
+Use Strategy when behavior varies by type and new variants are expected.
+
+Use Policy Object when a business decision needs a name and tests.
+
+Use Factory when construction contains rules, not merely when calling `new`.
+
+Use Adapter or Gateway for external systems.
+
+Use State Machine for lifecycle-heavy entities.
+
+Use Process Manager or Saga for long-running workflows.
+
+Use Outbox when database changes must reliably trigger external side effects.
+
+Use Inbox when external events or webhooks may arrive more than once.
+
+Use Specification for composable business filters.
+
+Do not use patterns decoratively.
+
+Conditional guidance:
+
+- If conditionals select between stable business behaviors that are expected to grow, use Strategy
+- If the conditional enforces a simple invariant, keep it local
+- If the conditional represents status transitions, use a State Machine
+- If the conditional classifies external errors, use an Error Classifier
+- If the conditional chooses construction paths, use a Factory
+
+## Code Organization Rules
+
+Prefer vertical slices by business capability.
+
+Good:
+
+- listing-removal/
+- merchant-sync/
+- email-routing/
+- product-classification/
+
+Avoid dumping code into:
+
+- services/
+- utils/
+- helpers/
+- managers/
+- common/
+
+Shared code must prove that it is genuinely shared across capabilities.
+
+## Test Rules
+
+Match tests to the architecture:
+
+- Policy tests for business decisions
+- State transition tests for lifecycle rules
+- Use case tests with fake ports
+- Adapter contract tests for external boundaries
+- Integration tests at persistence and API boundaries
+
+Do not rely only on happy-path integration tests when invariants, retries, statuses, or external systems are involved.
+
+## Output Format
+
+For architecture work, output:
+
+1. Architecture overview
+2. Boundary map
+3. Domain model
+4. Pattern choices
+5. Interface definitions
+6. Implementation plan
+7. Failure handling
+8. Tests
+
+For implementation work, output:
+
+1. Files to change
+2. Architecture contract
+3. Code
+4. Tests
+5. Review checklist
+
+## Failure Conditions
+
+Restart the design if:
+
+- Business logic appears in controllers or route handlers
+- Domain imports infrastructure
+- External SDK objects leak into domain or application code
+- A use case becomes a god class
+- Status logic is scattered
+- Retries exist without idempotency
+- Database writes and external calls are mixed without recovery design
+- Utilities contain business behavior
+- Pattern usage is decorative rather than necessary
+````
+</Toggle>
+
+<Toggle>
+<span slot="summary">Uncle Bob Craftsmanship</span>
+
+For those who haven't read <a href="https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882" target="_blank" rel="noopener noreferrer">Clean Code</a>, you should.
+
+```mdc
+---
+name: code-craftsmanship
+description: Sets a professional standard for coding work: keep scope tight, keep systems clean, and prove important behavior with tests. Use when planning, implementing, refactoring, or reviewing code.
+---
+
+# Code Craftsmanship
+
+## Core Rule
+
+Do not produce low-quality work. Quality is not optional. The fastest way to move is to keep the system clean.
+
+## Working Standard
+
+Use this sequence for any coding task:
+
+1. Restate the goal and exact scope before changing code.
+2. Identify the precise files to touch and keep the change local.
+3. Choose the simplest design that satisfies the real requirement.
+4. Prefer clean boundaries, small functions, and readable control flow.
+5. Add or update tests for critical behavior before or with the implementation.
+6. Refactor within scope when clarity or maintainability directly affects the task.
+7. Verify the result and check downstream impact before declaring success.
+8. Apply the same standard on every change; craftsmanship is a habit, not a cleanup phase.
+
+## Non-Negotiables
+
+- Do not justify bad code with deadlines or pressure.
+- Do not treat deferred cleanup as a real plan.
+- Do not ship tangled, unclear, or untested critical logic.
+- Do not add speculative abstractions or purity-driven complexity.
+- Push back when a request requires knowingly poor engineering.
+
+## Testing Discipline
+
+- Tests are how you prove correctness, not paperwork after the fact.
+- Test behavior that would be costly, risky, or hard to debug if wrong.
+- Use tests to force thinking before coding whenever the behavior is important.
+- If the code is awkward to test, reconsider the design.
+- If something critical is not tested, say so explicitly.
+
+## Professional Filter
+
+Before finishing, ask:
+
+- Is this the smallest clean change that works?
+- Will the next engineer understand it quickly?
+- Does this improve long-term velocity instead of borrowing from it?
+- Did I prove the important behavior?
+- Did I make trade-offs explicit instead of hiding them?
+
+## Customer Standard
+
+Clean code is not inward-looking. Reliability, clarity, and maintainability are part of the value delivered to the customer.
+
+## Triggers
+
+Apply this skill when:
+
+- planning implementation work
+- writing or modifying code
+- refactoring code that affects the task
+- reviewing code quality, correctness, or maintainability
+```
+</Toggle>
+
+<Toggle>
+  <span slot="summary">TDD</span>
+
+This one is a non-negotiable. Without TDD its a matter of time before
+the LLM starts cannibalizing itself. The more comprehensive the test
+suite the less likely that long-running agents will introduce regressions 
+and general slop into the codebase.
+
+```mdc
+---
+name: tdd
+description: Enforces Test-Driven Development (Red-Green-Refactor). Use when writing unit tests, implementing TDD, or improving test coverage for any feature.
+metadata:
+  labels: [tdd, testing, quality, red-green-refactor]
+  triggers:
+    files:
+      [
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '**/*_test.go',
+        '**/*Test.java',
+        '**/*_test.dart',
+        '**/*_spec.rb',
+      ]
+    keywords: [tdd, unit test, write test, red green refactor, failing test, test coverage]
+---
+
+# Test-Driven Development (TDD)
+
+## **Priority: P1 (OPERATIONAL)**
+
+## **The Iron Law**
+
+> **NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.**
+> Code written before the test must be deleted. Start over.
+
+## **The TDD Cycle**
+
+1. **RED**: Write a minimal failing test. **Verify failure** (Expected error, not typo).
+2. **GREEN**: Write simplest code to pass. **Verify pass**.
+3. **REFACTOR**: Clean up code while staying green.
+
+## **AAA Structure (Mandatory)**
+
+Every test must follow Arrange-Act-Assert:
+
+- **Arrange**: Set up inputs, stubs, mocks, and expected values.
+- **Act**: Call the single unit under test.
+- **Assert**: Verify output and side effects. One logical assertion per test.
+  **(See [AAA Example](references/aaa_example.md) for code structure)**.
+
+## **Coverage Thresholds**
+
+- **Minimum**: 80% (Statements, Functions, Lines), 75% (Branches).
+- **Target**: 90% (Statements, Functions, Lines), 85% (Branches).
+- Configure in test runner config (e.g. `jest.config.ts`, `vitest.config.ts`). Coverage below minimum is a build-gate failure.
+
+## **Test Runner Commands**
+
+| Language      | Runner            | Watch Mode                  | Coverage                     |
+| ------------- | ----------------- | --------------------------- | ---------------------------- |
+| TypeScript/JS | `jest` / `vitest` | `vitest --watch`            | `vitest run --coverage`      |
+| Go            | `go test`         | `go test -v ./... -count=1` | `go test -cover ./...`       |
+| Java          | JUnit 5 + Maven   | `mvn test`                  | `mvn verify -P coverage`     |
+| Kotlin        | JUnit 5 + Kotest  | `./gradlew test`            | `./gradlew jacocoTestReport` |
+| Dart/Flutter  | `flutter test`    | `flutter test --watch`      | `flutter test --coverage`    |
+
+## **Core Principles**
+
+- **Watch it Fail**: Prove the test works.
+- **Minimalism**: Don't add features/options beyond current test (YAGNI).
+- **Real Over Mock**: Prefer real dependencies unless slow/flaky.
+- **One Reason to Fail**: Test one behavior per test.
+- **Descriptive Names**: e.g. `should_returnError_when_emailIsInvalid`.
+
+## **When to Use Mocks vs Real Dependencies**
+
+- **Database**: Real DB (test container) or in-memory; mock as last resort.
+- **HTTP/External APIs**: Always mock.
+- **Filesystem**: Use temp dir; mock for unit isolation.
+- **Time/Dates**: Always mock/control.
+- **Internal services**: Real if fast (<200ms); mock if cross-network.
+
+## **Verification Checklist**
+
+- [ ] Every new function/method has a failing test first?
+- [ ] Failure message was expected?
+- [ ] Minimal code implemented passed?
+- [ ] AAA structure followed?
+- [ ] Coverage thresholds met?
+
+## **Expert References**
+
+- [AAA Example](references/aaa_example.md)
+- [TDD Patterns](references/tdd_patterns.md)
+- [Testing Anti-Patterns](references/testing_anti_patterns.md)
+```
+</Toggle>
+
+Domain-specific skills can also reduce net entropy significantly.
+
+<Toggle>
+<span slot="summary">Avoid `useEffect`</span>
+
+Since most React code on GitHub is written poorly, no amount of post-training
+can help steer the frontier models to stop polluting React components with `useEffect`
+invocations.
+
+One is enough, let alone multiple. Even the [React official docs](https://react.dev/learn/you-might-not-need-an-effect) warn about the dangers of `useEffect`.
+
+````mdc
+---
+name: react-avoid-unnecessary-effects
+description: Use when writing, reviewing, or refactoring React components that use useEffect, derived state, prop-driven resets, event-specific side effects, parent notifications, external stores, or data fetching.
+---
+
+# React Avoid Unnecessary Effects
+
+## Core Principle
+
+Effects are an escape hatch for synchronizing a component with an external system: browser APIs, DOM widgets, subscriptions, timers, analytics on display, or network state. If logic only derives UI from existing props/state or responds to a user action, it usually does not belong in `useEffect`.
+
+Before adding or keeping an Effect, answer: "Should this run because the component is visible, or because a specific event happened?"
+
+## Review Checklist
+
+1. If data can be calculated from props/state, calculate it during render.
+2. If the calculation is measurably expensive, consider `useMemo`; otherwise avoid memoization.
+3. If state should reset for a different entity, key the inner component by that entity ID; do not reset drafts just because the same entity object refreshed.
+4. If only part of state needs adjustment, first try storing a stable ID and deriving the selected object during render.
+5. If logic is caused by a click, submit, drag, or other interaction, move it into that event handler.
+6. If a child pushes fetched data to a parent in an Effect, lift the data fetch to the nearest common parent.
+7. If subscribing to mutable external data, prefer `useSyncExternalStore` over hand-rolled subscription state.
+8. If fetching in an Effect, include cleanup or cancellation so stale responses cannot win races.
+
+## Common Replacements
+
+| Anti-pattern | Prefer |
+| --- | --- |
+| `useEffect` sets derived state like `fullName`, `visibleItems`, totals, flags | A render-time `const` |
+| `useEffect` filters/sorts props into local state | Render-time calculation, or `useMemo` only when expensive |
+| `useEffect` resets all form state when `id` changes | Split the form and pass `key={id}` to the inner component |
+| `useEffect` sends POST/notification after state changes from a user action | Call POST/notification in the event handler |
+| Chained Effects update state solely to trigger other Effects | Compute next state together in the event handler |
+| Child calls parent setter from `useEffect` after fetching | Fetch in the parent and pass data down |
+| Manual browser/store subscription in `useEffect` | `useSyncExternalStore` |
+
+## Canonical Example
+
+```tsx
+// Avoid: redundant state, stale first render, extra render pass.
+const [visibleItems, setVisibleItems] = useState<Item[]>([]);
+useEffect(() => {
+  setVisibleItems(filterItems(items, filter));
+}, [items, filter]);
+
+// Prefer: derived during render.
+const visibleItems = filterItems(items, filter);
+```
+
+If `filterItems` is proven expensive and unrelated state changes cause re-renders:
+
+```tsx
+const visibleItems = useMemo(
+  () => filterItems(items, filter),
+  [items, filter],
+);
+```
+
+## Valid Effects
+
+Keep an Effect when the component must synchronize with something outside React:
+
+- Start or clean up a subscription, timer, observer, or non-React widget.
+- Report that the component was displayed, such as a page-view analytics event.
+- Keep results synchronized with network data for the current query/page, with stale-response cleanup.
+- Imperatively coordinate browser APIs or DOM APIs that cannot be expressed in render.
+
+## Red Flags
+
+- "When prop X changes, set state Y" where `Y` can be derived.
+- State variables that only mirror other state variables.
+- Effects that exist only to call another setter.
+- Effects that send event-specific requests after setting a flag.
+- Parent and child state kept synchronized from a child Effect.
+- Empty dependency Effects used for app initialization that must run once per app load.
+
+When a raw `useEffect` remains, name the external system it synchronizes with. If there is no external system, remove the Effect.
+````
+</Toggle>
+
+<Toggle>
+<span slot="summary">Performance benchmarking</span>
+
+````mdc
+---
+name: bun-benchmarking
+description: Benchmark and profile Bun applications, scripts, CLIs, and HTTP servers. Use when measuring Bun performance, comparing Bun runtime behavior, investigating CPU or memory usage, generating CPU profiles or heap snapshots, or choosing benchmark tools for Bun.
+---
+
+# Bun Benchmarking
+
+## Documentation First
+
+Before giving Bun-specific benchmark or profiling guidance:
+
+1. Fetch the complete Bun documentation index from `https://bun.com/docs/llms.txt`.
+2. Use that index to discover relevant Bun documentation pages before exploring further.
+3. Prefer current Bun documentation over memory when command flags or runtime APIs matter.
+
+## Choose the Benchmark Tool
+
+Use the tool that matches the workload:
+
+- Microbenchmarks: use `mitata`.
+- HTTP load testing: use `bombardier`, `oha`, or `http_load_test`.
+- CLI commands and scripts: use `hyperfine`.
+
+Do not use Node.js HTTP benchmarking tools such as `autocannon` for `Bun.serve()` load tests; they may be slower than the server and skew results.
+
+## Measure Time
+
+For in-process timing, use Bun runtime APIs:
+
+```ts
+const start = performance.now();
+await runWorkload();
+const elapsedMs = performance.now() - start;
+```
+
+For nanosecond timing since application start:
+
+```ts
+const start = Bun.nanoseconds();
+await runWorkload();
+const elapsedNs = Bun.nanoseconds() - start;
+```
+
+Use `performance.timeOrigin` when converting `Bun.nanoseconds()` measurements to a Unix timestamp.
+
+## Profile CPU
+
+Use Bun's profiler flags to capture JavaScript execution bottlenecks:
+
+```sh
+bun --cpu-prof script.js
+bun --cpu-prof-md script.js
+bun --cpu-prof --cpu-prof-md script.js
+```
+
+Use explicit output paths for repeatable runs:
+
+```sh
+bun --cpu-prof --cpu-prof-name my-profile.cpuprofile script.js
+bun --cpu-prof --cpu-prof-dir ./profiles script.js
+```
+
+Open `.cpuprofile` files in Chrome DevTools or VS Code's CPU profiler. Prefer `--cpu-prof-md` when the result needs to be searched, reviewed in a terminal, or analyzed by an LLM.
+
+## Profile Heap And Memory
+
+Bun has two heaps: the JavaScript heap and the native heap.
+
+For JavaScript heap stats:
+
+```ts
+import { heapStats } from "bun:jsc";
+
+console.log(heapStats());
+```
+
+Garbage collection can be forced when isolating memory behavior:
+
+```ts
+Bun.gc(true); // synchronous
+Bun.gc(false); // asynchronous
+```
+
+Generate a heap snapshot from code when object retention needs inspection:
+
+```ts
+import { generateHeapSnapshot } from "bun";
+
+const snapshot = generateHeapSnapshot();
+await Bun.write("heap.json", JSON.stringify(snapshot, null, 2));
+```
+
+Use Bun heap profiler flags for snapshots on exit:
+
+```sh
+bun --heap-prof script.js
+bun --heap-prof-md script.js
+bun --heap-prof --heap-prof-name my-snapshot.heapsnapshot script.js
+bun --heap-prof --heap-prof-dir ./profiles script.js
+```
+
+Use `--heap-prof-md` for CLI or LLM analysis. If both `--heap-prof` and `--heap-prof-md` are specified, Bun uses markdown output.
+
+For native heap stats, run with mimalloc stats enabled:
+
+```sh
+MIMALLOC_SHOW_STATS=1 bun script.js
+```
+
+## Benchmark Hygiene
+
+When preparing results:
+
+- Record the Bun version, OS, hardware, command, environment variables, and input data.
+- Separate cold-start, warm-start, steady-state, and load-test measurements.
+- Run enough iterations to reduce noise; use benchmark tooling rather than one-off timings for conclusions.
+- Keep benchmark code close to the real workload and avoid measuring unrelated setup work unless startup cost is the target.
+- Treat garbage-collected memory carefully: objects not freeing immediately is normal; objects never freeing may indicate retention.
+- Include the generated profile or markdown profile when making optimization recommendations.
+````
+</Toggle>
