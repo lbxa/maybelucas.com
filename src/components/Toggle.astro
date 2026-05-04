@@ -29,6 +29,12 @@ const { summary, open = false } = Astro.props;
 </details>
 
 <style>
+  .toggle[open] {
+    position: relative;
+    z-index: 80;
+    isolation: isolate;
+  }
+
   .toggle > summary {
     list-style: none;
   }
@@ -44,8 +50,52 @@ const { summary, open = false } = Astro.props;
     transform: rotate(90deg);
   }
 
+  .toggle[open]::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: rgb(18 18 18 / 0.62);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: toggle-overlay-fade 220ms ease-out;
+  }
+
+  :global(.dark) .toggle[open]::before {
+    background: rgb(18 18 18 / 0.72);
+  }
+
+  .toggle[open] > summary,
+  .toggle[open] > .toggle-content {
+    position: relative;
+    z-index: 1;
+  }
+
   .toggle[open] > .toggle-content {
     animation: toggle-fade 220ms ease-out;
+    border-radius: 0.875rem;
+    border: 1px solid rgb(18 18 18 / 0.14);
+    background: rgb(245 245 245 / 0.87);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 26px 56px -34px rgb(18 18 18 / 0.9);
+    padding: 0.875rem 1rem;
+  }
+
+  :global(.dark) .toggle[open] > .toggle-content {
+    border-color: rgb(245 245 245 / 0.16);
+    background: rgb(18 18 18 / 0.84);
+    box-shadow: 0 24px 56px -36px rgb(0 0 0 / 1);
+  }
+
+  @keyframes toggle-overlay-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes toggle-fade {
@@ -62,6 +112,9 @@ const { summary, open = false } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .toggle-marker {
       transition: none;
+    }
+    .toggle[open]::before {
+      animation: none;
     }
     .toggle[open] > .toggle-content {
       animation: none;
