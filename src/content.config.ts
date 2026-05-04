@@ -28,10 +28,15 @@ const bookshelfCollection = defineCollection({
   loader: glob({ base: './src/content/bookshelf', pattern: '**/*.{md,mdx}' }),
 });
 
+const codingCollection = defineCollection({
+  loader: glob({ base: './src/content/coding', pattern: '**/*.{md,mdx}' }),
+});
+
 export const collections = {
   blog: blogCollection,
   about: aboutCollection,
   research: researchCollection,
   questions: questionsCollection,
   bookshelf: bookshelfCollection,
+  coding: codingCollection,
 };

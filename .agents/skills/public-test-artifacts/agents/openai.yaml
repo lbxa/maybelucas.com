@@ -1,0 +1,4 @@
+interface:
+  display_name: "Public Test Artifacts"
+  short_description: "Keep public test listings generic and non-sensitive."
+  default_prompt: "Create or update a public-facing test artifact without revealing internal project, code, workflow, or business details."

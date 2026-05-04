@@ -203,6 +203,87 @@ const structuredData = JSON.stringify([
         document.documentElement.classList.add("is-mobile");
       }
     </script>
+    <script is:inline>
+      (() => {
+        const COPY_LABEL = "Copy";
+        const COPIED_LABEL = "Copied";
+        const FAILED_LABEL = "Failed";
+        const LABEL_RESET_MS = 1600;
+
+        const fallbackCopy = (text) => {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.append(textarea);
+          textarea.select();
+          const copied = document.execCommand("copy");
+          textarea.remove();
+          if (!copied) {
+            throw new Error("Fallback copy command failed");
+          }
+        };
+
+        const copyText = async (text) => {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+              await navigator.clipboard.writeText(text);
+              return;
+            } catch {
+              // Fall through to legacy fallback when Clipboard API is blocked.
+            }
+          }
+          fallbackCopy(text);
+        };
+
+        const setButtonLabel = (button, label) => {
+          button.textContent = label;
+          window.setTimeout(() => {
+            if (button.isConnected) {
+              button.textContent = COPY_LABEL;
+            }
+          }, LABEL_RESET_MS);
+        };
+
+        const addCopyButtons = () => {
+          const codeBlocks = document.querySelectorAll("pre > code");
+          for (const code of codeBlocks) {
+            const pre = code.parentElement;
+            if (!(pre instanceof HTMLElement)) continue;
+            if (pre.dataset.copyReady === "true") continue;
+
+            pre.dataset.copyReady = "true";
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "copy-code-button";
+            button.textContent = COPY_LABEL;
+            button.setAttribute("aria-label", "Copy code to clipboard");
+
+            button.addEventListener("click", async () => {
+              try {
+                await copyText(code.textContent ?? "");
+                setButtonLabel(button, COPIED_LABEL);
+              } catch {
+                setButtonLabel(button, FAILED_LABEL);
+              }
+            });
+
+            pre.append(button);
+          }
+        };
+
+        const init = () => addCopyButtons();
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init, { once: true });
+        } else {
+          init();
+        }
+
+        document.addEventListener("astro:page-load", init);
+      })();
+    </script>
   </head>
   <body>
     <NavbarReact client:only="react" />
