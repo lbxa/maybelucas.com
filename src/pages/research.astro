@@ -1,10 +1,30 @@
 ---
 import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry } from "astro:content";
+
+const opening = await getEntry("research", "opening");
+if (!opening) {
+  throw new Error("Research opening content not found");
+}
+const { Content: OpeningContent } = await opening.render();
+
+const publications = await getEntry("about", "publications");
+if (!publications) {
+  throw new Error("Publications content not found");
+}
+const { Content: PublicationsContent } = await publications.render();
 ---
 
 <ContentLayout title="Research">
-  <section class="blog-content content mb-xl">
+  <section class="mb-xl">
     <h1>Research</h1>
-    <p>Placeholder page. Real content coming soon.</p>
+    <section class="blog-content content mb-xl">
+      <p>Interests</p>
+      <OpeningContent />
+    </section>
+    <section class="blog-content content">
+      <p>Publications</p>
+      <PublicationsContent />
+    </section>
   </section>
 </ContentLayout>

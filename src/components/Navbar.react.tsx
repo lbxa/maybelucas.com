@@ -7,7 +7,7 @@ const TOP_LINKS = [
 ];
 
 const EXPANDED_LINKS = [
-  { label: "Books", href: "/books" },
+  { label: "Bookshelf", href: "/bookshelf" },
   { label: "Musings", href: "/musings" },
   { label: "Questions", href: "/questions" },
   { label: "Research", href: "/research" },
@@ -266,7 +266,7 @@ export default function NavbarReact() {
                       onClick={closeMenu}
                       className="group block rounded-xl border border-shark-300/70 bg-ivory/40 p-4 no-underline transition-colors hover:border-shark-400 hover:bg-ivory/60 dark:border-shark-700/70 dark:bg-shark-900/20 dark:hover:border-shark-500 dark:hover:bg-shark-900/40"
                     >
-                      <div className="flex items-center gap-1.5 font-serif text-lg font-semibold tracking-tight text-shark-900 transition-colors group-hover:text-shark-600 dark:text-ivory dark:group-hover:text-shark-300">
+                      <div className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-shark-900 transition-colors group-hover:text-shark-600 dark:text-ivory dark:group-hover:text-shark-300">
                         <span>And</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

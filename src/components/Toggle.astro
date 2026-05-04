@@ -8,18 +8,18 @@ const { summary, open = false } = Astro.props;
 ---
 
 <details class="toggle" open={open}>
-  <summary class="flex items-center gap-sm cursor-pointer select-none mb-lg">
+  <summary class="flex cursor-pointer select-none items-start gap-sm mb-lg">
     <svg
       viewBox="0 0 10 10"
       width="14"
       height="14"
       aria-hidden="true"
       focusable="false"
-      class="toggle-marker text-shark-500 dark:text-shark-400 shrink-0"
+      class="toggle-marker text-shark-500 dark:text-shark-400 mt-[0.22em] shrink-0"
     >
       <path d="M 3.5 2 L 7.5 5 L 3.5 8 Z" fill="currentColor"></path>
     </svg>
-    <span class="toggle-summary-text">
+    <span class="toggle-summary-text min-w-0 flex-1 leading-snug">
       <slot name="summary">{summary}</slot>
     </span>
   </summary>
