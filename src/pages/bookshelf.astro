@@ -1,12 +1,12 @@
 ---
 import ContentLayout from "@layouts/ContentLayout.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 
 const bookshelfPage = await getEntry("bookshelf", "index");
 if (!bookshelfPage) {
   throw new Error("Bookshelf content not found");
 }
-const { Content: BookshelfContent } = await bookshelfPage.render();
+const { Content: BookshelfContent } = await render(bookshelfPage);
 ---
 
 <ContentLayout title="Bookshelf">

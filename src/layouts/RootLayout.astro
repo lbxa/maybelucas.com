@@ -4,6 +4,7 @@ import "../styles/global.css";
 import GAnalytics from "@components/GAnalytics.astro";
 import NavbarReact from "@components/Navbar.react";
 import TetrisLauncher from "@components/Tetris/TetrisLauncher";
+import ImageViewer from "@components/ImageViewer";
 
 interface Props {
   title: string;
@@ -206,6 +207,7 @@ const structuredData = JSON.stringify([
   <body>
     <NavbarReact client:only="react" />
     <TetrisLauncher client:load hideTrigger />
+    <ImageViewer client:load />
     <slot />
   </body>
 </html>

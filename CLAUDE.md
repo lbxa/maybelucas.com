@@ -8,8 +8,8 @@
 - `bun run preview` - Preview production build locally
 
 ### Cloudflare Deployment
-- `bun run wranger:dev` - Build and serve with Wrangler locally
-- `bun run wranger:deploy` - Build and deploy to Cloudflare Pages
+- `bun run wrangler:dev` - Build and serve with Wrangler locally
+- `bun run wrangler:deploy` - Build and deploy to Cloudflare Workers
 
 ## Architecture Overview
 
@@ -21,7 +21,7 @@ This is a personal website and blog built with **Astro 5** using:
 - **TypeScript** - Strict type checking enabled
 - **Tailwind CSS** - Utility-first styling with custom design tokens
 - **MDX** - Blog posts with math support (KaTeX)
-- **Cloudflare Pages** - Deployment platform
+- **Cloudflare Workers** - Deployment platform
 
 ### Project Structure
 - **Content Collections**: Blog posts in `src/content/blog/`, about pages in `src/content/about/`
@@ -40,10 +40,6 @@ This is a personal website and blog built with **Astro 5** using:
 - **Colors**: Custom `shark` palette (grays) and `ivory` (#f5f5f5)
 - **Typography**: Neue Montreal (sans), Signifier (serif), ui-monospace (mono)
 - **Spacing**: Custom scale (xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, 2xl: 32px, 3xl: 48px)
-
-### Database Integration
-- **Cloudflare D1**: SQLite database for visitor tracking
-- **Local Development**: Uses `local.db` (gitignored)
 
 ### Critical Implementation Notes
 - **Path Aliases**: `@/*` → `src/*`, `@components/*` → `src/components/*`, `@layouts/*` → `src/layouts/*`

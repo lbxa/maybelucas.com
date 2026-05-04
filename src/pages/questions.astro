@@ -1,12 +1,12 @@
 ---
 import ContentLayout from "@layouts/ContentLayout.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 
 const questionsPage = await getEntry("questions", "index");
 if (!questionsPage) {
   throw new Error("Questions content not found");
 }
-const { Content: QuestionsContent } = await questionsPage.render();
+const { Content: QuestionsContent } = await render(questionsPage);
 ---
 
 <ContentLayout title="Questions">

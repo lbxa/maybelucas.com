@@ -11,8 +11,10 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "bunx --bun astro",
-    "wranger:dev": "bunx astro build && bunx wrangler pages dev ./dist",
-    "wranger:deploy": "bunx astro build && bunx wrangler pages deploy ./dist",
+    "wrangler:dev": "bunx astro build && bunx wrangler dev",
+    "wrangler:deploy": "bunx astro build && bunx wrangler deploy",
+    "wranger:dev": "bun run wrangler:dev",
+    "wranger:deploy": "bun run wrangler:deploy",
     "gen-thumbhash": "bun scripts/gen-thumbhash.ts"
   },
   "dependencies": {

@@ -1,18 +1,18 @@
 ---
 import ContentLayout from "@layouts/ContentLayout.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 
 const opening = await getEntry("research", "opening");
 if (!opening) {
   throw new Error("Research opening content not found");
 }
-const { Content: OpeningContent } = await opening.render();
+const { Content: OpeningContent } = await render(opening);
 
 const publications = await getEntry("about", "publications");
 if (!publications) {
   throw new Error("Publications content not found");
 }
-const { Content: PublicationsContent } = await publications.render();
+const { Content: PublicationsContent } = await render(publications);
 ---
 
 <ContentLayout title="Research">
