@@ -9,6 +9,7 @@ const TOP_LINKS = [
 const EXPANDED_LINKS = [
   { label: "Bookshelf", href: "/bookshelf" },
   { label: "Musings", href: "/musings" },
+  { label: "Words", href: "/words" },
   { label: "Questions", href: "/questions" },
   { label: "Research", href: "/research" },
   { label: "Coding", href: "/coding" },
