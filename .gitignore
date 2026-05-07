@@ -26,3 +26,5 @@ pnpm-debug.log*
 local.db
 
 .playwright-mcp
+
+.wrangler/
