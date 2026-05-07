@@ -1,0 +1,16 @@
+---
+import ContentLayout from "@layouts/ContentLayout.astro";
+import { getEntry, render } from "astro:content";
+
+const lexicon = await getEntry("about", "lexicon");
+if (!lexicon) {
+  throw new Error("Lexicon content not found");
+}
+const { Content: LexiconContent } = await render(lexicon);
+---
+
+<ContentLayout title="Lexicon">
+  <section class="blog-content content mb-xl">
+    <LexiconContent />
+  </section>
+</ContentLayout>

@@ -7,12 +7,12 @@ const TOP_LINKS = [
 ];
 
 const EXPANDED_LINKS = [
+  { label: "Research", href: "/research" },
+  { label: "Questions", href: "/questions" },
+  { label: "Coding", href: "/coding" },
   { label: "Bookshelf", href: "/bookshelf" },
   { label: "Musings", href: "/musings" },
-  { label: "Words", href: "/words" },
-  { label: "Questions", href: "/questions" },
-  { label: "Research", href: "/research" },
-  { label: "Coding", href: "/coding" },
+  { label: "Lexicon", href: "/lexicon" },
 ];
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
