@@ -1,9 +1,15 @@
 ---
 import { MobiusStripRenderer } from "@/components/MobiusStrip/MobiusStripRenderer";
+
+interface Props {
+  interactive?: boolean;
+}
+
+const { interactive = false } = Astro.props as Props;
 ---
 
-<canvas id="webgl"></canvas>
-<MobiusStripRenderer client:idle />
+<canvas id="webgl" data-interactive={interactive ? "true" : undefined}></canvas>
+<MobiusStripRenderer client:idle interactive={interactive} />
 
 <style>
   canvas#webgl {
@@ -15,5 +21,11 @@ import { MobiusStripRenderer } from "@/components/MobiusStrip/MobiusStripRendere
     height: 100%;
     z-index: 1;
     pointer-events: none;
+  }
+
+  canvas#webgl[data-interactive="true"] {
+    pointer-events: auto;
+    cursor: grab;
+    touch-action: none;
   }
 </style>

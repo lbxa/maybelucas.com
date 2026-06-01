@@ -26,6 +26,31 @@ interface GeometryDetail {
   rows: number;
 }
 
+interface MobiusStripOptions {
+  interactive?: boolean;
+}
+
+export type PlaygroundColorTheme = 'default' | 'cool' | 'violet';
+
+export interface PlaygroundSettings {
+  roughness?: number;
+  clearcoat?: number;
+  envMapIntensity?: number;
+  iridescence?: number;
+  colorTheme?: PlaygroundColorTheme;
+  exposure?: number;
+  shimmerAmplitude?: number;
+  shimmerFrequency?: number;
+  tintTemperature?: number;
+  highContrast?: boolean;
+}
+
+interface PlaygroundColorProfile {
+  color: number;
+  sheenColor: number;
+  specularColor: number;
+}
+
 const LIGHT_CHROME_PROFILE: ChromeProfile = {
   color: 0xc6d0df,
   roughness: 0.2,
@@ -64,9 +89,23 @@ const DARK_CHROME_PROFILE: ChromeProfile = {
   shimmerFrequency: 0.68,
 };
 
+const PLAYGROUND_COLOR_PROFILES: Record<'cool' | 'violet', PlaygroundColorProfile> = {
+  cool: {
+    color: 0xc2d9ff,
+    sheenColor: 0xbcdcff,
+    specularColor: 0xdeecff,
+  },
+  violet: {
+    color: 0xd6c5ff,
+    sheenColor: 0xcbb1ff,
+    specularColor: 0xe3d8ff,
+  },
+};
+
 export class MobiusStrip {
   private static readonly geometryCache = new Map<string, THREE.BufferGeometry>();
 
+  private readonly canvas: HTMLCanvasElement;
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
@@ -95,12 +134,25 @@ export class MobiusStrip {
   private readonly introOrbitZ = -0.38;
   private readonly introStartYOffset: number;
   private readonly geometryCacheKey: string;
+  private readonly isInteractive: boolean;
+  private playgroundSettings: PlaygroundSettings = {};
+  private dynamicEnvMapBase = LIGHT_CHROME_PROFILE.envMapIntensity;
+  private dynamicIridescenceBase = LIGHT_CHROME_PROFILE.iridescence;
+  private dynamicShimmerAmplitude = LIGHT_CHROME_PROFILE.shimmerAmplitude;
+  private dynamicShimmerFrequency = LIGHT_CHROME_PROFILE.shimmerFrequency;
+  private activePointerId: number | null = null;
+  private isDragging = false;
+  private dragLastX = 0;
+  private dragLastY = 0;
+  private readonly dragSensitivity = 0.0042;
 
   private readonly radius = 2.3;
   private readonly stripWidth = 1.05;
   private readonly stripThickness = 0.16;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, options: MobiusStripOptions = {}) {
+    this.canvas = canvas;
+    this.isInteractive = options.interactive ?? false;
     this.scene = new THREE.Scene();
 
     const { width: w, height: h } = this.getViewportSize();
@@ -112,7 +164,7 @@ export class MobiusStrip {
     this.introStartYOffset = this.computeIntroStartYOffset();
 
     this.renderer = new THREE.WebGLRenderer({
-      canvas,
+      canvas: this.canvas,
       alpha: true,
       antialias: false,
       powerPreference: 'low-power',
@@ -169,31 +221,175 @@ export class MobiusStrip {
     this.resizeHandler = () => this.onResize();
     window.addEventListener('resize', this.resizeHandler);
     this.observeThemeChanges();
+    this.bindPointerInteraction();
 
     this.loadEnvironmentMap();
     this.animate();
   }
 
-  private updateThemeMaterial(): void {
-    const isDarkMode = document.documentElement.classList.contains('dark');
-    this.chromeProfile = isDarkMode ? DARK_CHROME_PROFILE : LIGHT_CHROME_PROFILE;
-    const profile = this.chromeProfile;
+  private bindPointerInteraction(): void {
+    if (!this.isInteractive) {
+      return;
+    }
 
-    this.material.color.set(profile.color);
-    this.material.roughness = profile.roughness;
-    this.material.clearcoat = profile.clearcoat;
+    this.canvas.addEventListener('pointerdown', this.handlePointerDown);
+    this.canvas.addEventListener('pointermove', this.handlePointerMove);
+    this.canvas.addEventListener('pointerup', this.handlePointerUpOrCancel);
+    this.canvas.addEventListener('pointercancel', this.handlePointerUpOrCancel);
+  }
+
+  private unbindPointerInteraction(): void {
+    if (!this.isInteractive) {
+      return;
+    }
+
+    this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
+    this.canvas.removeEventListener('pointermove', this.handlePointerMove);
+    this.canvas.removeEventListener('pointerup', this.handlePointerUpOrCancel);
+    this.canvas.removeEventListener('pointercancel', this.handlePointerUpOrCancel);
+  }
+
+  private handlePointerDown = (event: PointerEvent): void => {
+    if (event.button !== 0 || this.activePointerId !== null) {
+      return;
+    }
+
+    event.preventDefault();
+    this.isDragging = true;
+    this.activePointerId = event.pointerId;
+    this.dragLastX = event.clientX;
+    this.dragLastY = event.clientY;
+    this.canvas.style.cursor = 'grabbing';
+    this.canvas.setPointerCapture(event.pointerId);
+  };
+
+  private handlePointerMove = (event: PointerEvent): void => {
+    if (!this.isDragging || this.activePointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - this.dragLastX;
+    const deltaY = event.clientY - this.dragLastY;
+    this.dragLastX = event.clientX;
+    this.dragLastY = event.clientY;
+
+    this.mesh.rotation.y += deltaX * this.dragSensitivity;
+    this.mesh.rotation.x += deltaY * this.dragSensitivity;
+  };
+
+  private handlePointerUpOrCancel = (event: PointerEvent): void => {
+    if (this.activePointerId !== event.pointerId) {
+      return;
+    }
+
+    this.isDragging = false;
+    this.activePointerId = null;
+    this.canvas.style.cursor = 'grab';
+
+    if (this.canvas.hasPointerCapture(event.pointerId)) {
+      this.canvas.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  private clampRange(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  private applyTintTemperature(colorHex: number, tintTemperature: number): number {
+    const color = new THREE.Color(colorHex);
+    const clampedTemperature = this.clampRange(tintTemperature, -1, 1);
+    const warmStrength = Math.max(0, clampedTemperature);
+    const coolStrength = Math.max(0, -clampedTemperature);
+
+    const red = this.clampRange(color.r + (warmStrength * 0.14) - (coolStrength * 0.06), 0, 1);
+    const green = this.clampRange(color.g + (warmStrength * 0.03) - (coolStrength * 0.01), 0, 1);
+    const blue = this.clampRange(color.b + (coolStrength * 0.14) - (warmStrength * 0.09), 0, 1);
+
+    color.setRGB(red, green, blue);
+    return color.getHex();
+  }
+
+  private getThemeColorProfile(baseProfile: ChromeProfile): PlaygroundColorProfile {
+    const colorTheme = this.playgroundSettings.colorTheme ?? 'default';
+    if (colorTheme === 'default') {
+      return {
+        color: baseProfile.color,
+        sheenColor: baseProfile.sheenColor,
+        specularColor: baseProfile.specularColor,
+      };
+    }
+
+    return PLAYGROUND_COLOR_PROFILES[colorTheme];
+  }
+
+  private applyThemeMaterial(): void {
+    const profile = this.chromeProfile;
+    const themeColorProfile = this.getThemeColorProfile(profile);
+    const roughness = this.playgroundSettings.roughness === undefined
+      ? profile.roughness
+      : this.clampRange(this.playgroundSettings.roughness, 0.02, 0.8);
+    const clearcoat = this.playgroundSettings.clearcoat === undefined
+      ? profile.clearcoat
+      : this.clampRange(this.playgroundSettings.clearcoat, 0, 1);
+    const envMapIntensity = this.playgroundSettings.envMapIntensity === undefined
+      ? profile.envMapIntensity
+      : this.clampRange(this.playgroundSettings.envMapIntensity, 0.4, 2.4);
+    const iridescence = this.playgroundSettings.iridescence === undefined
+      ? profile.iridescence
+      : this.clampRange(this.playgroundSettings.iridescence, 0, 1);
+    const toneMappingExposure = this.playgroundSettings.exposure === undefined
+      ? profile.toneMappingExposure
+      : this.clampRange(this.playgroundSettings.exposure, 0.55, 1.8);
+    const shimmerAmplitude = this.playgroundSettings.shimmerAmplitude === undefined
+      ? profile.shimmerAmplitude
+      : this.clampRange(this.playgroundSettings.shimmerAmplitude, 0, 0.25);
+    const shimmerFrequency = this.playgroundSettings.shimmerFrequency === undefined
+      ? profile.shimmerFrequency
+      : this.clampRange(this.playgroundSettings.shimmerFrequency, 0.15, 2.2);
+    const tintTemperature = this.playgroundSettings.tintTemperature === undefined
+      ? 0
+      : this.clampRange(this.playgroundSettings.tintTemperature, -1, 1);
+    const isHighContrast = this.playgroundSettings.highContrast ?? false;
+    const contrastedRoughness = isHighContrast ? Math.max(0.04, roughness * 0.68) : roughness;
+    const contrastedClearcoat = isHighContrast ? this.clampRange(clearcoat + 0.08, 0, 1) : clearcoat;
+    const contrastedEnvMapIntensity = isHighContrast
+      ? this.clampRange(envMapIntensity * 1.14, 0.4, 2.4)
+      : envMapIntensity;
+    const contrastedIridescence = isHighContrast
+      ? this.clampRange(iridescence * 0.92, 0, 1)
+      : iridescence;
+    const colorHex = this.applyTintTemperature(themeColorProfile.color, tintTemperature);
+    const sheenColorHex = this.applyTintTemperature(themeColorProfile.sheenColor, tintTemperature);
+    const specularColorHex = this.applyTintTemperature(themeColorProfile.specularColor, tintTemperature);
+    const specularIntensity = isHighContrast
+      ? this.clampRange(profile.specularIntensity + 0.1, 0, 1.2)
+      : profile.specularIntensity;
+
+    this.material.color.set(colorHex);
+    this.material.roughness = contrastedRoughness;
+    this.material.clearcoat = contrastedClearcoat;
     this.material.clearcoatRoughness = profile.clearcoatRoughness;
-    this.material.envMapIntensity = profile.envMapIntensity;
-    this.material.iridescence = profile.iridescence;
+    this.material.envMapIntensity = contrastedEnvMapIntensity;
+    this.material.iridescence = contrastedIridescence;
     this.material.iridescenceIOR = profile.iridescenceIOR;
     this.material.iridescenceThicknessRange = profile.iridescenceThicknessRange;
     this.material.sheen = profile.sheen;
     this.material.sheenRoughness = profile.sheenRoughness;
-    this.material.sheenColor.set(profile.sheenColor);
-    this.material.specularIntensity = profile.specularIntensity;
-    this.material.specularColor.set(profile.specularColor);
+    this.material.sheenColor.set(sheenColorHex);
+    this.material.specularIntensity = specularIntensity;
+    this.material.specularColor.set(specularColorHex);
 
-    this.renderer.toneMappingExposure = profile.toneMappingExposure;
+    this.dynamicEnvMapBase = contrastedEnvMapIntensity;
+    this.dynamicIridescenceBase = contrastedIridescence;
+    this.dynamicShimmerAmplitude = shimmerAmplitude;
+    this.dynamicShimmerFrequency = shimmerFrequency;
+    this.renderer.toneMappingExposure = toneMappingExposure;
+  }
+
+  private updateThemeMaterial(): void {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    this.chromeProfile = isDarkMode ? DARK_CHROME_PROFILE : LIGHT_CHROME_PROFILE;
+    this.applyThemeMaterial();
   }
 
   private observeThemeChanges(): void {
@@ -486,16 +682,16 @@ export class MobiusStrip {
 
   private applyDynamicChrome(elapsedSeconds: number): void {
     if (this.isReducedMotion || this.isPageHidden) {
-      this.material.envMapIntensity = this.chromeProfile.envMapIntensity;
-      this.material.iridescence = this.chromeProfile.iridescence;
+      this.material.envMapIntensity = this.dynamicEnvMapBase;
+      this.material.iridescence = this.dynamicIridescenceBase;
       return;
     }
 
-    const shimmerWave = Math.sin(elapsedSeconds * this.chromeProfile.shimmerFrequency);
-    const shimmer = 1 + shimmerWave * this.chromeProfile.shimmerAmplitude;
+    const shimmerWave = Math.sin(elapsedSeconds * this.dynamicShimmerFrequency);
+    const shimmer = 1 + shimmerWave * this.dynamicShimmerAmplitude;
 
-    this.material.envMapIntensity = this.chromeProfile.envMapIntensity * shimmer;
-    this.material.iridescence = this.chromeProfile.iridescence + shimmerWave * 0.025;
+    this.material.envMapIntensity = this.dynamicEnvMapBase * shimmer;
+    this.material.iridescence = this.dynamicIridescenceBase + shimmerWave * 0.025;
   }
 
   private animate(): void {
@@ -543,6 +739,7 @@ export class MobiusStrip {
 
     cancelAnimationFrame(this.animationId);
     window.removeEventListener('resize', this.resizeHandler);
+    this.unbindPointerInteraction();
     this.themeObserver?.disconnect();
     this.unbindMotionSignals();
     this.themeObserver = null;
@@ -560,5 +757,14 @@ export class MobiusStrip {
     }
     this.material.dispose();
     this.renderer.dispose();
+  }
+
+  public applyPlaygroundSettings(settings: PlaygroundSettings): void {
+    this.playgroundSettings = {
+      ...this.playgroundSettings,
+      ...settings,
+    };
+
+    this.applyThemeMaterial();
   }
 }

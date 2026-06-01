@@ -1,5 +1,6 @@
 ---
 import MobiusStrip from "@components/MobiusStrip/MobiusStrip.astro";
+import { MobiusPlaygroundControls } from "@components/MobiusStrip/MobiusPlaygroundControls";
 import RootLayout from "@layouts/RootLayout.astro";
 ---
 
@@ -10,9 +11,10 @@ import RootLayout from "@layouts/RootLayout.astro";
   type="website"
   noIndex
 >
-  <MobiusStrip />
+  <MobiusStrip interactive />
+  <MobiusPlaygroundControls client:load />
 
-  <main class="relative z-20 min-h-dvh pt-24">
+  <main class="pointer-events-none relative z-20 min-h-dvh pt-24">
     <h1 class="sr-only">Mobius Strip Showcase</h1>
   </main>
 </RootLayout>
