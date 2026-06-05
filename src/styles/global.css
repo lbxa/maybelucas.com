@@ -372,27 +372,55 @@ th {
   font-display: swap;
 }
 
-@media (max-width: 767px) {
-/* KaTeX: keep large display equations from causing page-wide horizontal scroll */
-.katex-display {
+/* Match display math sizing to blog body copy; KaTeX scales from the container. */
+.blog-content .katex-display {
+  font-size: 1.125rem;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  /* keep default KaTeX vertical rhythm but ensure space for scrollbar */
   padding-bottom: 0.25rem;
 }
 
-.katex-display > .katex {
-  /* avoid wrapping; allow horizontal scroll within container */
-  white-space: nowrap;
+.blog-content .katex-display > .katex {
   display: inline-block;
+  white-space: nowrap;
 }
 
-.katex-display > .tag {
+.blog-content .katex-display > .tag {
   position: absolute;
   right: 0;
   top: 0;
   transform: none;
 }
+
+@media (min-width: 768px) {
+  .blog-content .katex-display {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  /* KaTeX: keep display equations outside blog content from causing page-wide horizontal scroll */
+  .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    /* keep default KaTeX vertical rhythm but ensure space for scrollbar */
+    padding-bottom: 0.25rem;
+  }
+
+  .katex-display > .katex {
+    /* avoid wrapping; allow horizontal scroll within container */
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .katex-display > .tag {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: none;
+  }
 }
