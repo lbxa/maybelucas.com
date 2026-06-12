@@ -204,10 +204,19 @@ code {
 pre {
   @apply bg-ivory/60 dark:bg-shark-600/60 backdrop-blur-sm;
   padding: 1rem;
+  padding-right: 4.25rem;
   border-radius: 8px;
   overflow-x: auto;
   margin-bottom: 1rem;
+}
+
+.code-block-wrapper {
+  margin-bottom: 1rem;
   position: relative;
+}
+
+.code-block-wrapper pre {
+  margin-bottom: 0;
 }
 
 pre code {

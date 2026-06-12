@@ -254,6 +254,11 @@ const structuredData = JSON.stringify([
             if (pre.dataset.copyReady === "true") continue;
 
             pre.dataset.copyReady = "true";
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-block-wrapper";
+            pre.before(wrapper);
+            wrapper.append(pre);
+
             const button = document.createElement("button");
             button.type = "button";
             button.className = "copy-code-button";
@@ -269,7 +274,7 @@ const structuredData = JSON.stringify([
               }
             });
 
-            pre.append(button);
+            wrapper.append(button);
           }
         };
 
