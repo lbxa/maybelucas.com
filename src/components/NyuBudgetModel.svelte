@@ -1933,7 +1933,7 @@
         href={workbookHref}
         download
       >
-        Workbook
+        Download
       </a>
     </div>
   </section>
