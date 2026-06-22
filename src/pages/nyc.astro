@@ -1,0 +1,93 @@
+---
+import NyuBudgetModel from "@components/nyc/NyuBudgetModel.svelte";
+
+export const prerender = true;
+
+const workbookHref = "/budget.xlsx";
+const title = "NYU CS Master's Budget Model";
+const description =
+  "Interactive NYU CS master's budget model for New York City housing and lifestyle scenarios.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f6f8fb" />
+    <link rel="canonical" href="https://maybelucas.com/nyc" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://maybelucas.com/nyc" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <NyuBudgetModel client:load workbookHref={workbookHref} />
+  </body>
+</html>
+
+<style is:global>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  @layer base {
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      color: #172026;
+      background: #f6f8fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    html {
+      min-width: 320px;
+      background: #f6f8fb;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+  }
+</style>
