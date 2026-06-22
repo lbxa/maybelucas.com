@@ -72,7 +72,7 @@ export async function getStaticPaths() {
     <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
       {entry.data.description ?? null}
     </p>
-    <div class="font-mono text-sm text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-md">
+    <div class="font-mono text-xs text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-sm">
       <WordCount content={entry.body ?? ""} />
       <span>•</span>
       <ReadingTime content={entry.body ?? ""} />

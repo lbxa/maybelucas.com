@@ -6,6 +6,7 @@ import rehypeExternalLinks from "rehype-external-links";
 import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
 import react from "@astrojs/react";
+import svelte from "@astrojs/svelte";
 import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
@@ -77,6 +78,7 @@ export default defineConfig({
     react({
       include: ["**/*.react.tsx"],
     }),
+    svelte(),
     icon({ iconDir: "src/assets/icons" }),
     partytown({
       config: {
