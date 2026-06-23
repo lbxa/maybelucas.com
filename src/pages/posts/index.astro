@@ -9,10 +9,26 @@ const pageDescription =
   "Browse the full archive of Lucas Barbosa's writing, sorted by recency with reading times.";
 // Keep canonicalPath per page (e.g., /posts/page/2) if pagination/filters are added.
 const canonicalPath = "/posts";
-const dateFormat = "MMMM D, YYYY";
+const dateFormat = "MMM DD";
 
 const posts = (await getCollection("blog")).sort((a, b) =>
   dayjs(a.data.date).isBefore(dayjs(b.data.date)) ? 1 : -1,
+);
+
+const postsByYear = posts.reduce(
+  (groups, post) => {
+    const year = dayjs(post.data.date).format("YYYY");
+    const currentGroup = groups.at(-1);
+
+    if (currentGroup?.year === year) {
+      currentGroup.posts.push(post);
+      return groups;
+    }
+
+    groups.push({ year, posts: [post] });
+    return groups;
+  },
+  [] as Array<{ year: string; posts: typeof posts }>,
 );
 ---
 
@@ -26,22 +42,32 @@ const posts = (await getCollection("blog")).sort((a, b) =>
     <Title>Posts</Title>
     <p class="mb-3xl">Toward escape velocity</p>
   </section> -->
-  <section>
+  <section class="flex flex-col gap-2xl">
     {
-      posts.map((p) => (
-        <div class="flex flex-col gap-sm mb-xl">
-          <a
-            class="no-underline hover:underline focus:underline visited:text-blue-700 dark:visited:text-blue-300 truncate"
-            href={"/posts/" + p.id}
+      postsByYear.map(({ year, posts }) => (
+        <section aria-labelledby={`posts-${year}`}>
+          <h2
+            id={`posts-${year}`}
+            class="!mt-0 !mb-lg font-mono !text-xs !leading-snug font-medium tracking-normal text-gray-600 dark:text-gray-400"
           >
-            {p.data.title.trim()}
-          </a>
-          <div class="text-gray-700 dark:text-gray-400 text-xs">
-            <ReadingTime content={p.body ?? ""} />
-            <span class="font-sans">•</span>
-            <span>{dayjs(p.data.date).format(dateFormat)}</span>
-          </div>
-        </div>
+            {year}
+          </h2>
+          {posts.map((p) => (
+            <div class="flex flex-col gap-sm mb-xl">
+              <a
+                class="no-underline hover:underline focus:underline visited:text-blue-700 dark:visited:text-blue-300 truncate"
+                href={"/posts/" + p.id}
+              >
+                {p.data.title.trim()}
+              </a>
+              <div class="text-gray-700 dark:text-gray-400 text-xs">
+                <ReadingTime content={p.body ?? ""} />
+                <span class="font-sans">•</span>
+                <span>{dayjs(p.data.date).format(dateFormat)}</span>
+              </div>
+            </div>
+          ))}
+        </section>
       ))
     }
   </section>
