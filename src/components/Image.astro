@@ -8,6 +8,8 @@ interface Props {
   src: ImageLike;
   alt: string;
   caption?: string;
+  captionSourceHref?: string;
+  captionSourceLabel?: string;
   width?: number;
   height?: number;
   class?: string;
@@ -17,12 +19,17 @@ interface Props {
   decoding?: "async" | "auto" | "sync";
   fetchpriority?: "high" | "low" | "auto";
   quality?: number;
+  layout?: "constrained" | "fixed" | "full-width" | "none";
+  widths?: number[];
+  sizes?: string;
 }
 
 const {
   src,
   alt,
   caption,
+  captionSourceHref,
+  captionSourceLabel,
   width,
   height,
   class: className,
@@ -31,8 +38,15 @@ const {
   decoding,
   fetchpriority,
   quality,
+  layout,
+  widths,
+  sizes,
 } = Astro.props as Props;
 const isOptimizable = typeof src === "object" && src !== null && "src" in src;
+const captionSourceLabelText = captionSourceLabel ?? "Source";
+const viewerCaptionSourceLabel = captionSourceHref
+  ? captionSourceLabelText
+  : undefined;
 
 const placeholderDataUrl = thumbhash
   ? thumbhashHexToDataUrl(thumbhash)
@@ -90,6 +104,8 @@ const mainOnLoad = thumbhash
             data-image-viewer-trigger="true"
             data-image-viewer-alt={alt}
             data-image-viewer-caption={caption}
+            data-image-viewer-caption-source-href={captionSourceHref}
+            data-image-viewer-caption-source-label={viewerCaptionSourceLabel}
             tabindex="0"
             aria-haspopup="dialog"
             onload={mainOnLoad}
@@ -97,6 +113,9 @@ const mainOnLoad = thumbhash
             decoding={decoding}
             fetchpriority={fetchpriority}
             quality={quality}
+            layout={layout}
+            widths={widths}
+            sizes={sizes}
           />
         ) : (
           <img
@@ -111,6 +130,8 @@ const mainOnLoad = thumbhash
             data-image-viewer-trigger="true"
             data-image-viewer-alt={alt}
             data-image-viewer-caption={caption}
+            data-image-viewer-caption-source-href={captionSourceHref}
+            data-image-viewer-caption-source-label={viewerCaptionSourceLabel}
             tabindex="0"
             aria-haspopup="dialog"
             onload={mainOnLoad}
@@ -127,12 +148,17 @@ const mainOnLoad = thumbhash
         data-image-viewer-trigger="true"
         data-image-viewer-alt={alt}
         data-image-viewer-caption={caption}
+        data-image-viewer-caption-source-href={captionSourceHref}
+        data-image-viewer-caption-source-label={viewerCaptionSourceLabel}
         tabindex="0"
         aria-haspopup="dialog"
         loading={loading}
         decoding={decoding}
         fetchpriority={fetchpriority}
         quality={quality}
+        layout={layout}
+        widths={widths}
+        sizes={sizes}
       />
     ) : (
       <img
@@ -146,15 +172,23 @@ const mainOnLoad = thumbhash
         data-image-viewer-trigger="true"
         data-image-viewer-alt={alt}
         data-image-viewer-caption={caption}
+        data-image-viewer-caption-source-href={captionSourceHref}
+        data-image-viewer-caption-source-label={viewerCaptionSourceLabel}
         tabindex="0"
         aria-haspopup="dialog"
       />
     )
   }
   {
-    caption && (
+    (caption || captionSourceHref) && (
       <figcaption class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
         {caption}
+        {caption && captionSourceHref && " "}
+        {captionSourceHref && (
+          <a href={captionSourceHref} target="_blank" rel="noreferrer">
+            {captionSourceLabelText}
+          </a>
+        )}
       </figcaption>
     )
   }

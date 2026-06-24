@@ -22,6 +22,7 @@ const { Content } = await render(entry);
 const publishedDate = entry.data.date;
 const modifiedDate =
   (entry.data as { updated?: Date }).updated ?? publishedDate;
+const opener = entry.data.description?.trim();
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const dateFormat = "MMMM D, YYYY";
 
@@ -59,19 +60,16 @@ export async function getStaticPaths() {
   publishedTime={entry.data.date.toISOString?.()}
   type="article"
 >
-  <header class="mb-xl">
+  <header class="mb-2xl">
     <div class="my-lg">
       <a
         href="/posts"
-        class="font-mono text-base hover:underline no-underline inline-flex items-center gap-xs text-gray-700 dark:text-gray-400 hover:text-shark-950 hover:dark:text-ivory transition-colors duration-200"
+        class="font-mono text-xs hover:underline no-underline inline-flex items-center gap-xs text-gray-700 dark:text-gray-400 hover:text-shark-950 hover:dark:text-ivory transition-colors duration-200"
       >
-        ← Back
+        ← Go back
       </a>
     </div>
     <Title>{entry.data.title}</Title>
-    <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-      {entry.data.description ?? null}
-    </p>
     <div class="font-mono text-xs text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-sm">
       <WordCount content={entry.body ?? ""} />
       <span>•</span>
@@ -81,9 +79,18 @@ export async function getStaticPaths() {
     </div>
   </header>
   <script type="application/ld+json" is:inline>{jsonLd}</script>
-  <section
-    class="blog-content content mx-auto [&_p]:text-[1.125rem] md:[&_p]:text-[1.25rem] [&_p]:leading-[1.85] [&_li]:text-[1.0625rem] md:[&_li]:text-[1.125rem] [&_li]:leading-[1.8]"
-  >
-    <Content />
+  <section class="mx-auto">
+    {
+      opener && (
+        <p class="mb-2xl border-l-2 border-shark-950/20 pl-md font-serif text-[1.35rem] leading-relaxed text-shark-700 dark:border-ivory/25 dark:text-shark-200 md:text-[1.55rem]">
+          {opener}
+        </p>
+      )
+    }
+    <div
+      class="blog-content content [&_p]:text-[1.125rem] md:[&_p]:text-[1.25rem] [&_p]:leading-[1.85] [&_li]:text-[1.0625rem] md:[&_li]:text-[1.125rem] [&_li]:leading-[1.8]"
+    >
+      <Content />
+    </div>
   </section>
 </ContentLayout>

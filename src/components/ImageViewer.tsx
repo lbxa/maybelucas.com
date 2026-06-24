@@ -5,6 +5,8 @@ interface ViewerState {
   src: string;
   alt: string;
   caption?: string;
+  captionSourceHref?: string;
+  captionSourceLabel?: string;
 }
 
 const TRIGGER_SELECTOR = "img[data-image-viewer-trigger='true']";
@@ -37,8 +39,12 @@ function extractViewerState(image: HTMLImageElement): ViewerState | null {
 
   const alt = image.dataset.imageViewerAlt ?? image.alt ?? "";
   const caption = image.dataset.imageViewerCaption?.trim() || undefined;
+  const captionSourceHref =
+    image.dataset.imageViewerCaptionSourceHref?.trim() || undefined;
+  const captionSourceLabel =
+    image.dataset.imageViewerCaptionSourceLabel?.trim() || undefined;
 
-  return { src, alt, caption };
+  return { src, alt, caption, captionSourceHref, captionSourceLabel };
 }
 
 export default function ImageViewer() {
@@ -232,9 +238,22 @@ export default function ImageViewer() {
                       />
                     </div>
                   </div>
-                  <Show when={state().caption}>
+                  <Show when={state().caption || state().captionSourceHref}>
                     <p class="border-t border-shark-950/10 px-md pt-md text-sm leading-snug break-words text-shark-700 dark:border-ivory/10 dark:text-shark-200 md:px-lg">
                       {state().caption}
+                      <Show when={state().caption && state().captionSourceHref}>
+                        {" "}
+                      </Show>
+                      <Show when={state().captionSourceHref}>
+                        <a
+                          href={state().captionSourceHref}
+                          target="_blank"
+                          rel="noreferrer"
+                          class="font-medium underline underline-offset-2 transition-opacity hover:opacity-75"
+                        >
+                          {state().captionSourceLabel ?? "Source"}
+                        </a>
+                      </Show>
                     </p>
                   </Show>
                 </section>

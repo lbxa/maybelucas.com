@@ -5,6 +5,7 @@ import ContentLayout from "@layouts/ContentLayout.astro";
 import Image from "@components/Image.astro";
 import { getEntry, render } from "astro:content";
 import profileImage from "../assets/images/profile.webp";
+import treeImage from "../assets/images/tree.webp";
 
 const bioIntro = await getEntry("about", "bio-intro");
 if (!bioIntro) {
@@ -58,5 +59,17 @@ const { Content: CourseWorkContent } = await render(courseWork);
   <section class="blog-content content mb-xl">
     <CourseWorkContent />
   </section>
+  <Image
+    src={treeImage}
+    alt="Sunset shining through a bamboo grove"
+    width={1536}
+    height={1162}
+    caption="Sunset shining through a bamboo grove in Osaka"
+    class="w-full mx-auto mb-3xl [&_img]:!rounded-none [&_.placeholder-shell]:!rounded-none"
+    thumbhash="8d180a0f024866767f777777787887878879785405486500"
+    layout="constrained"
+    sizes="(min-width: 640px) 640px, calc(100vw - 2rem)"
+    quality={82}
+  />
   <MobiusStrip slot="background" />
 </ContentLayout>
