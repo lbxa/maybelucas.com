@@ -27,7 +27,7 @@ From the oversimplified RL algorithm above 2) is the chief concern of most RL re
 
 ### Markov Decision Processes
 
-Before we start its useful to formally define a Markov Decision Process (MDP). It is a stochastic system where the future depends only on the present and not the past. Mathematically, 
+Before we start it’s useful to formally define a Markov Decision Process (MDP). It is a stochastic system where the future depends only on the present and not the past. Mathematically,
 
 $$
 P(S_{t+1}|S_t) = P(S_{t+1}|S_1,\ldots, S_t).
@@ -59,7 +59,7 @@ V^\pi(s) = \mathbb E_{\tau\sim\pi }\left[R(\tau)\mid s_0 = s\right] ,\quad R(\ta
 \end{cases}
 $$
 
-This is assuming the episode starts $t = 0$, otherwise we could express it more generally for any $t$,
+This is assuming the episode starts at $t = 0$, otherwise we could express it more generally for any $t$,
 
 $$
 R(\tau) =\begin{cases}
@@ -68,13 +68,13 @@ R(\tau) =\begin{cases}
 \end{cases}
 $$
 
-The big $\mathbb{E}$  represents the expected value $\mathbb{E}_{\tau\sim\pi }[R(\tau)]$ of a certain policy $\pi$; at its core RL is basically an optimisation problem around this equation. It’s useful for determining how effective the policy is performing. We can use it to formally solve for the optimal policy,
+The big $\mathbb{E}$  represents the expected value $\mathbb{E}_{\tau\sim\pi }[R(\tau)]$ of a certain policy $\pi$; at its core RL is basically an optimisation problem around this equation. It’s useful for determining how effectively the policy is performing. We can use it to formally solve for the optimal policy,
 
 $$
 \pi^* = \argmax_\pi \mathbb{E}_{\tau\sim\pi }[R(\tau)].
 $$
 
-The value of a state $V^\pi(s)$ is useful but not the complete picture. We might be interested about the effect of an arbitrary action $a$ coupled with a given state. We can use the Q-function for this,
+The value of a state $V^\pi(s)$ is useful but not the complete picture. We might be interested in the effect of an arbitrary action $a$ coupled with a given state. We can use the Q-function for this,
 
 $$
 Q^\pi(s, a) = \mathbb E_{\tau\sim\pi}[R(\tau)\mid s_0 = s, a_0 = a].
@@ -82,7 +82,7 @@ $$
 
 Unless stated otherwise, $Q(s,a)$ denotes $Q^{\pi}(s,a)$ for the current policy; $Q^{*}$ denotes the optimal action-value.
 
-If the action space $\mathcal{A}$ and state space $\mathcal{S}$ are both small and discrete, its feasible to sample a large quantity of Q-values into a Q-table with $|\mathcal{S}| |\mathcal{A}|$ entries. This can be used to produce the next best action based on,
+If the action space $\mathcal{A}$ and state space $\mathcal{S}$ are both small and discrete, it’s feasible to sample a large quantity of Q-values into a Q-table with $|\mathcal{S}| |\mathcal{A}|$ entries. This can be used to produce the next best action based on,
 
 $$
 a = \argmax_{a\in \mathcal{A}} Q^\pi(s,a).
@@ -97,9 +97,9 @@ a = np.argmax(Q[s, :])
 
 In continuous spaces $\argmax_{a \in \mathcal{A}} Q^\pi(s, a)$ is tractable only if $Q^\pi(s,\cdot)$ is concave and differentiable, allowing convex optimisation techniques to find the optimal action.
 
-Most real world problems (especially robotics) unfortunately suffer from the curse of dimensionality with extremely large continuous action spaces of torque control, action controls and gripper commands. State spaces are likewise high dimensional and continuous, spanning joint angles and velocities, torques, motor currents and other sensors readings.
+Most real world problems (especially robotics) unfortunately suffer from the curse of dimensionality with extremely large continuous action spaces of torque control, action controls and gripper commands. State spaces are likewise high dimensional and continuous, spanning joint angles and velocities, torques, motor currents and other sensor readings.
 
-It’s always easier to grok compute limits with real examples. A typical Q-table takes up $|\mathcal{S}| |\mathcal{A}| \times \texttt{dsize}$ bytes of memory where $\texttt{dsize} = 4$ bytes if you’re using single precision floats. An indoor mobile navigator operating in a 100 x 100 m workspace with a 0.1 m discretisation per cell has a total state space of $1000\times 1000 = 10^6$ cells. Even before adding orientation and speed the Q-table already needs $10^6$ rows. Now add 6 actions and you’re total memory footprint is $6\times 10^6 \times 4 \texttt{ bytes} = 24 \texttt{ MB}$. What happens when we add a $z$-axis (discretised the same) for a new 100 x 100 x 100 m workspace for a drone? That’s $24$ GB. As you can see this does not scale well, especially on embedded hardware that often has significant compute limits.
+It’s always easier to grok compute limits with real examples. A typical Q-table takes up $|\mathcal{S}| |\mathcal{A}| \times \texttt{dsize}$ bytes of memory where $\texttt{dsize} = 4$ bytes if you’re using single precision floats. An indoor mobile navigator operating in a 100 x 100 m workspace with a 0.1 m discretisation per cell has a total state space of $1000\times 1000 = 10^6$ cells. Even before adding orientation and speed the Q-table already needs $10^6$ rows. Now add 6 actions and your total memory footprint is $6\times 10^6 \times 4 \texttt{ bytes} = 24 \texttt{ MB}$. What happens when we add a $z$-axis (discretised the same) for a new 100 x 100 x 100 m workspace for a drone? That’s $24$ GB. As you can see this does not scale well, especially on embedded hardware that often has significant compute limits.
 
 Hence why pure  $\arg\max_a Q^\pi(s,a)$ is often impractical, motivating other methods like actor-critic and deterministic policy gradients; I’ll cover when to use value-based methods (SARSA, Q-learning, DQN) in a separate post; they’re still useful.
 
@@ -107,7 +107,7 @@ However, we’re here to talk about *policy gradients*.
 
 ## Policy Gradients
 
-The real world is high dimensional and continuous, so we cannot sample $V(s)$ densely enough to find a global best action without catastrophe like having a robot arm swing at you, or drone fly through a wall.
+The real world is high dimensional and continuous, so we cannot sample $V(s)$ densely enough to find a global best action without catastrophe like having a robot arm swing at you, or a drone flying through a wall.
 
 Instead we can borrow concepts from supervised learning with gradient descent to optimise a policy parametrised over $\theta \in \mathbb{R}^d$ directly from interaction, updating $\pi_\theta$ with gradients of the expected return estimated from rollouts in the real environment. In short, policy gradients *learn by doing*.
 

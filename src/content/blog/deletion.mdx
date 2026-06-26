@@ -2,7 +2,7 @@
 title: To Delete or Complete? (WIP)
 author: Lucas
 date: 2026-04-02
-description: This blog is a wip. Please email me any feedback.
+description: This blog is a WIP. Please email me any feedback.
 ---
 
 import GitHubLineChanges from "../../components/GitHubLineChanges";
@@ -12,9 +12,9 @@ import GitHubLineChanges from "../../components/GitHubLineChanges";
 > [*Paul Graham via X.com*](https://x.com/paulg/status/1953289830982664236)
 > 
 
-We’re already well into the age of token verbosity which [I wrote about last year](https://www.notion.so/The-Hippocampus-of-AGI-39cc5ca4988c405cb25d5b565dd2d6e5?pvs=21). Shipping 10,000 lines of C-B+ quality code per day is now trivial. Inevitably this surfaces a new issue that’s already infecting SWEland like the bubonic plague. C-grade code is slop, its hard to maintain and no *good enough* engineer would (or should) approve it during code review. It actually hard (and taxing) to find pockets of C-grade code amidst a forest of 10,000 lines. It’s easier to relate when you see a real example of slop in the wild.
+We’re already well into the age of token verbosity which [I wrote about last year](https://www.notion.so/The-Hippocampus-of-AGI-39cc5ca4988c405cb25d5b565dd2d6e5?pvs=21). Shipping 10,000 lines of C-B+ quality code per day is now trivial. Inevitably this surfaces a new issue that’s already infecting SWEland like the bubonic plague. C-grade code is slop, it’s hard to maintain and no *good enough* engineer would (or should) approve it during code review. It is actually hard (and taxing) to find pockets of C-grade code amidst a forest of 10,000 lines. It’s easier to relate when you see a real example of slop in the wild.
 
-Frontier models know how to write *good* code so you most likely won’t find individual blocks of code that are poorly written. For example this escape logic in [`packages/solid/src/server/rendering.ts:35-86`](https://github.com/solidjs/solid/blob/7d913a69ee97d3f84bd84191a0d6f9243a199a05/packages/solid/src/server/rendering.ts#L35) from the SolidJS source code could’ve been written better when we review it in isolation. I want to make the distinction that I don’t believe LLM’s are making this kind of mistake very often and since this still passes tests, it’ll most likely go unnoticed. Thanks [ryansolid](https://github.com/ryansolid) for the example.
+Frontier models know how to write *good* code so you most likely won’t find individual blocks of code that are poorly written. For example this escape logic in [`packages/solid/src/server/rendering.ts:35-86`](https://github.com/solidjs/solid/blob/7d913a69ee97d3f84bd84191a0d6f9243a199a05/packages/solid/src/server/rendering.ts#L35) from the SolidJS source code could’ve been written better when we review it in isolation. I want to make the distinction that I don’t believe LLMs are making this kind of mistake very often and since this still passes tests, it’ll most likely go unnoticed. Thanks [ryansolid](https://github.com/ryansolid) for the example.
 
 ```typescript
 // these methods are duplicates from solid-js/web
