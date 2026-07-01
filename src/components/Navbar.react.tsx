@@ -261,7 +261,7 @@ export default function NavbarReact() {
 
                   <div className="relative overflow-hidden">
                     <div className="mb-2 text-xs uppercase tracking-[0.14em] text-shark-500 dark:text-shark-400 font-mono">
-                      [Featured post]
+                      Featured post
                     </div>
                     <a
                       href="/posts/and"
