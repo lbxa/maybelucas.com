@@ -67,7 +67,10 @@ const mainImgClass = thumbhash
   : interactiveMainImageClass;
 
 const mainOnLoad = thumbhash
-  ? "this.classList.add('opacity-100')"
+  ? [
+      "this.classList.add('opacity-100')",
+      "this.closest('figure')?.classList.add('thumbhash-loaded')",
+    ].join("; ")
   : undefined;
 ---
 
@@ -200,6 +203,7 @@ const mainOnLoad = thumbhash
           const img = root?.querySelector("[data-main-image]");
           if (img instanceof HTMLImageElement && img.complete) {
             img.classList.add("opacity-100");
+            root?.classList.add("thumbhash-loaded");
           }
         });
       </script>
@@ -219,5 +223,13 @@ const mainOnLoad = thumbhash
     display: block;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  figure.thumbhash-placeholder .placeholder-shell :where(img[aria-hidden="true"]) {
+    transition: opacity 500ms ease;
+  }
+
+  figure.thumbhash-placeholder.thumbhash-loaded .placeholder-shell :where(img[aria-hidden="true"]) {
+    opacity: 0;
   }
 </style>
