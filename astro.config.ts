@@ -11,10 +11,16 @@ import icon from "astro-icon";
 import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
+import rehypeNoOrphanMathPunctuation from "./src/lib/rehypeNoOrphanMathPunctuation";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://maybelucas.com",
+
+  server: {
+    host: "127.0.0.1",
+    port: 4321,
+  },
 
   prefetch: {
     prefetchAll: true,
@@ -27,6 +33,9 @@ export default defineConfig({
   },
 
   vite: {
+    server: {
+      strictPort: true,
+    },
     build: {
       cssCodeSplit: true,
       rollupOptions: {
@@ -54,6 +63,7 @@ export default defineConfig({
       ],
       rehypePlugins: [
         rehypeKatex,
+        rehypeNoOrphanMathPunctuation,
         [
           rehypeExternalLinks,
           {

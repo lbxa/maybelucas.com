@@ -135,6 +135,15 @@ a {
   opacity: 0.8;
 }
 
+.blog-content .math-nowrap {
+  white-space: nowrap;
+}
+
+.problem-content p {
+  overflow-wrap: normal;
+  text-wrap: pretty;
+}
+
 .content a::after,
 .link-icon::after {
   content: "↗";

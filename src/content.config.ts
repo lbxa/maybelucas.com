@@ -24,6 +24,22 @@ const questionsCollection = defineCollection({
   loader: glob({ base: './src/content/questions', pattern: '**/*.{md,mdx}' }),
 });
 
+const problemsCollection = defineCollection({
+  loader: glob({
+    base: './src/content/problems',
+    pattern: '**/[^_]*.{md,mdx}',
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    source: z.string().url(),
+    topic: z.string(),
+    difficulty: z.number().int().min(1).max(10),
+    estimatedTime: z.number().int().positive(),
+  }),
+});
+
 const bookshelfCollection = defineCollection({
   loader: glob({ base: './src/content/bookshelf', pattern: '**/*.{md,mdx}' }),
 });
@@ -37,6 +53,7 @@ export const collections = {
   about: aboutCollection,
   research: researchCollection,
   questions: questionsCollection,
+  problems: problemsCollection,
   bookshelf: bookshelfCollection,
   coding: codingCollection,
 };

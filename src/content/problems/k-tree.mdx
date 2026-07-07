@@ -1,0 +1,171 @@
+---
+title: "k-Tree"
+description: "Count weighted root paths that reach a target sum while using at least one large edge."
+date: 2026-07-07
+source: "https://codeforces.com/problemset/problem/431/C"
+topic: "Dynamic Programming / Trees"
+difficulty: 6
+estimatedTime: 45
+---
+
+import Toggle from '../../components/Toggle.astro';
+
+Let $M = 10^9+7$.
+
+A path from the root is determined uniquely by the sequence of edge weights used along the path. Hence the problem is equivalent to counting finite sequences
+
+$$
+(x_1,x_2,\ldots,x_m)
+$$
+
+such that
+
+$$
+1 \le x_i \le k
+$$
+
+and
+
+$$
+x_1+x_2+\cdots+x_m=n
+$$
+
+with at least one $x_i \ge d$.
+
+Let $A_s$ be the number of such sequences with total sum $s$, using parts from $1$ to $k$. Let $B_s$ be the number of such sequences with total sum $s$, using only parts from $1$ to $d-1$.
+
+We define the base case
+
+$$
+A_0 = B_0 = 1
+$$
+
+for the empty sequence, and
+
+$$
+A_s = B_s = 0
+$$
+
+whenever $s < 0$.
+
+For $s \ge 1$, consider the last term of a sequence counted by $A_s$. If the last term is $i$, where $1 \le i \le k$, then the previous terms must form a sequence with sum $s-i$. Therefore
+
+$$
+\begin{aligned}
+A_s &= A_{s - 1} + A_{s - 2} + \ldots + A_{s - n} \\
+&= \sum_{i=1}^{k} A_{s-i}.
+\end{aligned}
+$$
+
+Similarly, a sequence counted by $B_s$ may only use terms smaller than $d$. Hence its last term may be any $i$ with $1 \le i \le d-1$, giving
+
+$$
+\begin{aligned}
+B_s &= B_{s - 1} + B_{s - 2} + \ldots + B_{s - (d-1)} \\
+&= \sum_{i=1}^{d-1} B_{s-i}.
+\end{aligned}
+$$
+
+Now $A_n$ counts all sequences summing to $n$, without enforcing the condition that some edge has weight at least $d$. The sequences that fail this condition are exactly those in which every term is less than $d$, and these are counted by $B_n$.
+
+Thus the required number of paths is
+
+$$
+A_n - B_n.
+$$
+
+Since the answer is required modulo $M$, the final answer is
+
+$$
+(A_n - B_n + M) \bmod M.
+$$
+
+$A_s$ and $B_s$ can be defined by a shared counting function `count`.
+
+```cpp
+using ll = long long;
+const ll MOD = 1e9 + 7;
+
+ll count(int n, int max) {
+  vector<ll> dp(n + 1, 0);
+  dp[0] = 1;
+  for (int s = 1; s <= n; ++s) {
+    for (int i = 1; i <= max && i <= s; ++i) {
+      dp[s] = (dp[s] + dp[s - i]) % MOD;
+    }
+  }
+  return dp[n];
+}
+```
+
+Where we can set $A_n = \texttt{count}(n,k)$ and $B_n = \texttt{count}(n, d-1)$.
+
+```cpp
+void solve() {
+  int n, k, d;
+  cin >> n >> k >> d;
+
+  ll A = count(n, k);
+  ll B = count(n, d - 1);
+
+  cout << (A - B + MOD) % MOD << '\n';
+}
+```
+
+<Toggle>
+<span slot="summary">Full cp-grade code</span>
+
+```cpp
+#include <cstdio>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+using ll = long long;
+const ll MOD = 1e9 + 7;
+
+#pragma GCC optimize("Ofast", "inline", "fast-math", "unroll-loops",           \
+                     "no-stack-protector", "-ffast-math")
+#pragma GCC target(                                                            \
+    "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native", "f16c")
+static const bool Booster = []() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  return true;
+}();
+auto init = []() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  return 'c';
+}();
+
+ll count(int n, int max) {
+  vector<ll> dp(n + 1, 0);
+  dp[0] = 1;
+  for (int s = 1; s <= n; ++s) {
+    for (int i = 1; i <= max && i <= s; ++i) {
+      dp[s] = (dp[s] + dp[s - i]) % MOD;
+    }
+  }
+  return dp[n];
+}
+
+void solve() {
+  int n, k, d;
+  cin >> n >> k >> d;
+
+  ll A = count(n, k);
+  ll B = count(n, d - 1);
+
+  cout << (A - B + MOD) % MOD << '\n';
+}
+
+int main() {
+  solve();
+  return 0;
+}
+```
+</Toggle>

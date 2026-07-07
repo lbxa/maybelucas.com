@@ -243,53 +243,17 @@ export default function NavbarReact() {
                     : `opacity 200ms ${EASE}`,
                 }}
               >
-                <div className="grid gap-6 md:grid-cols-[1fr_1.4fr]">
-                  <div className="flex flex-col gap-4 md:gap-1.5 font-mono">
-                    {EXPANDED_LINKS.map((link) => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        onClick={closeMenu}
+                <div className="flex flex-col gap-4 md:gap-1.5 font-mono">
+                  {EXPANDED_LINKS.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={closeMenu}
                         className={`cursor-pointer text-sm tracking-tight no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${isActive(link.href) ? "text-blue-700 dark:text-blue-300" : ""}`}
                       >
-                        [{link.label}]
-                      </a>
-                    ))}
-                  </div>
-
-                  <div className="border-t border-shark-300/80 dark:border-shark-700/70 md:hidden" />
-
-                  <div className="relative overflow-hidden">
-                    <div className="mb-2 text-xs uppercase tracking-[0.14em] text-shark-500 dark:text-shark-400 font-mono">
-                      Featured post
-                    </div>
-                    <a
-                      href="/posts/and"
-                      onClick={closeMenu}
-                      className="group block rounded-xl border border-shark-300/70 bg-ivory/40 p-4 no-underline transition-colors hover:border-shark-400 hover:bg-ivory/60 dark:border-shark-700/70 dark:bg-shark-900/20 dark:hover:border-shark-500 dark:hover:bg-shark-900/40"
-                    >
-                      <div className="flex items-center gap-1.5 text-lg font-semibold tracking-tight text-shark-900 transition-colors group-hover:text-shark-600 dark:text-ivory dark:group-hover:text-shark-300">
-                        <span>And</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                          className="size-4 stroke-current"
-                          fill="none"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M7 17 17 7" />
-                          <path d="M8 7h9v9" />
-                        </svg>
-                      </div>
-                      <p className="mt-2 !mb-0 text-sm leading-relaxed text-shark-600 dark:text-shark-300">
-                        One quiet enemy of great work is our habit of treating things
-                        as mutually exclusive.
-                      </p>
+                      [{link.label}]
                     </a>
-                  </div>
+                  ))}
                 </div>
 
                 <div className="mt-6 flex items-center justify-between text-xs text-shark-600 dark:text-shark-300 font-serif">

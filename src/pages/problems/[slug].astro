@@ -1,0 +1,75 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import ContentLayout from "@layouts/ContentLayout.astro";
+import dayjs from "dayjs";
+import Title from "@components/Title.astro";
+
+const { slug } = Astro.params;
+if (!slug) {
+  throw new Error("Missing problem slug parameter");
+}
+
+const entry = await getEntry("problems", slug);
+
+if (!entry) {
+  throw new Error(`Problem with slug "${slug}" not found`);
+}
+
+const { Content } = await render(entry);
+const dateFormat = "MMMM D, YYYY";
+
+export async function getStaticPaths() {
+  const problems = await getCollection("problems");
+  return problems.map((problem) => ({
+    params: { slug: problem.id },
+  }));
+}
+---
+
+<ContentLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  url={`/problems/${entry.id}`}
+  publishedTime={entry.data.date.toISOString?.()}
+  type="article"
+>
+  <header class="mb-2xl">
+    <div class="my-lg">
+      <a
+        href="/problems"
+        class="font-mono text-xs hover:underline no-underline inline-flex items-center gap-xs text-gray-700 dark:text-gray-400 hover:text-shark-950 hover:dark:text-ivory transition-colors duration-200"
+      >
+        &larr; Go back
+      </a>
+    </div>
+    <Title>{entry.data.title}</Title>
+    <div class="font-mono text-xs text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-sm">
+      <span>{entry.data.topic}</span>
+      <span>&middot;</span>
+      <span>{entry.data.difficulty}/10</span>
+      <span>&middot;</span>
+      <span>{entry.data.estimatedTime} min</span>
+      <span>&middot;</span>
+      <span>{dayjs(entry.data.date).format(dateFormat)}</span>
+    </div>
+  </header>
+
+  <section class="mx-auto">
+    <p class="mb-2xl font-mono text-xs leading-snug text-gray-700 dark:text-gray-400">
+      Source:{" "}
+      <a
+        href={entry.data.source}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="break-all hover:underline"
+      >
+        {entry.data.source}
+      </a>
+    </p>
+    <div
+      class="blog-content content problem-content [&_p]:text-base md:[&_p]:text-[1.125rem] [&_p]:leading-[1.75] [&_li]:text-base md:[&_li]:text-[1.0625rem] [&_li]:leading-[1.7]"
+    >
+      <Content />
+    </div>
+  </section>
+</ContentLayout>
