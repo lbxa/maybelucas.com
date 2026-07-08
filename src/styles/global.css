@@ -139,6 +139,18 @@ a {
   white-space: nowrap;
 }
 
+.blog-content {
+  --content-math-base-size: 1rem;
+}
+
+.post-content {
+  --content-math-base-size: 1.125rem;
+}
+
+.problem-content {
+  --content-math-base-size: 1rem;
+}
+
 .problem-content p {
   overflow-wrap: normal;
   text-wrap: pretty;
@@ -390,9 +402,19 @@ th {
   font-display: swap;
 }
 
-/* Match display math sizing to blog body copy; KaTeX scales from the container. */
+@media (min-width: 768px) {
+  .post-content {
+    --content-math-base-size: 1.25rem;
+  }
+
+  .problem-content {
+    --content-math-base-size: 1.125rem;
+  }
+}
+
+/* Keep display math at the same base size as inline math in surrounding copy. */
 .blog-content .katex-display {
-  font-size: 1.125rem;
+  font-size: var(--content-math-base-size);
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
@@ -410,12 +432,6 @@ th {
   right: 0;
   top: 0;
   transform: none;
-}
-
-@media (min-width: 768px) {
-  .blog-content .katex-display {
-    font-size: 1.25rem;
-  }
 }
 
 @media (max-width: 767px) {

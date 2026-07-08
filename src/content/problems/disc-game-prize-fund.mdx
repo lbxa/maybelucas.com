@@ -1,0 +1,177 @@
+---
+title: "Disc Game Prize Fund"
+description: "Compute the maximum fair prize fund for a 15-turn disc game using probability DP."
+date: 2026-07-08
+source: "https://projecteuler.net/problem=121"
+topic: "Dynamic Programming / Probability"
+difficulty: 5
+estimatedTime: 35
+---
+
+import Toggle from '../../components/Toggle.astro';
+
+For a game with $n$ turns, the player wins only by drawing strictly more blue discs than red discs. Therefore, the number of blue discs required to win is
+
+$$
+k = \left\lfloor \frac{n}{2} \right\rfloor + 1.
+$$
+
+Let $F$ be the prize fund, and let
+
+$$
+p = \Pr(\text{the player wins the 15-turn game}).
+$$
+
+To decide how large $F$ can be, compare the banker's certain income with the banker's expected payout. The probability $p$ is the long-run fraction of games in which the banker must pay the prize. Thus, although any single game pays either $F$ or $0$, the expected payout per game is $pF$.
+
+Equivalently, the banker's expected profit is the entry fee minus the expected prize payment, so it is $1 - pF$. For the banker to avoid making an expected loss, we need $1 - pF \geq 0$, which means $F \leq 1/p$. Since $F$ must be a positive integer, the maximum valid prize fund is
+
+$$
+F_{\max} = \left\lfloor \frac{1}{p} \right\rfloor.
+$$
+
+It remains to compute $p$.
+
+Let $A_i(k)$ denote the probability that exactly $k$ blue discs have been drawn after $i$ turns.
+
+On turn $i$, the bag contains $1$ blue disc and $i$ red discs. Therefore,
+
+$$
+\Pr(\text{blue on turn } i) = \frac{1}{i+1},
+\qquad
+\Pr(\text{red on turn } i) = \frac{i}{i+1}.
+$$
+
+There are two ways to obtain exactly $k$ blue discs after $i$ turns.
+
+First, the disc drawn on turn $i$ may be red. In that case, the first $i-1$ turns must already have contained exactly $k$ blue discs, which contributes
+
+$$
+A_{i-1}(k)\frac{i}{i+1}.
+$$
+
+Second, the disc drawn on turn $i$ may be blue. In that case, the first $i-1$ turns must have contained exactly $k-1$ blue discs, which contributes
+
+$$
+A_{i-1}(k-1)\frac{1}{i+1}.
+$$
+
+Therefore, the recurrence is
+
+$$
+A_i(k)
+=
+A_{i-1}(k)\frac{i}{i+1}
++
+A_{i-1}(k-1)\frac{1}{i+1}.
+$$
+
+The base case is $A_0(0) = 1$, with $A_0(k) = 0$ for $k \neq 0$. We also take $A_i(k) = 0$ whenever $k < 0$ or $k > i$.
+
+For a 15-turn game, the player needs
+
+$$
+\left\lfloor \frac{15}{2} \right\rfloor + 1 = 8
+$$
+
+blue discs to win. Hence
+
+$$
+p
+=
+\sum_{k=8}^{15} A_{15}(k).
+$$
+
+Now this can be formulated as a two-dimensional DP problem using $A_i(k) = \texttt{dp[i][k]}$.
+
+```cpp
+using ld = long double;
+
+void solve() {
+  ld dp[16][16] = {};
+
+  dp[0][0] = 1.0L;
+
+  for (int i = 1; i <= 15; ++i) {
+    for (int k = 0; k <= i; ++k) {
+      dp[i][k] += dp[i - 1][k] * ((ld)i / (i + 1));
+
+      if (k > 0) {
+        dp[i][k] += dp[i - 1][k - 1] * (1.0L / (i + 1));
+      }
+    }
+  }
+
+  ld p = 0.0L;
+  for (int k = 8; k <= 15; ++k) {
+    p += dp[15][k];
+  }
+
+  cout << floor(1 / p) << '\n';
+}
+```
+
+This prints the maximum prize fund:
+
+```text
+2269
+```
+
+<Toggle>
+<span slot="summary">Full CP-grade code</span>
+
+```cpp
+#include <cmath>
+#include <cstdio>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+using ld = long double;
+
+#pragma GCC optimize("Ofast", "inline", "fast-math", "unroll-loops",           \
+                     "no-stack-protector", "-ffast-math")
+#pragma GCC target(                                                            \
+    "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native", "f16c")
+static const bool Booster = []() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  return true;
+}();
+auto init = []() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  return 'c';
+}();
+
+void solve() {
+  ld dp[16][16] = {};
+
+  dp[0][0] = 1.0L;
+
+  for (int i = 1; i <= 15; ++i) {
+    for (int k = 0; k <= i; ++k) {
+      dp[i][k] += dp[i - 1][k] * ((ld)i / (i + 1));
+
+      if (k > 0) {
+        dp[i][k] += dp[i - 1][k - 1] * (1.0L / (i + 1));
+      }
+    }
+  }
+
+  ld p = 0.0L;
+  for (int k = 8; k <= 15; ++k) {
+    p += dp[15][k];
+  }
+
+  cout << floor(1 / p) << '\n';
+}
+
+int main() {
+  solve();
+  return 0;
+}
+```
+</Toggle>

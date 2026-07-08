@@ -1,0 +1,4 @@
+interface:
+  display_name: "Problem of the Day Publisher"
+  short_description: "Publish daily math problem entries"
+  default_prompt: "Use $publish-problem-of-day to add a new problem of the day to the site."
