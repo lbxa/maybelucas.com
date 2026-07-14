@@ -1,4 +1,6 @@
 ---
+import prismImage from "../assets/images/prism.webp";
+
 interface Props {
   title: string;
   description?: string;
@@ -36,13 +38,16 @@ const metaDescription =
 const socialTitle = ogTitle ?? title;
 const socialDescription = ogDescription ?? metaDescription;
 
-const fallbackImage = "/images/tree.webp";
+const fallbackImage = prismImage.src;
 const imagePath = image ?? fallbackImage;
 const usingFallbackImage = !image;
-const fallbackImageWidth = 1536;
-const fallbackImageHeight = 1162;
+const fallbackImageWidth = prismImage.width;
+const fallbackImageHeight = prismImage.height;
+const fallbackImageAlt =
+  "Transparent glass prism refracting light against a black background";
 
-const openGraphImageAlt = imageAlt ?? `${title} preview image`;
+const openGraphImageAlt =
+  imageAlt ?? (usingFallbackImage ? fallbackImageAlt : `${title} preview image`);
 
 const openGraphImageWidth =
   imageWidth ?? (usingFallbackImage ? fallbackImageWidth : undefined);
