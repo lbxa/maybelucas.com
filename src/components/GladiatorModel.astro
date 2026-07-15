@@ -1,0 +1,548 @@
+<figure class="gladiator-model" data-gladiator-model data-state="idle">
+  <div class="model-viewport">
+    <canvas
+      data-model-canvas
+      width="640"
+      height="520"
+      aria-label="Interactive 3D model of a Roman gladiator sculpture. Drag to rotate it."
+    ></canvas>
+
+    <div class="model-status" role="status" aria-live="polite">
+      <span class="loading-indicator" aria-hidden="true"></span>
+      <span data-model-status>Preparing 3D sculpture…</span>
+    </div>
+
+  </div>
+
+  <figcaption>
+    <a
+      href="https://sketchfab.com/3d-models/sculpture-of-a-roman-gladiator-ca42e593d8aa4b2894dc2b288f595af5"
+      target="_blank"
+      rel="noopener noreferrer"
+    >“Sculpture of a Roman gladiator”</a> by
+    <a
+      href="https://sketchfab.com/WirtualneMuzeaMalopolski"
+      target="_blank"
+      rel="noopener noreferrer"
+    >Virtual Museums of Małopolska</a>.
+  </figcaption>
+</figure>
+
+<style>
+  .gladiator-model {
+    margin: 1.25rem 0 2.5rem;
+    contain: layout paint style;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
+
+  .model-viewport {
+    position: relative;
+    width: 100%;
+    height: clamp(23rem, 62vw, 30rem);
+    margin-inline: auto;
+    overflow: hidden;
+    background: radial-gradient(
+      ellipse at 50% 48%,
+      rgb(18 18 18 / 4%),
+      transparent 66%
+    );
+  }
+
+  :global(html.dark) .model-viewport {
+    background: radial-gradient(
+      ellipse at 50% 48%,
+      rgb(245 245 245 / 7%),
+      transparent 66%
+    );
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    outline: none;
+    cursor: grab;
+    pointer-events: none;
+    touch-action: pan-y pinch-zoom;
+    transition: opacity 220ms ease;
+  }
+
+  .gladiator-model[data-state="ready"] canvas {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .gladiator-model[data-dragging="true"] canvas {
+    cursor: grabbing;
+  }
+
+  .model-status {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: rgb(18 18 18 / 62%);
+    font-size: 0.875rem;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  :global(html.dark) .model-status {
+    color: rgb(245 245 245 / 62%);
+  }
+
+  .loading-indicator {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 1.5px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 999px;
+    opacity: 0;
+  }
+
+  .gladiator-model[data-state="loading"] .loading-indicator {
+    opacity: 1;
+    animation: spin 700ms linear infinite;
+  }
+
+  .gladiator-model[data-state="ready"] .model-status {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .gladiator-model[data-state="error"] .loading-indicator {
+    display: none;
+  }
+
+  figcaption {
+    margin-top: 0.25rem;
+    color: rgb(18 18 18 / 48%);
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  :global(html.dark) figcaption {
+    color: rgb(245 245 245 / 45%);
+  }
+
+  figcaption :global(a::after) {
+    content: none;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas,
+    .model-status {
+      transition: none;
+    }
+
+    .gladiator-model[data-state="loading"] .loading-indicator {
+      animation: none;
+      border-right-color: currentColor;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .model-viewport {
+      width: clamp(13rem, 58vw, 14rem);
+      height: clamp(22rem, 110vw, 27rem);
+    }
+  }
+</style>
+
+<script>
+  type ThreeModule = typeof import("three");
+  type ThreeGroup = import("three").Group;
+  type ThreePerspectiveCamera = import("three").PerspectiveCamera;
+  type ThreeScene = import("three").Scene;
+  type ThreeTexture = import("three").Texture;
+  type ThreeWebGLRenderer = import("three").WebGLRenderer;
+
+  const MODEL_URL = "/models/gladiator/scene.gltf";
+  const ENVIRONMENT_URL = "/textures/studio_small_03_1k.hdr";
+  const PRELOAD_MARGIN = "80px 0px";
+  const SCROLL_SETTLE_MS = 180;
+  const PIXEL_RATIO_CAP = 1.5;
+  const DRAG_SPEED = 0.008;
+  const MAX_VERTICAL_ROTATION = Math.PI * 0.22;
+  const LIGHT_THEME_EXPOSURE = 1.38;
+  const DARK_THEME_EXPOSURE = 1.12;
+  const LIGHT_THEME_ENVIRONMENT_INTENSITY = 1.8;
+  const DARK_THEME_ENVIRONMENT_INTENSITY = 1.15;
+  const MODEL_FRAME_PADDING = 1.14;
+
+  class GladiatorViewer {
+    private readonly canvas: HTMLCanvasElement;
+    private readonly status: HTMLElement;
+    private readonly viewportObserver: IntersectionObserver | null;
+    private resizeObserver: ResizeObserver | null = null;
+    private three: ThreeModule | null = null;
+    private scene: ThreeScene | null = null;
+    private camera: ThreePerspectiveCamera | null = null;
+    private renderer: ThreeWebGLRenderer | null = null;
+    private model: ThreeGroup | null = null;
+    private environmentTexture: ThreeTexture | null = null;
+    private themeObserver: MutationObserver | null = null;
+    private modelRadius = 1;
+    private modelWidth = 1;
+    private modelHeight = 1;
+    private modelDepth = 1;
+    private pointerId: number | null = null;
+    private pointerX = 0;
+    private pointerY = 0;
+    private renderRequest = 0;
+    private loadTimer: number | null = null;
+    private nearViewport = false;
+    private loadingStarted = false;
+    private disposed = false;
+
+    constructor(private readonly root: HTMLElement) {
+      const canvas = root.querySelector<HTMLCanvasElement>("[data-model-canvas]");
+      const status = root.querySelector<HTMLElement>("[data-model-status]");
+      if (!canvas || !status) {
+        throw new Error("Gladiator model elements are missing");
+      }
+
+      this.canvas = canvas;
+      this.status = status;
+      this.viewportObserver = this.createViewportObserver();
+      document.addEventListener("astro:before-swap", this.dispose, { once: true });
+    }
+
+    private createViewportObserver(): IntersectionObserver | null {
+      if (!("IntersectionObserver" in window)) {
+        this.loadingStarted = true;
+        void this.load();
+        return null;
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          this.nearViewport = entries.some((entry) => entry.isIntersecting);
+          if (!this.nearViewport) {
+            this.cancelScheduledLoad();
+            return;
+          }
+
+          window.addEventListener("scroll", this.onScroll, { passive: true });
+          this.scheduleLoad();
+        },
+        { rootMargin: PRELOAD_MARGIN },
+      );
+      observer.observe(this.root);
+      return observer;
+    }
+
+    private readonly onScroll = (): void => {
+      this.scheduleLoad();
+    };
+
+    private scheduleLoad(): void {
+      if (!this.nearViewport || this.loadingStarted || this.disposed) return;
+      if (this.loadTimer !== null) window.clearTimeout(this.loadTimer);
+
+      this.loadTimer = window.setTimeout(() => {
+        this.loadTimer = null;
+        this.loadingStarted = true;
+        this.viewportObserver?.disconnect();
+        window.removeEventListener("scroll", this.onScroll);
+        void this.load();
+      }, SCROLL_SETTLE_MS);
+    }
+
+    private cancelScheduledLoad(): void {
+      if (this.loadTimer !== null) window.clearTimeout(this.loadTimer);
+      this.loadTimer = null;
+      window.removeEventListener("scroll", this.onScroll);
+    }
+
+    private async load(): Promise<void> {
+      this.setState("loading", "Loading 3D sculpture…");
+
+      try {
+        const [three, { GLTFLoader }, { RGBELoader }] = await Promise.all([
+          import("three"),
+          import("three/addons/loaders/GLTFLoader.js"),
+          import("three/addons/loaders/RGBELoader.js"),
+        ]);
+        if (this.disposed) return;
+
+        this.three = three;
+        this.setupScene();
+
+        const [modelResult, environmentResult] = await Promise.allSettled([
+          new GLTFLoader().loadAsync(MODEL_URL),
+          new RGBELoader().loadAsync(ENVIRONMENT_URL),
+        ]);
+
+        if (this.disposed) {
+          if (modelResult.status === "fulfilled") this.disposeObject(modelResult.value.scene);
+          if (environmentResult.status === "fulfilled") environmentResult.value.dispose();
+          return;
+        }
+
+        if (modelResult.status === "rejected") {
+          if (environmentResult.status === "fulfilled") environmentResult.value.dispose();
+          throw modelResult.reason;
+        }
+
+        if (environmentResult.status === "fulfilled") {
+          this.environmentTexture = environmentResult.value;
+          this.environmentTexture.mapping = three.EquirectangularReflectionMapping;
+          if (this.scene) this.scene.environment = this.environmentTexture;
+        }
+
+        this.addModel(modelResult.value.scene);
+        this.bindInteraction();
+        this.observeThemeChanges();
+        this.applyThemeLighting();
+        this.setState("ready", "3D sculpture ready");
+        this.resize();
+      } catch (error) {
+        if (this.disposed) return;
+        console.error("Unable to load the gladiator model", error);
+        this.releaseRenderer();
+        this.setState("error", "The 3D sculpture could not be loaded.");
+      }
+    }
+
+    private setupScene(): void {
+      const three = this.three;
+      if (!three) return;
+
+      this.scene = new three.Scene();
+      this.camera = new three.PerspectiveCamera(32, 1, 0.01, 100);
+      this.renderer = new three.WebGLRenderer({
+        canvas: this.canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance",
+      });
+      this.renderer.outputColorSpace = three.SRGBColorSpace;
+      this.renderer.toneMapping = three.ACESFilmicToneMapping;
+
+      this.scene.add(new three.HemisphereLight(0xffffff, 0x514841, 3));
+      const keyLight = new three.DirectionalLight(0xfff5e8, 4.2);
+      keyLight.position.set(3, 4, 5);
+      this.scene.add(keyLight);
+
+      const fillLight = new three.DirectionalLight(0xdbe8ff, 2.2);
+      fillLight.position.set(-4, 1.5, -3);
+      this.scene.add(fillLight);
+    }
+
+    private observeThemeChanges(): void {
+      this.themeObserver = new MutationObserver(this.applyThemeLighting);
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+
+    private readonly applyThemeLighting = (): void => {
+      if (!this.renderer || !this.scene) return;
+
+      const isDark = document.documentElement.classList.contains("dark");
+      this.renderer.toneMappingExposure = isDark
+        ? DARK_THEME_EXPOSURE
+        : LIGHT_THEME_EXPOSURE;
+      this.scene.environmentIntensity = isDark
+        ? DARK_THEME_ENVIRONMENT_INTENSITY
+        : LIGHT_THEME_ENVIRONMENT_INTENSITY;
+      this.queueRender();
+    };
+
+    private addModel(sceneRoot: ThreeGroup): void {
+      const three = this.three;
+      if (!three || !this.scene) return;
+
+      const model = new three.Group();
+      model.add(sceneRoot);
+
+      const bounds = new three.Box3().setFromObject(model);
+      const center = bounds.getCenter(new three.Vector3());
+      sceneRoot.position.sub(center);
+
+      const centeredBounds = new three.Box3().setFromObject(model);
+      const size = centeredBounds.getSize(new three.Vector3());
+      const sphere = centeredBounds.getBoundingSphere(new three.Sphere());
+      this.modelWidth = Math.max(size.x, 0.01);
+      this.modelHeight = Math.max(size.y, 0.01);
+      this.modelDepth = Math.max(size.z, 0.01);
+      this.modelRadius = Math.max(sphere.radius, 0.01);
+      model.rotation.y = 1.35;
+
+      this.model = model;
+      this.scene.add(model);
+    }
+
+    private bindInteraction(): void {
+      this.canvas.addEventListener("pointerdown", this.onPointerDown);
+      this.canvas.addEventListener("pointermove", this.onPointerMove);
+      this.canvas.addEventListener("pointerup", this.onPointerEnd);
+      this.canvas.addEventListener("pointercancel", this.onPointerEnd);
+
+      this.resizeObserver = new ResizeObserver(this.resize);
+      this.resizeObserver.observe(this.canvas);
+    }
+
+    private readonly onPointerDown = (event: PointerEvent): void => {
+      if (!this.model || (event.pointerType === "mouse" && event.button !== 0)) return;
+
+      this.pointerId = event.pointerId;
+      this.pointerX = event.clientX;
+      this.pointerY = event.clientY;
+      this.canvas.setPointerCapture(event.pointerId);
+      this.root.dataset.dragging = "true";
+    };
+
+    private readonly onPointerMove = (event: PointerEvent): void => {
+      if (event.pointerId !== this.pointerId || !this.model) return;
+
+      const deltaX = event.clientX - this.pointerX;
+      const deltaY = event.clientY - this.pointerY;
+      this.pointerX = event.clientX;
+      this.pointerY = event.clientY;
+
+      this.model.rotation.y += deltaX * DRAG_SPEED;
+      this.model.rotation.x = Math.max(
+        -MAX_VERTICAL_ROTATION,
+        Math.min(MAX_VERTICAL_ROTATION, this.model.rotation.x + deltaY * DRAG_SPEED),
+      );
+      this.queueRender();
+    };
+
+    private readonly onPointerEnd = (event: PointerEvent): void => {
+      if (event.pointerId !== this.pointerId) return;
+      if (this.canvas.hasPointerCapture(event.pointerId)) {
+        this.canvas.releasePointerCapture(event.pointerId);
+      }
+      this.pointerId = null;
+      delete this.root.dataset.dragging;
+    };
+
+    private readonly resize = (): void => {
+      if (!this.renderer || !this.camera) return;
+
+      const { width, height } = this.canvas.getBoundingClientRect();
+      if (width <= 0 || height <= 0) return;
+
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, PIXEL_RATIO_CAP));
+      this.renderer.setSize(width, height, false);
+      this.camera.aspect = width / height;
+      this.frameCamera();
+      this.queueRender();
+    };
+
+    private frameCamera(): void {
+      const three = this.three;
+      const camera = this.camera;
+      if (!three || !camera) return;
+
+      const verticalFov = three.MathUtils.degToRad(camera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+      const horizontalExtent = Math.max(this.modelWidth, this.modelDepth) / 2;
+      const verticalExtent = this.modelHeight / 2;
+      const horizontalDistance = horizontalExtent / Math.tan(horizontalFov / 2);
+      const verticalDistance = verticalExtent / Math.tan(verticalFov / 2);
+      const distance = Math.max(horizontalDistance, verticalDistance) * MODEL_FRAME_PADDING;
+
+      camera.position.set(0, this.modelRadius * 0.03, distance);
+      camera.near = Math.max(distance / 100, 0.01);
+      camera.far = distance + this.modelRadius * 4;
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+    }
+
+    private queueRender(): void {
+      const renderer = this.renderer;
+      const scene = this.scene;
+      const camera = this.camera;
+      if (this.renderRequest || !renderer || !scene || !camera) return;
+
+      this.renderRequest = requestAnimationFrame(() => {
+        this.renderRequest = 0;
+        renderer.render(scene, camera);
+      });
+    }
+
+    private setState(state: "loading" | "ready" | "error", message: string): void {
+      this.root.dataset.state = state;
+      this.status.textContent = message;
+    }
+
+    private disposeObject(root: import("three").Object3D): void {
+      const three = this.three;
+      if (!three) return;
+
+      const textures = new Set<import("three").Texture>();
+      const materials = new Set<import("three").Material>();
+      root.traverse((child) => {
+        if (!(child instanceof three.Mesh)) return;
+        child.geometry.dispose();
+        const meshMaterials = Array.isArray(child.material) ? child.material : [child.material];
+        for (const material of meshMaterials) materials.add(material);
+      });
+
+      for (const material of materials) {
+        for (const value of Object.values(material)) {
+          if (value instanceof three.Texture) textures.add(value);
+        }
+        material.dispose();
+      }
+      for (const texture of textures) texture.dispose();
+    }
+
+    private releaseRenderer(): void {
+      this.environmentTexture?.dispose();
+      this.environmentTexture = null;
+      this.renderer?.dispose();
+      this.renderer?.forceContextLoss();
+      this.renderer = null;
+      this.scene = null;
+      this.camera = null;
+    }
+
+    private readonly dispose = (): void => {
+      if (this.disposed) return;
+      this.disposed = true;
+      this.viewportObserver?.disconnect();
+      this.resizeObserver?.disconnect();
+      this.themeObserver?.disconnect();
+      this.cancelScheduledLoad();
+      this.canvas.removeEventListener("pointerdown", this.onPointerDown);
+      this.canvas.removeEventListener("pointermove", this.onPointerMove);
+      this.canvas.removeEventListener("pointerup", this.onPointerEnd);
+      this.canvas.removeEventListener("pointercancel", this.onPointerEnd);
+      document.removeEventListener("astro:before-swap", this.dispose);
+
+      if (this.renderRequest) cancelAnimationFrame(this.renderRequest);
+      if (this.model) this.disposeObject(this.model);
+      this.releaseRenderer();
+    };
+  }
+
+  const initializeGladiatorViewers = (): void => {
+    const viewers = document.querySelectorAll<HTMLElement>(
+      "[data-gladiator-model]",
+    );
+    for (const element of viewers) {
+      if (element.dataset.initialized === "true") continue;
+      element.dataset.initialized = "true";
+      new GladiatorViewer(element);
+    }
+  };
+
+  document.addEventListener("astro:page-load", initializeGladiatorViewers);
+</script>

@@ -3,16 +3,49 @@ import { MobiusStripRenderer } from "@/components/MobiusStrip/MobiusStripRendere
 
 interface Props {
   interactive?: boolean;
+  inline?: boolean;
 }
 
-const { interactive = false } = Astro.props as Props;
+const { interactive = false, inline = false } = Astro.props as Props;
+const canvasId = `mobius-${crypto.randomUUID()}`;
 ---
 
-<canvas id="webgl" data-interactive={interactive ? "true" : undefined}></canvas>
-<MobiusStripRenderer client:idle interactive={interactive} />
+<figure
+  class:list={["mobius-strip", { "mobius-strip--inline": inline }]}
+  data-mobius-root
+  data-state={inline ? "idle" : undefined}
+>
+  <div class="mobius-viewport">
+    <canvas
+      id={canvasId}
+      data-interactive={interactive ? "true" : undefined}
+      aria-label={inline ? "Interactive 3D Möbius strip. Drag to rotate it." : undefined}
+    ></canvas>
+
+    {inline && (
+      <div class="mobius-status" role="status" aria-live="polite">
+        <span class="loading-indicator" aria-hidden="true"></span>
+        <span data-mobius-status>Preparing Möbius strip…</span>
+      </div>
+    )}
+
+    <MobiusStripRenderer
+      client:idle
+      canvasId={canvasId}
+      interactive={interactive}
+      inline={inline}
+    />
+  </div>
+
+  {inline && <figcaption>Möbius strip by me.</figcaption>}
+</figure>
 
 <style>
-  canvas#webgl {
+  .mobius-strip {
+    margin: 0;
+  }
+
+  .mobius-strip:not(.mobius-strip--inline) canvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -23,9 +56,139 @@ const { interactive = false } = Astro.props as Props;
     pointer-events: none;
   }
 
-  canvas#webgl[data-interactive="true"] {
+  .mobius-strip:not(.mobius-strip--inline) canvas[data-interactive="true"] {
     pointer-events: auto;
     cursor: grab;
     touch-action: none;
+  }
+
+  .mobius-strip--inline {
+    width: 100%;
+    margin: 1.25rem auto 2.5rem;
+    contain: layout paint style;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 26rem;
+  }
+
+  .mobius-strip--inline .mobius-viewport {
+    position: relative;
+    width: 100%;
+    height: clamp(19rem, 54vw, 24rem);
+    overflow: hidden;
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      rgb(18 18 18 / 4%),
+      transparent 67%
+    );
+  }
+
+  :global(html.dark) .mobius-strip--inline .mobius-viewport {
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      rgb(245 245 245 / 6%),
+      transparent 67%
+    );
+  }
+
+  .mobius-strip--inline canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    outline: none;
+    pointer-events: none;
+    touch-action: pan-y pinch-zoom;
+    transition: opacity 220ms ease;
+  }
+
+  .mobius-strip--inline[data-state="ready"] canvas[data-interactive="true"] {
+    pointer-events: auto;
+    cursor: grab;
+  }
+
+  .mobius-strip--inline[data-state="ready"] canvas {
+    opacity: 1;
+  }
+
+  .mobius-status {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: rgb(18 18 18 / 62%);
+    font-size: 0.875rem;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  figcaption {
+    margin-top: 0.25rem;
+    color: rgb(18 18 18 / 48%);
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  :global(html.dark) figcaption {
+    color: rgb(245 245 245 / 45%);
+  }
+
+  :global(html.dark) .mobius-status {
+    color: rgb(245 245 245 / 62%);
+  }
+
+  .loading-indicator {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 1.5px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 999px;
+    opacity: 0;
+  }
+
+  .mobius-strip--inline[data-state="loading"] .loading-indicator {
+    opacity: 1;
+    animation: spin 700ms linear infinite;
+  }
+
+  .mobius-strip--inline[data-state="ready"] .mobius-status {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .mobius-strip--inline[data-state="error"] .loading-indicator {
+    display: none;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (max-width: 639px) {
+    .mobius-strip--inline {
+      width: min(100%, 24rem);
+    }
+
+    .mobius-strip--inline .mobius-viewport {
+      height: clamp(16rem, 66vw, 18rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobius-strip--inline canvas,
+    .mobius-status {
+      transition: none;
+    }
+
+    .mobius-strip--inline[data-state="loading"] .loading-indicator {
+      animation: none;
+      border-right-color: currentColor;
+    }
   }
 </style>

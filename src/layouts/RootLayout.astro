@@ -5,6 +5,7 @@ import GAnalytics from "@components/GAnalytics.astro";
 import NavbarReact from "@components/Navbar.react";
 import TetrisLauncher from "@components/Tetris/TetrisLauncher";
 import ImageViewer from "@components/ImageViewer";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -92,6 +93,7 @@ const structuredData = JSON.stringify([
     >
 
     <GAnalytics />
+    <ClientRouter />
     <link
       rel="icon"
       type="image/png"
@@ -110,86 +112,19 @@ const structuredData = JSON.stringify([
       // fetch user dark mode settings
       // inline option removes astro overhead - no theme flickering
       (() => {
-        const theme = (() => {
-          if (
-            typeof localStorage !== "undefined" &&
-            localStorage.getItem("theme")
-          ) {
-            return localStorage.getItem("theme");
-          }
-          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            return "dark";
-          }
-          return "light";
-        })();
+        const storedTheme = localStorage.getItem("theme");
+        const theme =
+          storedTheme ??
+          (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+        const isDark = theme === "dark";
 
-        function applyTheme() {
-          const wanted = (() => {
-            if (
-              typeof localStorage !== "undefined" &&
-              localStorage.getItem("theme")
-            ) {
-              return localStorage.getItem("theme");
-            }
-            if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-              return "dark";
-            }
-            return "light";
-          })();
-
-          const html = document.documentElement;
-          const hasDark = html.classList.contains("dark");
-
-          if (wanted === "dark" && !hasDark) {
-            html.classList.add("dark");
-          }
-          if (wanted === "light" && hasDark) {
-            html.classList.remove("dark");
-          }
-
-          localStorage.setItem("theme", wanted);
-        }
-
-        // Apply theme immediately
-        applyTheme();
-
-        // Theme color management for mobile browsers
-        let themeColorObserver = null;
-
-        function setupThemeColor() {
-          // Clean up existing observer if any
-          if (themeColorObserver) {
-            themeColorObserver.disconnect();
-          }
-
-          // Get fresh reference to meta tag
-          const themeColorMetaTag = document.querySelector(
-            'meta[name="theme-color"]',
-          );
-
-          function updateThemeColor() {
-            const isDarkMode =
-              document.documentElement.classList.contains("dark");
-            themeColorMetaTag?.setAttribute(
-              "content",
-              isDarkMode ? "#121212" : "#f5f5f5",
-            );
-          }
-
-          // Initial call to set the theme color based on current mode
-          updateThemeColor();
-
-          // Set up new observer
-          themeColorObserver = new MutationObserver(updateThemeColor);
-          themeColorObserver.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ["class"],
-          });
-        }
-
-        // Setup theme color initially
-        setupThemeColor();
-
+        document.documentElement.classList.toggle("dark", isDark);
+        localStorage.setItem("theme", theme);
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", isDark ? "#121212" : "#f5f5f5");
       })();
     </script>
     <script is:inline>
@@ -202,14 +137,30 @@ const structuredData = JSON.stringify([
         document.documentElement.classList.add("is-mobile");
       }
     </script>
-    <script is:inline>
+    <script>
+      document.addEventListener("astro:before-swap", (event) => {
+        const currentRoot = document.documentElement;
+        const nextRoot = event.newDocument.documentElement;
+        const isDark = currentRoot.classList.contains("dark");
+
+        nextRoot.classList.toggle("dark", isDark);
+        nextRoot.classList.toggle(
+          "is-mobile",
+          currentRoot.classList.contains("is-mobile"),
+        );
+        event.newDocument
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", isDark ? "#121212" : "#f5f5f5");
+      });
+    </script>
+    <script>
       (() => {
         const COPY_LABEL = "Copy";
         const COPIED_LABEL = "Copied";
         const FAILED_LABEL = "Failed";
         const LABEL_RESET_MS = 1600;
 
-        const fallbackCopy = (text) => {
+        const fallbackCopy = (text: string): void => {
           const textarea = document.createElement("textarea");
           textarea.value = text;
           textarea.setAttribute("readonly", "");
@@ -224,7 +175,7 @@ const structuredData = JSON.stringify([
           }
         };
 
-        const copyText = async (text) => {
+        const copyText = async (text: string): Promise<void> => {
           if (navigator.clipboard && navigator.clipboard.writeText) {
             try {
               await navigator.clipboard.writeText(text);
@@ -236,7 +187,10 @@ const structuredData = JSON.stringify([
           fallbackCopy(text);
         };
 
-        const setButtonLabel = (button, label) => {
+        const setButtonLabel = (
+          button: HTMLButtonElement,
+          label: string,
+        ): void => {
           button.textContent = label;
           window.setTimeout(() => {
             if (button.isConnected) {
@@ -245,8 +199,9 @@ const structuredData = JSON.stringify([
           }, LABEL_RESET_MS);
         };
 
-        const addCopyButtons = () => {
-          const codeBlocks = document.querySelectorAll("pre > code");
+        const addCopyButtons = (): void => {
+          const codeBlocks =
+            document.querySelectorAll<HTMLElement>("pre > code");
           for (const code of codeBlocks) {
             const pre = code.parentElement;
             if (!(pre instanceof HTMLElement)) continue;
@@ -277,22 +232,14 @@ const structuredData = JSON.stringify([
           }
         };
 
-        const init = () => addCopyButtons();
-
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", init, { once: true });
-        } else {
-          init();
-        }
-
-        document.addEventListener("astro:page-load", init);
+        document.addEventListener("astro:page-load", addCopyButtons);
       })();
     </script>
   </head>
   <body>
-    <NavbarReact client:only="react" />
-    <TetrisLauncher client:load hideTrigger />
-    <ImageViewer client:load />
+    <NavbarReact client:only="react" transition:persist />
+    <TetrisLauncher client:load hideTrigger transition:persist />
+    <ImageViewer client:load transition:persist />
     <slot />
   </body>
 </html>

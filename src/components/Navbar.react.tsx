@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 const TOP_LINKS = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/posts" },
+  { label: "Research", href: "/research" },
 ];
 
 const EXPANDED_LINKS = [
-  { label: "Research", href: "/research" },
   { label: "Questions", href: "/questions" },
   { label: "Coding", href: "/coding" },
   { label: "Bookshelf", href: "/bookshelf" },
@@ -63,14 +63,16 @@ export default function NavbarReact() {
 
   useEffect(() => {
     syncThemeFromDom();
-    setCurrentPath(window.location.pathname);
   }, []);
 
   useEffect(() => {
     const updateCurrentPath = () => setCurrentPath(window.location.pathname);
+    updateCurrentPath();
     window.addEventListener("popstate", updateCurrentPath);
+    document.addEventListener("astro:page-load", updateCurrentPath);
     return () => {
       window.removeEventListener("popstate", updateCurrentPath);
+      document.removeEventListener("astro:page-load", updateCurrentPath);
     };
   }, []);
 
@@ -119,8 +121,19 @@ export default function NavbarReact() {
       }
     };
 
+    const resetAfterNavigation = () => {
+      prevY = window.scrollY;
+      setIsScrolled(prevY > 6);
+      setVisible(true);
+      setIsOpen(false);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    document.addEventListener("astro:page-load", resetAfterNavigation);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("astro:page-load", resetAfterNavigation);
+    };
   }, []);
 
   useEffect(() => {
@@ -176,22 +189,6 @@ export default function NavbarReact() {
                   [{link.label}]
                 </a>
               ))}
-              <button
-                type="button"
-                onClick={openTetris}
-                className="cursor-pointer no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300"
-                aria-label="Open Tetris"
-              >
-                <span
-                  className="font-semibold bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(90deg, var(--tetris-i) 0%, var(--tetris-o) 20%, var(--tetris-t) 40%, var(--tetris-j) 55%, var(--tetris-l) 70%, var(--tetris-s) 85%, var(--tetris-z) 100%)",
-                  }}
-                >
-                  [Tetris]
-                </span>
-              </button>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -249,11 +246,27 @@ export default function NavbarReact() {
                       key={link.href}
                       href={link.href}
                       onClick={closeMenu}
-                        className={`cursor-pointer text-sm tracking-tight no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${isActive(link.href) ? "text-blue-700 dark:text-blue-300" : ""}`}
-                      >
+                      className={`cursor-pointer text-sm tracking-tight no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${isActive(link.href) ? "text-blue-700 dark:text-blue-300" : ""}`}
+                    >
                       [{link.label}]
                     </a>
                   ))}
+                  <button
+                    type="button"
+                    onClick={openTetris}
+                    className="cursor-pointer text-left text-sm tracking-tight transition-colors hover:text-shark-600 dark:hover:text-shark-300"
+                    aria-label="Open Tetris"
+                  >
+                    <span
+                      className="font-semibold bg-clip-text text-transparent"
+                      style={{
+                        backgroundImage:
+                          "linear-gradient(90deg, var(--tetris-i) 0%, var(--tetris-o) 20%, var(--tetris-t) 40%, var(--tetris-j) 55%, var(--tetris-l) 70%, var(--tetris-s) 85%, var(--tetris-z) 100%)",
+                      }}
+                    >
+                      [Tetris]
+                    </span>
+                  </button>
                 </div>
 
                 <div className="mt-6 flex items-center justify-between text-xs text-shark-600 dark:text-shark-300 font-serif">

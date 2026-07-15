@@ -28,6 +28,7 @@ interface GeometryDetail {
 
 interface MobiusStripOptions {
   interactive?: boolean;
+  inline?: boolean;
 }
 
 export type PlaygroundColorTheme = 'default' | 'cool' | 'violet';
@@ -114,6 +115,8 @@ export class MobiusStrip {
   private material: THREE.MeshPhysicalMaterial;
   private animationId: number = 0;
   private resizeHandler: () => void;
+  private resizeObserver: ResizeObserver | null = null;
+  private viewportObserver: IntersectionObserver | null = null;
   private themeObserver: MutationObserver | null = null;
   private pmremTarget: THREE.WebGLRenderTarget | null = null;
   private sourceEnvironmentTexture: THREE.DataTexture | null = null;
@@ -123,18 +126,15 @@ export class MobiusStrip {
   private isDisposed = false;
   private isReducedMotion = false;
   private isPageHidden = false;
+  private isInViewport = true;
   private viewportWidth = 0;
   private viewportHeight = 0;
   private motionScale = 1;
   private readonly animationStartTime = performance.now();
   private chromeProfile: ChromeProfile = LIGHT_CHROME_PROFILE;
-  private readonly introDurationMs = 1750;
-  private readonly introBezier: [number, number, number, number] = [0.22, 0.72, 0.2, 1];
-  private readonly introOrbitX = 0.62;
-  private readonly introOrbitZ = -0.38;
-  private readonly introStartYOffset: number;
   private readonly geometryCacheKey: string;
   private readonly isInteractive: boolean;
+  private readonly isInline: boolean;
   private playgroundSettings: PlaygroundSettings = {};
   private dynamicEnvMapBase = LIGHT_CHROME_PROFILE.envMapIntensity;
   private dynamicIridescenceBase = LIGHT_CHROME_PROFILE.iridescence;
@@ -153,6 +153,7 @@ export class MobiusStrip {
   constructor(canvas: HTMLCanvasElement, options: MobiusStripOptions = {}) {
     this.canvas = canvas;
     this.isInteractive = options.interactive ?? false;
+    this.isInline = options.inline ?? false;
     this.scene = new THREE.Scene();
 
     const { width: w, height: h } = this.getViewportSize();
@@ -161,7 +162,6 @@ export class MobiusStrip {
 
     this.camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 100);
     this.camera.position.z = 5;
-    this.introStartYOffset = this.computeIntroStartYOffset();
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -170,7 +170,7 @@ export class MobiusStrip {
       powerPreference: 'low-power',
     });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.35));
-    this.renderer.setSize(w, h);
+    this.renderer.setSize(w, h, false);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.92;
@@ -211,6 +211,7 @@ export class MobiusStrip {
       this.isPageHidden = document.hidden;
       if (!this.isPageHidden) {
         this.updateThemeMaterial();
+        this.startAnimation();
       }
     };
     this.bindMotionSignals();
@@ -219,12 +220,13 @@ export class MobiusStrip {
     this.updateThemeMaterial();
 
     this.resizeHandler = () => this.onResize();
-    window.addEventListener('resize', this.resizeHandler);
+    this.bindResizeSignals();
     this.observeThemeChanges();
+    this.observeViewport();
     this.bindPointerInteraction();
 
     this.loadEnvironmentMap();
-    this.animate();
+    this.startAnimation();
   }
 
   private bindPointerInteraction(): void {
@@ -593,7 +595,7 @@ export class MobiusStrip {
     const heightDelta = Math.abs(h - this.viewportHeight);
 
     // Ignore mobile address-bar collapse/expand resize noise while scrolling.
-    if (this.viewportWidth <= 768 && widthDelta < 2 && heightDelta < 120) {
+    if (!this.isInline && this.viewportWidth <= 768 && widthDelta < 2 && heightDelta < 120) {
       return;
     }
 
@@ -603,64 +605,23 @@ export class MobiusStrip {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
 
-    this.renderer.setSize(w, h);
+    this.renderer.setSize(w, h, false);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.35));
     this.updateMotionScale();
   }
 
   private getViewportSize(): { width: number; height: number } {
+    if (this.isInline) {
+      const bounds = this.canvas.getBoundingClientRect();
+      return {
+        width: Math.max(1, Math.round(bounds.width || this.canvas.clientWidth)),
+        height: Math.max(1, Math.round(bounds.height || this.canvas.clientHeight)),
+      };
+    }
+
     const width = document.documentElement.clientWidth || window.innerWidth;
     const height = document.documentElement.clientHeight || window.innerHeight;
     return { width, height };
-  }
-
-  private computeIntroStartYOffset(): number {
-    const halfVerticalFovRad = THREE.MathUtils.degToRad(this.camera.fov * 0.5);
-    const halfVisibleHeight = Math.tan(halfVerticalFovRad) * this.camera.position.z;
-    const stripHalfExtent = this.radius + this.stripWidth * 0.5 + this.stripThickness;
-    return -(halfVisibleHeight + stripHalfExtent + 0.75);
-  }
-
-  private sampleCubicBezier(controlPoint1: number, controlPoint2: number, t: number): number {
-    const oneMinusT = 1 - t;
-    return (3 * oneMinusT * oneMinusT * t * controlPoint1) + (3 * oneMinusT * t * t * controlPoint2) + (t * t * t);
-  }
-
-  private sampleCubicBezierDerivative(controlPoint1: number, controlPoint2: number, t: number): number {
-    const oneMinusT = 1 - t;
-    return (3 * oneMinusT * oneMinusT * controlPoint1) + (6 * oneMinusT * t * (controlPoint2 - controlPoint1)) + (3 * t * t * (1 - controlPoint2));
-  }
-
-  private evaluateCubicBezier(progress: number, p1x: number, p1y: number, p2x: number, p2y: number): number {
-    const clamped = THREE.MathUtils.clamp(progress, 0, 1);
-    if (clamped === 0 || clamped === 1) {
-      return clamped;
-    }
-
-    let t = clamped;
-    for (let i = 0; i < 5; i++) {
-      const xEstimate = this.sampleCubicBezier(p1x, p2x, t) - clamped;
-      const slope = this.sampleCubicBezierDerivative(p1x, p2x, t);
-      if (Math.abs(slope) < 1e-6) {
-        break;
-      }
-      t -= xEstimate / slope;
-      t = THREE.MathUtils.clamp(t, 0, 1);
-    }
-
-    let lower = 0;
-    let upper = 1;
-    for (let i = 0; i < 8; i++) {
-      const xEstimate = this.sampleCubicBezier(p1x, p2x, t);
-      if (xEstimate < clamped) {
-        lower = t;
-      } else {
-        upper = t;
-      }
-      t = (lower + upper) * 0.5;
-    }
-
-    return this.sampleCubicBezier(p1y, p2y, t);
   }
 
   private bindMotionSignals(): void {
@@ -671,6 +632,33 @@ export class MobiusStrip {
   private unbindMotionSignals(): void {
     this.reducedMotionQuery.removeEventListener('change', this.reducedMotionHandler);
     document.removeEventListener('visibilitychange', this.visibilityHandler);
+  }
+
+  private bindResizeSignals(): void {
+    if (this.isInline && 'ResizeObserver' in window) {
+      this.resizeObserver = new ResizeObserver(() => this.onResize());
+      this.resizeObserver.observe(this.canvas);
+      return;
+    }
+
+    window.addEventListener('resize', this.resizeHandler);
+  }
+
+  private observeViewport(): void {
+    if (!this.isInline || !('IntersectionObserver' in window)) {
+      return;
+    }
+
+    this.viewportObserver = new IntersectionObserver(
+      (entries) => {
+        this.isInViewport = entries.some((entry) => entry.isIntersecting);
+        if (this.isInViewport) {
+          this.startAnimation();
+        }
+      },
+      { rootMargin: '160px 0px' },
+    );
+    this.viewportObserver.observe(this.canvas);
   }
 
   private updateMotionScale(): void {
@@ -694,10 +682,17 @@ export class MobiusStrip {
     this.material.iridescence = this.dynamicIridescenceBase + shimmerWave * 0.025;
   }
 
-  private animate(): void {
-    this.animationId = requestAnimationFrame(() => this.animate());
+  private startAnimation(): void {
+    if (this.animationId !== 0 || this.isDisposed || this.isPageHidden || !this.isInViewport) {
+      return;
+    }
 
-    if (this.isPageHidden) {
+    this.animationId = requestAnimationFrame(() => this.animate());
+  }
+
+  private animate(): void {
+    this.animationId = 0;
+    if (this.isDisposed || this.isPageHidden || !this.isInViewport) {
       return;
     }
 
@@ -706,39 +701,25 @@ export class MobiusStrip {
     this.applyDynamicChrome(elapsedSeconds);
 
     const animationScale = this.isReducedMotion ? this.motionScale * 0.3 : this.motionScale;
-    if (this.isReducedMotion) {
-      this.mesh.position.set(0, 0, 0);
-    } else {
-      const linearIntroProgress = Math.min(elapsedMs / this.introDurationMs, 1);
-      const [p1x, p1y, p2x, p2y] = this.introBezier;
-      const easedIntroProgress = this.evaluateCubicBezier(linearIntroProgress, p1x, p1y, p2x, p2y);
-      const introRemaining = 1 - easedIntroProgress;
-      const orbitalArc = Math.sin(easedIntroProgress * Math.PI);
-      const orbitalSway = Math.sin(easedIntroProgress * Math.PI * 2);
-
-      this.mesh.position.set(
-        (this.introOrbitX * orbitalArc) + (this.introOrbitX * 0.2 * orbitalSway),
-        this.introStartYOffset * introRemaining,
-        (this.introOrbitZ * orbitalArc) - (this.introOrbitZ * 0.2 * orbitalSway),
-      );
-
-      const introSpinScale = introRemaining * introRemaining;
-      this.mesh.rotation.x += 0.0007 * introSpinScale * animationScale;
-      this.mesh.rotation.z += 0.0009 * introSpinScale * animationScale;
-    }
 
     this.mesh.rotation.x += (0.00056 + Math.sin(elapsedSeconds * 0.21) * 0.00004) * animationScale;
     this.mesh.rotation.y += (0.00106 + Math.sin(elapsedSeconds * 0.31) * 0.00006) * animationScale;
     this.mesh.rotation.z += (0.0033 + Math.sin(elapsedSeconds * 0.43) * 0.00016) * animationScale;
 
     this.renderer.render(this.scene, this.camera);
+    this.startAnimation();
   }
 
   public dispose(): void {
     this.isDisposed = true;
 
     cancelAnimationFrame(this.animationId);
+    this.animationId = 0;
     window.removeEventListener('resize', this.resizeHandler);
+    this.resizeObserver?.disconnect();
+    this.viewportObserver?.disconnect();
+    this.resizeObserver = null;
+    this.viewportObserver = null;
     this.unbindPointerInteraction();
     this.themeObserver?.disconnect();
     this.unbindMotionSignals();

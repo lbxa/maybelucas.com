@@ -1,6 +1,5 @@
 ---
 import Socials from "@components/Socials.astro";
-import MobiusStrip from "@components/MobiusStrip/MobiusStrip.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import Image from "@components/Image.astro";
 import { getEntry, render } from "astro:content";
@@ -19,11 +18,6 @@ if (!publications) {
 }
 const { Content: PublicationsContent } = await render(publications);
 
-const courseWork = await getEntry("about", "course-work");
-if (!courseWork) {
-  throw new Error("Course work content not found");
-}
-const { Content: CourseWorkContent } = await render(courseWork);
 ---
 
 <ContentLayout
@@ -52,14 +46,11 @@ const { Content: CourseWorkContent } = await render(courseWork);
   <section class="mb-3xl">
     <Socials />
   </section>
-  <section class="blog-content content mb-xl">
+  <!-- <section class="blog-content content mb-xl">
     <h2>Publications</h2>
     <PublicationsContent />
-  </section>
-  <section class="blog-content content mb-xl">
-    <CourseWorkContent />
-  </section>
-  <Image
+  </section> -->
+  <!-- <Image
     src={treeImage}
     alt="Sunset shining through a bamboo grove"
     width={1536}
@@ -70,6 +61,5 @@ const { Content: CourseWorkContent } = await render(courseWork);
     layout="constrained"
     sizes="(min-width: 640px) 640px, calc(100vw - 2rem)"
     quality={82}
-  />
-  <MobiusStrip slot="background" />
+  /> -->
 </ContentLayout>

@@ -13,6 +13,12 @@ if (!publications) {
   throw new Error("Publications content not found");
 }
 const { Content: PublicationsContent } = await render(publications);
+
+const courseWork = await getEntry("about", "course-work");
+if (!courseWork) {
+  throw new Error("Course work content not found");
+}
+const { Content: CourseWorkContent } = await render(courseWork);
 ---
 
 <ContentLayout title="Research">
@@ -25,6 +31,9 @@ const { Content: PublicationsContent } = await render(publications);
     <section class="blog-content content">
       <p>Publications</p>
       <PublicationsContent />
+    </section>
+    <section class="blog-content content mt-xl">
+      <CourseWorkContent />
     </section>
   </section>
 </ContentLayout>
