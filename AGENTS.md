@@ -92,9 +92,22 @@ The convention for a glTF sculpture is **one self-contained `.astro` component p
 
 - Lives under `public/models/<name>/` (a `.glb`, or `scene.gltf` + `scene.bin` + optional `textures/`, plus the Sketchfab `license.txt`).
 - Lazy-loads via `IntersectionObserver` with a scroll-settle delay, dynamically importing `three` and its loaders only when near the viewport.
-- Shares the environment map `public/textures/studio_small_03_1k.hdr` and the same exposure/intensity constants, which is what makes the sculptures look like one set.
-- Recenters and frames generically from a `Box3`, so **no per-model scale or camera tuning is needed**. The one genuinely per-model value is `INITIAL_ROTATION_Y` (which way the source scan happened to face).
+- Shares the environment map asset `public/textures/studio_small_03_1k.hdr`. That asset, and the component structure itself, are the only things the viewers actually have in common — see the calibration note below.
+- Recenters and frames generically from a `Box3`, so **model scale and centring need no hand-tuning**: a 0.003-scaled Sketchfab export frames as readily as a unit-scaled one. What this does *not* determine is how much of the frame the model fills — that depends on the model's proportions against the canvas aspect, which is why mobile canvas size is per-model too.
 - Keys off a unique root data attribute (`data-gladiator-model`, `data-lady-justice-model`) and initialises on `astro:page-load`, disposing on `astro:before-swap`.
+
+**Lighting, material and sizing constants are per-model and are meant to diverge.** Do not "restore consistency" by copying one viewer's values onto another: each set is calibrated against that scan's albedo and proportions. The gladiator's rig applied to the pale Lady Justice scan blows it out to pure white, and hers applied to his bronze leaves it murky. Current divergence:
+
+| | Gladiator (dark bronze, textured) | Lady Justice (pale stone, vertex colours only) |
+|---|---|---|
+| Exposure light / dark | 1.38 / 1.12 | 1.0 / 0.85 |
+| Env intensity light / dark | 1.8 / 1.15 | 0.25 / 0.18 |
+| Hemisphere / key / fill | 3 / 4.2 / 2.2 | 0.55 / 2.1 / 0.45 |
+| Material | glTF values as authored | overridden: metalness 0, roughness 0.72, limestone tint |
+| Mobile canvas width | `clamp(13rem, 58vw, 14rem)` | `clamp(16rem, 72vw, 18rem)` |
+| `INITIAL_ROTATION_Y` | 1.35 | 0 |
+
+Two rules of thumb behind those numbers. Environment intensity is the strongest single knob: the studio HDR is broad omnidirectional light, so raising it flattens carved form and lifts the surface toward white — pale models want it low. And Sketchfab's default material values are frequently unphysical for the subject (a stone statue exported at metalness 0.22), so check them against what the thing actually is before trusting them.
 
 **Raw Sketchfab exports cannot be committed as-is.** They routinely run to hundreds of MB, which breaks two hard limits: GitHub rejects any file over 100 MiB on push, and Cloudflare rejects static assets over 25 MiB. They are also far more geometry than the ~350–500px render target can resolve. Decimate and compress before committing:
 
