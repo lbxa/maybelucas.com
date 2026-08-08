@@ -1,0 +1,617 @@
+<figure class="lady-justice-model" data-lady-justice-model data-state="idle">
+  <div class="model-viewport">
+    <canvas
+      data-model-canvas
+      width="640"
+      height="520"
+      aria-label="Interactive 3D model of a Lady Justice sculpture. Drag to rotate it."
+    ></canvas>
+
+    <div class="model-status" role="status" aria-live="polite">
+      <span class="loading-indicator" aria-hidden="true"></span>
+      <span data-model-status>Preparing 3D sculpture…</span>
+    </div>
+
+  </div>
+
+  <figcaption>
+    <a
+      href="https://sketchfab.com/3d-models/lady-justice-67b91f4d07ee423b9c5c53a08d8aa454"
+      target="_blank"
+      rel="noopener noreferrer"
+    >“Lady Justice”</a> by
+    <a
+      href="https://sketchfab.com/Kenny.Maguire.Studio"
+      target="_blank"
+      rel="noopener noreferrer"
+    >Kenny Maguire Studio</a>.
+  </figcaption>
+</figure>
+
+<style>
+  .lady-justice-model {
+    margin: 1.25rem 0 2.5rem;
+    contain: layout paint style;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
+
+  .model-viewport {
+    position: relative;
+    width: 100%;
+    height: clamp(23rem, 62vw, 30rem);
+    margin-inline: auto;
+    overflow: hidden;
+    background: radial-gradient(
+      ellipse at 50% 48%,
+      rgb(18 18 18 / 4%),
+      transparent 66%
+    );
+  }
+
+  :global(html.dark) .model-viewport {
+    background: radial-gradient(
+      ellipse at 50% 48%,
+      rgb(245 245 245 / 7%),
+      transparent 66%
+    );
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    outline: none;
+    cursor: grab;
+    pointer-events: none;
+    touch-action: pan-y pinch-zoom;
+    transition: opacity 220ms ease;
+  }
+
+  .lady-justice-model[data-state="ready"] canvas {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .lady-justice-model[data-dragging="true"] canvas {
+    cursor: grabbing;
+  }
+
+  .model-status {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: rgb(18 18 18 / 62%);
+    font-size: 0.875rem;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  :global(html.dark) .model-status {
+    color: rgb(245 245 245 / 62%);
+  }
+
+  .loading-indicator {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 1.5px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 999px;
+    opacity: 0;
+  }
+
+  .lady-justice-model[data-state="loading"] .loading-indicator {
+    opacity: 1;
+    animation: spin 700ms linear infinite;
+  }
+
+  .lady-justice-model[data-state="ready"] .model-status {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .lady-justice-model[data-state="error"] .loading-indicator {
+    display: none;
+  }
+
+  figcaption {
+    margin-top: 0.25rem;
+    color: rgb(18 18 18 / 48%);
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  :global(html.dark) figcaption {
+    color: rgb(245 245 245 / 45%);
+  }
+
+  figcaption :global(a::after) {
+    content: none;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas,
+    .model-status {
+      transition: none;
+    }
+
+    .lady-justice-model[data-state="loading"] .loading-indicator {
+      animation: none;
+      border-right-color: currentColor;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .model-viewport {
+      /* Wider than the gladiator's mobile box on purpose. Her scales make her
+         proportionally broader (height/width 1.41 vs his 1.76), so on a narrow
+         canvas frameCamera() hits the horizontal constraint and pulls the
+         camera back to fit her width — leaving her floating small in the frame.
+         The extra width relaxes that constraint so she fills it as he does.
+         Do not fix this by dropping MODEL_FRAME_PADDING below 1: that crops
+         the scales. */
+      width: clamp(16rem, 72vw, 18rem);
+      height: clamp(22rem, 110vw, 27rem);
+    }
+  }
+</style>
+
+<script>
+  type ThreeModule = typeof import("three");
+  type ThreeGroup = import("three").Group;
+  type ThreePerspectiveCamera = import("three").PerspectiveCamera;
+  type ThreeScene = import("three").Scene;
+  type ThreeTexture = import("three").Texture;
+  type ThreeWebGLRenderer = import("three").WebGLRenderer;
+
+  // Decimated + meshopt-compressed GLB (144.8 MiB raw scan → 3.9 MiB). The raw
+  // Sketchfab export cannot ship: it exceeds both GitHub's 100 MiB file limit
+  // and Cloudflare's 25 MiB static-asset limit, and 2.6M vertices froze the
+  // main thread on load. Requires EXT_meshopt_compression, hence the decoder
+  // below; KHR_mesh_quantization is handled by GLTFLoader natively.
+  const MODEL_URL = "/models/lady-justice/scene.glb";
+  const ENVIRONMENT_URL = "/textures/studio_small_03_1k.hdr";
+  const PRELOAD_MARGIN = "80px 0px";
+  const SCROLL_SETTLE_MS = 180;
+  const PIXEL_RATIO_CAP = 1.5;
+  const DRAG_SPEED = 0.008;
+  const MAX_VERTICAL_ROTATION = Math.PI * 0.22;
+  // Calibrated for pale stone (mean vertex-colour albedo ≈ 0.6), not the
+  // gladiator's dark bronze — the gladiator's rig blows this model out to white.
+  const LIGHT_THEME_EXPOSURE = 1.0;
+  const DARK_THEME_EXPOSURE = 0.85;
+  // Kept deliberately low. The studio HDR is broad omnidirectional light: turn
+  // it up and it flattens the carved form and lifts the whole surface toward
+  // white. It was the single biggest cause of the washed-out look — the shading
+  // here wants to come from the key light, not from ambient IBL.
+  const LIGHT_THEME_ENVIRONMENT_INTENSITY = 0.25;
+  const DARK_THEME_ENVIRONMENT_INTENSITY = 0.18;
+  // Wide key-to-fill ratio: strong directional modelling is what gives a
+  // sculpture its carved form. Ambient stays low so crevices actually go dark.
+  const HEMISPHERE_LIGHT_INTENSITY = 0.55;
+  const KEY_LIGHT_INTENSITY = 2.1;
+  const FILL_LIGHT_INTENSITY = 0.45;
+  const MODEL_FRAME_PADDING = 1.14;
+  const INITIAL_ROTATION_Y = 0;
+
+  // The scan ships one PBR material with Sketchfab's defaults (metalness 0.22,
+  // roughness 0.31) — that reads as polished silver, not carved rock. Stone is
+  // a rough dielectric, so metalness goes to 0 and roughness way up. There are
+  // no UVs on this mesh, so surface character has to come from these values and
+  // from the COLOR_0 vertex colours rather than from any texture map.
+  const STONE_METALNESS = 0;
+  // Matte, but not fully chalky — a little sheen is what reads as carved rock
+  // rather than plaster.
+  const STONE_ROUGHNESS = 0.72;
+  // Limestone, multiplied over the near-neutral vertex colours (mean ≈ 0.6).
+  // Deliberately darker than white so the sculpture holds its edge against the
+  // ivory page background instead of dissolving into it.
+  const STONE_TINT = 0xd6ccbc;
+
+  class LadyJusticeViewer {
+    private readonly canvas: HTMLCanvasElement;
+    private readonly status: HTMLElement;
+    private readonly viewportObserver: IntersectionObserver | null;
+    private resizeObserver: ResizeObserver | null = null;
+    private three: ThreeModule | null = null;
+    private scene: ThreeScene | null = null;
+    private camera: ThreePerspectiveCamera | null = null;
+    private renderer: ThreeWebGLRenderer | null = null;
+    private model: ThreeGroup | null = null;
+    private environmentTexture: ThreeTexture | null = null;
+    private themeObserver: MutationObserver | null = null;
+    private modelRadius = 1;
+    private modelWidth = 1;
+    private modelHeight = 1;
+    private modelDepth = 1;
+    private pointerId: number | null = null;
+    private pointerX = 0;
+    private pointerY = 0;
+    private renderRequest = 0;
+    private loadTimer: number | null = null;
+    private nearViewport = false;
+    private loadingStarted = false;
+    private disposed = false;
+
+    constructor(private readonly root: HTMLElement) {
+      const canvas = root.querySelector<HTMLCanvasElement>("[data-model-canvas]");
+      const status = root.querySelector<HTMLElement>("[data-model-status]");
+      if (!canvas || !status) {
+        throw new Error("Lady Justice model elements are missing");
+      }
+
+      this.canvas = canvas;
+      this.status = status;
+      this.viewportObserver = this.createViewportObserver();
+      document.addEventListener("astro:before-swap", this.dispose, { once: true });
+    }
+
+    private createViewportObserver(): IntersectionObserver | null {
+      if (!("IntersectionObserver" in window)) {
+        this.loadingStarted = true;
+        void this.load();
+        return null;
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          this.nearViewport = entries.some((entry) => entry.isIntersecting);
+          if (!this.nearViewport) {
+            this.cancelScheduledLoad();
+            return;
+          }
+
+          window.addEventListener("scroll", this.onScroll, { passive: true });
+          this.scheduleLoad();
+        },
+        { rootMargin: PRELOAD_MARGIN },
+      );
+      observer.observe(this.root);
+      return observer;
+    }
+
+    private readonly onScroll = (): void => {
+      this.scheduleLoad();
+    };
+
+    private scheduleLoad(): void {
+      if (!this.nearViewport || this.loadingStarted || this.disposed) return;
+      if (this.loadTimer !== null) window.clearTimeout(this.loadTimer);
+
+      this.loadTimer = window.setTimeout(() => {
+        this.loadTimer = null;
+        this.loadingStarted = true;
+        this.viewportObserver?.disconnect();
+        window.removeEventListener("scroll", this.onScroll);
+        void this.load();
+      }, SCROLL_SETTLE_MS);
+    }
+
+    private cancelScheduledLoad(): void {
+      if (this.loadTimer !== null) window.clearTimeout(this.loadTimer);
+      this.loadTimer = null;
+      window.removeEventListener("scroll", this.onScroll);
+    }
+
+    private async load(): Promise<void> {
+      this.setState("loading", "Loading 3D sculpture…");
+
+      try {
+        const [three, { GLTFLoader }, { RGBELoader }, { MeshoptDecoder }] =
+          await Promise.all([
+            import("three"),
+            import("three/addons/loaders/GLTFLoader.js"),
+            import("three/addons/loaders/RGBELoader.js"),
+            import("three/addons/libs/meshopt_decoder.module.js"),
+          ]);
+        if (this.disposed) return;
+
+        this.three = three;
+        this.setupScene();
+
+        const gltfLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+
+        const [modelResult, environmentResult] = await Promise.allSettled([
+          gltfLoader.loadAsync(MODEL_URL),
+          new RGBELoader().loadAsync(ENVIRONMENT_URL),
+        ]);
+
+        if (this.disposed) {
+          if (modelResult.status === "fulfilled") this.disposeObject(modelResult.value.scene);
+          if (environmentResult.status === "fulfilled") environmentResult.value.dispose();
+          return;
+        }
+
+        if (modelResult.status === "rejected") {
+          if (environmentResult.status === "fulfilled") environmentResult.value.dispose();
+          throw modelResult.reason;
+        }
+
+        if (environmentResult.status === "fulfilled") {
+          this.environmentTexture = environmentResult.value;
+          this.environmentTexture.mapping = three.EquirectangularReflectionMapping;
+          if (this.scene) this.scene.environment = this.environmentTexture;
+        }
+
+        this.addModel(modelResult.value.scene);
+        this.bindInteraction();
+        this.observeThemeChanges();
+        this.applyThemeLighting();
+        this.setState("ready", "3D sculpture ready");
+        this.resize();
+      } catch (error) {
+        if (this.disposed) return;
+        console.error("Unable to load the Lady Justice model", error);
+        this.releaseRenderer();
+        this.setState("error", "The 3D sculpture could not be loaded.");
+      }
+    }
+
+    private setupScene(): void {
+      const three = this.three;
+      if (!three) return;
+
+      this.scene = new three.Scene();
+      this.camera = new three.PerspectiveCamera(32, 1, 0.01, 100);
+      this.renderer = new three.WebGLRenderer({
+        canvas: this.canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance",
+      });
+      this.renderer.outputColorSpace = three.SRGBColorSpace;
+      this.renderer.toneMapping = three.ACESFilmicToneMapping;
+
+      this.scene.add(
+        new three.HemisphereLight(0xffffff, 0x514841, HEMISPHERE_LIGHT_INTENSITY),
+      );
+      const keyLight = new three.DirectionalLight(0xfff5e8, KEY_LIGHT_INTENSITY);
+      keyLight.position.set(3, 4, 5);
+      this.scene.add(keyLight);
+
+      const fillLight = new three.DirectionalLight(0xdbe8ff, FILL_LIGHT_INTENSITY);
+      fillLight.position.set(-4, 1.5, -3);
+      this.scene.add(fillLight);
+    }
+
+    private observeThemeChanges(): void {
+      this.themeObserver = new MutationObserver(this.applyThemeLighting);
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+
+    private readonly applyThemeLighting = (): void => {
+      if (!this.renderer || !this.scene) return;
+
+      const isDark = document.documentElement.classList.contains("dark");
+      this.renderer.toneMappingExposure = isDark
+        ? DARK_THEME_EXPOSURE
+        : LIGHT_THEME_EXPOSURE;
+      this.scene.environmentIntensity = isDark
+        ? DARK_THEME_ENVIRONMENT_INTENSITY
+        : LIGHT_THEME_ENVIRONMENT_INTENSITY;
+      this.queueRender();
+    };
+
+    private addModel(sceneRoot: ThreeGroup): void {
+      const three = this.three;
+      if (!three || !this.scene) return;
+
+      const model = new three.Group();
+      model.add(sceneRoot);
+      this.applyStoneMaterial(sceneRoot);
+
+      const bounds = new three.Box3().setFromObject(model);
+      const center = bounds.getCenter(new three.Vector3());
+      sceneRoot.position.sub(center);
+
+      const centeredBounds = new three.Box3().setFromObject(model);
+      const size = centeredBounds.getSize(new three.Vector3());
+      const sphere = centeredBounds.getBoundingSphere(new three.Sphere());
+      this.modelWidth = Math.max(size.x, 0.01);
+      this.modelHeight = Math.max(size.y, 0.01);
+      this.modelDepth = Math.max(size.z, 0.01);
+      this.modelRadius = Math.max(sphere.radius, 0.01);
+      model.rotation.y = INITIAL_ROTATION_Y;
+
+      this.model = model;
+      this.scene.add(model);
+    }
+
+    private applyStoneMaterial(sceneRoot: ThreeGroup): void {
+      const three = this.three;
+      if (!three) return;
+
+      const seen = new Set<import("three").Material>();
+      sceneRoot.traverse((child) => {
+        if (!(child instanceof three.Mesh)) return;
+        const materials = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+
+        for (const material of materials) {
+          if (seen.has(material)) continue;
+          seen.add(material);
+          if (!(material instanceof three.MeshStandardMaterial)) continue;
+
+          material.metalness = STONE_METALNESS;
+          material.roughness = STONE_ROUGHNESS;
+          material.color.setHex(STONE_TINT);
+          material.needsUpdate = true;
+        }
+      });
+    }
+
+    private bindInteraction(): void {
+      this.canvas.addEventListener("pointerdown", this.onPointerDown);
+      this.canvas.addEventListener("pointermove", this.onPointerMove);
+      this.canvas.addEventListener("pointerup", this.onPointerEnd);
+      this.canvas.addEventListener("pointercancel", this.onPointerEnd);
+
+      this.resizeObserver = new ResizeObserver(this.resize);
+      this.resizeObserver.observe(this.canvas);
+    }
+
+    private readonly onPointerDown = (event: PointerEvent): void => {
+      if (!this.model || (event.pointerType === "mouse" && event.button !== 0)) return;
+
+      this.pointerId = event.pointerId;
+      this.pointerX = event.clientX;
+      this.pointerY = event.clientY;
+      this.canvas.setPointerCapture(event.pointerId);
+      this.root.dataset.dragging = "true";
+    };
+
+    private readonly onPointerMove = (event: PointerEvent): void => {
+      if (event.pointerId !== this.pointerId || !this.model) return;
+
+      const deltaX = event.clientX - this.pointerX;
+      const deltaY = event.clientY - this.pointerY;
+      this.pointerX = event.clientX;
+      this.pointerY = event.clientY;
+
+      this.model.rotation.y += deltaX * DRAG_SPEED;
+      this.model.rotation.x = Math.max(
+        -MAX_VERTICAL_ROTATION,
+        Math.min(MAX_VERTICAL_ROTATION, this.model.rotation.x + deltaY * DRAG_SPEED),
+      );
+      this.queueRender();
+    };
+
+    private readonly onPointerEnd = (event: PointerEvent): void => {
+      if (event.pointerId !== this.pointerId) return;
+      if (this.canvas.hasPointerCapture(event.pointerId)) {
+        this.canvas.releasePointerCapture(event.pointerId);
+      }
+      this.pointerId = null;
+      delete this.root.dataset.dragging;
+    };
+
+    private readonly resize = (): void => {
+      if (!this.renderer || !this.camera) return;
+
+      const { width, height } = this.canvas.getBoundingClientRect();
+      if (width <= 0 || height <= 0) return;
+
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, PIXEL_RATIO_CAP));
+      this.renderer.setSize(width, height, false);
+      this.camera.aspect = width / height;
+      this.frameCamera();
+      this.queueRender();
+    };
+
+    private frameCamera(): void {
+      const three = this.three;
+      const camera = this.camera;
+      if (!three || !camera) return;
+
+      const verticalFov = three.MathUtils.degToRad(camera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+      const horizontalExtent = Math.max(this.modelWidth, this.modelDepth) / 2;
+      const verticalExtent = this.modelHeight / 2;
+      const horizontalDistance = horizontalExtent / Math.tan(horizontalFov / 2);
+      const verticalDistance = verticalExtent / Math.tan(verticalFov / 2);
+      const distance = Math.max(horizontalDistance, verticalDistance) * MODEL_FRAME_PADDING;
+
+      camera.position.set(0, this.modelRadius * 0.03, distance);
+      camera.near = Math.max(distance / 100, 0.01);
+      camera.far = distance + this.modelRadius * 4;
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+    }
+
+    private queueRender(): void {
+      const renderer = this.renderer;
+      const scene = this.scene;
+      const camera = this.camera;
+      if (this.renderRequest || !renderer || !scene || !camera) return;
+
+      this.renderRequest = requestAnimationFrame(() => {
+        this.renderRequest = 0;
+        renderer.render(scene, camera);
+      });
+    }
+
+    private setState(state: "loading" | "ready" | "error", message: string): void {
+      this.root.dataset.state = state;
+      this.status.textContent = message;
+    }
+
+    private disposeObject(root: import("three").Object3D): void {
+      const three = this.three;
+      if (!three) return;
+
+      const textures = new Set<import("three").Texture>();
+      const materials = new Set<import("three").Material>();
+      root.traverse((child) => {
+        if (!(child instanceof three.Mesh)) return;
+        child.geometry.dispose();
+        const meshMaterials = Array.isArray(child.material) ? child.material : [child.material];
+        for (const material of meshMaterials) materials.add(material);
+      });
+
+      for (const material of materials) {
+        for (const value of Object.values(material)) {
+          if (value instanceof three.Texture) textures.add(value);
+        }
+        material.dispose();
+      }
+      for (const texture of textures) texture.dispose();
+    }
+
+    private releaseRenderer(): void {
+      this.environmentTexture?.dispose();
+      this.environmentTexture = null;
+      this.renderer?.dispose();
+      this.renderer?.forceContextLoss();
+      this.renderer = null;
+      this.scene = null;
+      this.camera = null;
+    }
+
+    private readonly dispose = (): void => {
+      if (this.disposed) return;
+      this.disposed = true;
+      this.viewportObserver?.disconnect();
+      this.resizeObserver?.disconnect();
+      this.themeObserver?.disconnect();
+      this.cancelScheduledLoad();
+      this.canvas.removeEventListener("pointerdown", this.onPointerDown);
+      this.canvas.removeEventListener("pointermove", this.onPointerMove);
+      this.canvas.removeEventListener("pointerup", this.onPointerEnd);
+      this.canvas.removeEventListener("pointercancel", this.onPointerEnd);
+      document.removeEventListener("astro:before-swap", this.dispose);
+
+      if (this.renderRequest) cancelAnimationFrame(this.renderRequest);
+      if (this.model) this.disposeObject(this.model);
+      this.releaseRenderer();
+    };
+  }
+
+  const initializeLadyJusticeViewers = (): void => {
+    const viewers = document.querySelectorAll<HTMLElement>(
+      "[data-lady-justice-model]",
+    );
+    for (const element of viewers) {
+      if (element.dataset.initialized === "true") continue;
+      element.dataset.initialized = "true";
+      new LadyJusticeViewer(element);
+    }
+  };
+
+  document.addEventListener("astro:page-load", initializeLadyJusticeViewers);
+</script>

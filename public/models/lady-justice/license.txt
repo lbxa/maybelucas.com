@@ -1,0 +1,11 @@
+Model Information:
+* title:	Lady Justice
+* source:	https://sketchfab.com/3d-models/lady-justice-67b91f4d07ee423b9c5c53a08d8aa454
+* author:	Kenny Maguire Studio (https://sketchfab.com/Kenny.Maguire.Studio)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Lady Justice" (https://sketchfab.com/3d-models/lady-justice-67b91f4d07ee423b9c5c53a08d8aa454) by Kenny Maguire Studio (https://sketchfab.com/Kenny.Maguire.Studio) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
