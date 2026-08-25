@@ -1,0 +1,39 @@
+# Lucas Barbosa
+
+> The personal website of Lucas Barbosa, an engineer, researcher, and product designer writing about software, artificial intelligence, robotics, mathematics, science, startups, and life.
+
+This site contains Lucas's biography, selected work, research, essays, notes, and worked solutions to technical problems. Use the writing and problem archives to discover individual entries. Unless a page states otherwise, Lucas Barbosa is the author.
+
+## About
+
+- [Home and biography](https://maybelucas.com/): Background, current work, selected projects, achievements, and contact links.
+- [Research](https://maybelucas.com/research): Research interests, publications, and academic work.
+- [Coding](https://maybelucas.com/coding): Programming experience, tools, and software interests.
+- [Bookshelf](https://maybelucas.com/bookshelf): Books Lucas has read or recommends.
+
+## Writing
+
+- [Writing archive](https://maybelucas.com/posts): Complete, reverse-chronological index of essays with summaries and reading times.
+- [The Hippocampus of AGI](https://maybelucas.com/posts/hippocampus): An essay on whether language models are AGI or one component of a larger system.
+- [The Laws of Software](https://maybelucas.com/posts/software-laws): A collection of laws and principles from software engineering and computing.
+- [Policy Gradients](https://maybelucas.com/posts/policy-gradients): A technical introduction to how reinforcement-learning agents learn by acting.
+- [Zig Doesn't Need an FFI](https://maybelucas.com/posts/zig-interop): A practical exploration of interoperability between Zig and C.
+- [On Research](https://maybelucas.com/posts/on-research): A short argument for ambitious, consequential research.
+
+## Problems
+
+- [Problems of the Day](https://maybelucas.com/problems): Index of worked programming and mathematics problems with topic, difficulty, and estimated solving time.
+- [Disc Game Prize Fund](https://maybelucas.com/problems/disc-game-prize-fund): A probability dynamic-programming solution to Project Euler problem 121.
+- [k-Tree](https://maybelucas.com/problems/k-tree): A dynamic-programming solution to Codeforces problem 431C.
+
+## Other Collections
+
+- [Questions](https://maybelucas.com/questions): Questions Lucas is thinking about, plus a link to the daily problem collection.
+- [Musings](https://maybelucas.com/musings): Short observations and ideas.
+- [Lexicon](https://maybelucas.com/lexicon): Words, phrases, and concepts collected by Lucas.
+- [Lab](https://maybelucas.com/lab): Interactive experiments and prototypes.
+
+## Optional
+
+- [GitHub profile](https://github.com/lbxa): Lucas's public code and repositories.
+- [Website source](https://github.com/lbxa/maybelucas.com): Source code and content for this website.
