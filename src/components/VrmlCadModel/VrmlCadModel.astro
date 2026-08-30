@@ -1,0 +1,1432 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<figure class="vrml-cad-model" data-vrml-cad-model data-state="idle">
+  <div class="model-viewport">
+    <canvas
+      data-model-canvas
+      width="640"
+      height="520"
+      aria-label="Interactive 3D engine CAD assembly. Drag to orbit, right-drag to pan, and scroll to zoom."
+    ></canvas>
+
+    <div class="model-status" role="status" aria-live="polite">
+      <span class="loading-indicator" aria-hidden="true"></span>
+      <span data-model-status>Preparing CAD model…</span>
+    </div>
+
+    <div class="cad-orientation">
+      <svg
+        class="cad-compass"
+        data-cad-compass
+        viewBox="0 0 64 64"
+        role="img"
+        aria-label="CAD orientation compass"
+      >
+        <g data-compass-axis="x">
+          <line data-compass-line="x" x1="32" y1="32" x2="51" y2="32"></line>
+          <circle data-compass-point="x" cx="51" cy="32" r="2.25"></circle>
+          <text data-compass-label="x" x="57" y="34">X</text>
+        </g>
+        <g data-compass-axis="y">
+          <line data-compass-line="y" x1="32" y1="32" x2="32" y2="13"></line>
+          <circle data-compass-point="y" cx="32" cy="13" r="2.25"></circle>
+          <text data-compass-label="y" x="32" y="7">Y</text>
+        </g>
+        <g data-compass-axis="z">
+          <line data-compass-line="z" x1="32" y1="32" x2="19" y2="45"></line>
+          <circle data-compass-point="z" cx="19" cy="45" r="2.25"></circle>
+          <text data-compass-label="z" x="15" y="51">Z</text>
+        </g>
+        <circle class="compass-origin" cx="32" cy="32" r="1.75"></circle>
+      </svg>
+
+      <button
+        class="cad-home"
+        type="button"
+        data-cad-home
+        aria-label="Reset CAD view"
+        title="Reset view"
+        disabled
+      >
+        <Icon name="home" class="cad-home-icon" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="cad-controls" role="toolbar" aria-label="CAD view controls">
+      <button
+        type="button"
+        data-cad-control="grid"
+        aria-label="Toggle XYZ grid"
+        aria-pressed="false"
+        title="Toggle XYZ grid"
+        disabled
+      >
+        <Icon name="cad-grid" class="cad-control-icon" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        data-cad-control="orbit"
+        aria-label="Orbit view"
+        aria-pressed="true"
+        title="Orbit view"
+        disabled
+      >
+        <Icon name="cad-orbit" class="cad-control-icon" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        data-cad-control="plan"
+        aria-label="Plan view"
+        aria-pressed="false"
+        title="Plan view"
+        disabled
+      >
+        <Icon name="cad-plan" class="cad-control-icon" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        data-cad-control="explode"
+        aria-label="Explode assembly"
+        aria-pressed="false"
+        title="Explode assembly"
+        disabled
+      >
+        <Icon name="cad-explode" class="cad-control-icon" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <figcaption>Engine assembly, rendered from VRML.</figcaption>
+</figure>
+
+<style>
+  .vrml-cad-model {
+    margin: 1.25rem 0 2.5rem;
+    contain: layout paint style;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 29rem;
+  }
+
+  .model-viewport {
+    position: relative;
+    width: 100%;
+    height: clamp(21rem, 58vw, 27rem);
+    margin-inline: auto;
+    overflow: hidden;
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      rgb(18 18 18 / 4%),
+      transparent 67%
+    );
+  }
+
+  :global(html.dark) .model-viewport {
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      rgb(245 245 245 / 7%),
+      transparent 67%
+    );
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    outline: none;
+    cursor: grab;
+    pointer-events: none;
+    touch-action: pan-y pinch-zoom;
+    transition: opacity 220ms ease;
+  }
+
+  .vrml-cad-model[data-state="ready"] canvas {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .vrml-cad-model[data-dragging="true"] canvas {
+    cursor: grabbing;
+  }
+
+  .vrml-cad-model[data-view="plan"] canvas {
+    cursor: default;
+  }
+
+  .model-status {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: rgb(18 18 18 / 62%);
+    font-size: 0.875rem;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  :global(html.dark) .model-status {
+    color: rgb(245 245 245 / 62%);
+  }
+
+  .loading-indicator {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 1.5px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 999px;
+    opacity: 0;
+  }
+
+  .vrml-cad-model[data-state="loading"] .loading-indicator {
+    opacity: 1;
+    animation: spin 700ms linear infinite;
+  }
+
+  .vrml-cad-model[data-state="ready"] .model-status {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .vrml-cad-model[data-state="error"] .loading-indicator {
+    display: none;
+  }
+
+  .cad-orientation {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 0.125rem;
+    color: rgb(18 18 18 / 62%);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.25rem);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .vrml-cad-model[data-state="ready"] .cad-orientation {
+    opacity: 1;
+    transform: none;
+  }
+
+  :global(html.dark) .cad-orientation {
+    color: rgb(245 245 245 / 68%);
+  }
+
+  .cad-compass {
+    width: 3.25rem;
+    height: 3.25rem;
+    overflow: visible;
+    filter: drop-shadow(0 1px 3px rgb(18 18 18 / 14%));
+  }
+
+  .cad-compass g {
+    transition: opacity 120ms ease;
+  }
+
+  .cad-compass line {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .cad-compass circle {
+    fill: currentColor;
+  }
+
+  .cad-compass text {
+    fill: currentColor;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 7px;
+    font-weight: 600;
+    text-anchor: middle;
+  }
+
+  .cad-compass [data-compass-axis="x"] {
+    color: #d95c5c;
+  }
+
+  .cad-compass [data-compass-axis="y"] {
+    color: #5aa36d;
+  }
+
+  .cad-compass [data-compass-axis="z"] {
+    color: #5785cf;
+  }
+
+  .cad-compass .compass-origin {
+    fill: currentColor;
+  }
+
+  .cad-home {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    place-items: center;
+    border: 1px solid rgb(18 18 18 / 10%);
+    border-radius: 0.375rem;
+    background: rgb(245 245 245 / 78%);
+    color: rgb(18 18 18 / 64%);
+    box-shadow: 0 0.25rem 0.75rem rgb(18 18 18 / 5%);
+    pointer-events: auto;
+    cursor: pointer;
+    backdrop-filter: blur(0.75rem);
+    transition:
+      color 140ms ease,
+      background-color 140ms ease,
+      opacity 140ms ease;
+  }
+
+  .cad-home:hover:not(:disabled) {
+    color: rgb(18 18 18 / 90%);
+    background: rgb(245 245 245 / 94%);
+  }
+
+  .cad-home:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .cad-home:disabled {
+    opacity: 0.32;
+    cursor: default;
+  }
+
+  .cad-home :global(.cad-home-icon) {
+    width: 0.75rem;
+    height: 0.75rem;
+    fill: currentColor;
+  }
+
+  :global(html.dark) .cad-home {
+    border-color: rgb(245 245 245 / 12%);
+    background: rgb(18 18 18 / 74%);
+    color: rgb(245 245 245 / 68%);
+    box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 16%);
+  }
+
+  :global(html.dark) .cad-home:hover:not(:disabled) {
+    color: rgb(245 245 245 / 94%);
+    background: rgb(18 18 18 / 90%);
+  }
+
+  .cad-controls {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    gap: 0.125rem;
+    padding: 0.1875rem;
+    border: 1px solid rgb(18 18 18 / 10%);
+    border-radius: 0.5rem;
+    background: rgb(245 245 245 / 78%);
+    box-shadow: 0 0.25rem 1rem rgb(18 18 18 / 6%);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(0.25rem);
+    backdrop-filter: blur(0.75rem);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  :global(html.dark) .cad-controls {
+    border-color: rgb(245 245 245 / 12%);
+    background: rgb(18 18 18 / 74%);
+    box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 18%);
+  }
+
+  .vrml-cad-model[data-state="ready"] .cad-controls {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%);
+  }
+
+  .cad-controls button {
+    display: grid;
+    width: 1.75rem;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 0.3125rem;
+    background: transparent;
+    color: rgb(18 18 18 / 56%);
+    cursor: pointer;
+    transition:
+      color 140ms ease,
+      background-color 140ms ease;
+  }
+
+  .cad-controls button:hover {
+    color: rgb(18 18 18 / 82%);
+    background: rgb(18 18 18 / 5%);
+  }
+
+  .cad-controls button[aria-pressed="true"] {
+    color: rgb(18 18 18 / 92%);
+    background: rgb(18 18 18 / 9%);
+  }
+
+  .cad-controls button:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  .cad-controls button:disabled {
+    cursor: default;
+  }
+
+  :global(html.dark) .cad-controls button {
+    color: rgb(245 245 245 / 56%);
+  }
+
+  :global(html.dark) .cad-controls button:hover {
+    color: rgb(245 245 245 / 84%);
+    background: rgb(245 245 245 / 7%);
+  }
+
+  :global(html.dark) .cad-controls button[aria-pressed="true"] {
+    color: rgb(245 245 245 / 94%);
+    background: rgb(245 245 245 / 12%);
+  }
+
+  figcaption {
+    margin-top: 0.25rem;
+    color: rgb(18 18 18 / 48%);
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  :global(html.dark) figcaption {
+    color: rgb(245 245 245 / 45%);
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas,
+    .model-status,
+    .cad-orientation,
+    .cad-compass g,
+    .cad-home,
+    .cad-controls,
+    .cad-controls button {
+      transition: none;
+    }
+
+    .vrml-cad-model[data-state="loading"] .loading-indicator {
+      animation: none;
+      border-right-color: currentColor;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .model-viewport {
+      width: clamp(14rem, 64vw, 16rem);
+      height: clamp(20rem, 96vw, 24rem);
+    }
+
+    .cad-controls {
+      bottom: 0.5rem;
+    }
+
+    .cad-orientation {
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+
+    .cad-compass {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .cad-controls button {
+      min-width: 1.75rem;
+    }
+  }
+
+  .cad-controls :global(.cad-control-icon) {
+    width: 0.8125rem;
+    height: 0.8125rem;
+    fill: currentColor;
+  }
+</style>
+
+<script>
+  import type {
+    VrmlCadGeometryData,
+    VrmlCadMaterialData,
+    VrmlCadStartMessage,
+    VrmlCadWorkerMessage,
+  } from "./VrmlCadModel.types";
+
+  type CadViewMode = "orbit" | "plan";
+  type CompassAxisName = "x" | "y" | "z";
+  type ExplodeUniform = { value: number };
+  type ThreeCamera = import("three").OrthographicCamera | import("three").PerspectiveCamera;
+  type ThreeGroup = import("three").Group;
+  type ThreeMaterial = import("three").Material;
+  type ThreeModule = typeof import("three");
+  type ThreeOrbitControls = import("three/addons/controls/OrbitControls.js").OrbitControls;
+  type ThreeOrbitControlsConstructor = typeof import("three/addons/controls/OrbitControls.js").OrbitControls;
+  type ThreeOrthographicCamera = import("three").OrthographicCamera;
+  type ThreePerspectiveCamera = import("three").PerspectiveCamera;
+  type ThreeScene = import("three").Scene;
+  type ThreeVector3 = import("three").Vector3;
+  type ThreeWebGLRenderer = import("three").WebGLRenderer;
+
+  const MODEL_URL = "/models/cad/engine.wrl.gz";
+  const MODEL_BASE_PATH = "/models/cad/";
+  const PRELOAD_MARGIN = "120px 0px";
+  const SCROLL_SETTLE_MS = 180;
+  const PIXEL_RATIO_CAP = 1.35;
+  const MODEL_FRAME_PADDING = 1.16;
+  const EXPLODED_FRAME_SCALE = 0.26;
+  const GRID_SIZE_SCALE = 1.45;
+  const GRID_DIVISIONS = 16;
+  const EXPLODE_ANIMATION_MS = 300;
+  const RESET_ANIMATION_MS = 260;
+  const HOME_EPSILON = 0.001;
+  const INITIAL_ROTATION_Y = 0.62;
+  const LIGHT_THEME_EXPOSURE = 1.08;
+  const DARK_THEME_EXPOSURE = 0.92;
+  const EXPLODE_SHADER_KEY = "vrml-cad-explode-v1";
+
+  class VrmlCadViewer {
+    private readonly canvas: HTMLCanvasElement;
+    private readonly status: HTMLElement;
+    private readonly gridButton: HTMLButtonElement;
+    private readonly orbitButton: HTMLButtonElement;
+    private readonly planButton: HTMLButtonElement;
+    private readonly explodeButton: HTMLButtonElement;
+    private readonly compass: SVGSVGElement;
+    private readonly homeButton: HTMLButtonElement;
+    private readonly viewportObserver: IntersectionObserver | null;
+    private resizeObserver: ResizeObserver | null = null;
+    private themeObserver: MutationObserver | null = null;
+    private worker: Worker | null = null;
+    private three: ThreeModule | null = null;
+    private orbitControlsConstructor: ThreeOrbitControlsConstructor | null = null;
+    private scene: ThreeScene | null = null;
+    private perspectiveCamera: ThreePerspectiveCamera | null = null;
+    private planCamera: ThreeOrthographicCamera | null = null;
+    private renderer: ThreeWebGLRenderer | null = null;
+    private orbitControls: ThreeOrbitControls | null = null;
+    private model: ThreeGroup | null = null;
+    private grid: ThreeGroup | null = null;
+    private readonly explodeUniforms: ExplodeUniform[] = [];
+    private modelRadius = 1;
+    private modelWidth = 1;
+    private modelHeight = 1;
+    private modelDepth = 1;
+    private viewportAspect = 1;
+    private viewMode: CadViewMode = "orbit";
+    private gridVisible = false;
+    private exploded = false;
+    private explosionProgress = 0;
+    private explosionStartProgress = 0;
+    private explosionTarget = 0;
+    private explosionAnimationStart = 0;
+    private resetAnimating = false;
+    private resetAnimationStart = 0;
+    private resetStartCameraPosition: ThreeVector3 | null = null;
+    private resetStartTarget: ThreeVector3 | null = null;
+    private homeCameraPosition: ThreeVector3 | null = null;
+    private perspectiveFrameDistance = 0;
+    private renderRequest = 0;
+    private loadTimer: number | null = null;
+    private nearViewport = false;
+    private loadingStarted = false;
+    private disposed = false;
+
+    constructor(private readonly root: HTMLElement) {
+      const canvas = root.querySelector<HTMLCanvasElement>("[data-model-canvas]");
+      const status = root.querySelector<HTMLElement>("[data-model-status]");
+      const gridButton = root.querySelector<HTMLButtonElement>(
+        '[data-cad-control="grid"]',
+      );
+      const orbitButton = root.querySelector<HTMLButtonElement>(
+        '[data-cad-control="orbit"]',
+      );
+      const planButton = root.querySelector<HTMLButtonElement>(
+        '[data-cad-control="plan"]',
+      );
+      const explodeButton = root.querySelector<HTMLButtonElement>(
+        '[data-cad-control="explode"]',
+      );
+      const compass = root.querySelector<SVGSVGElement>("[data-cad-compass]");
+      const homeButton = root.querySelector<HTMLButtonElement>("[data-cad-home]");
+      if (
+        !canvas ||
+        !status ||
+        !gridButton ||
+        !orbitButton ||
+        !planButton ||
+        !explodeButton ||
+        !compass ||
+        !homeButton
+      ) {
+        throw new Error("VRML CAD model elements are missing");
+      }
+
+      this.canvas = canvas;
+      this.status = status;
+      this.gridButton = gridButton;
+      this.orbitButton = orbitButton;
+      this.planButton = planButton;
+      this.explodeButton = explodeButton;
+      this.compass = compass;
+      this.homeButton = homeButton;
+      this.viewportObserver = this.createViewportObserver();
+      document.addEventListener("astro:before-swap", this.dispose, { once: true });
+    }
+
+    private createViewportObserver(): IntersectionObserver | null {
+      if (!("IntersectionObserver" in window)) {
+        this.loadingStarted = true;
+        void this.load();
+        return null;
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          this.nearViewport = entries.some((entry) => entry.isIntersecting);
+          if (!this.nearViewport) {
+            this.cancelScheduledLoad();
+            return;
+          }
+
+          window.addEventListener("scroll", this.onScroll, { passive: true });
+          this.scheduleLoad();
+        },
+        { rootMargin: PRELOAD_MARGIN },
+      );
+      observer.observe(this.root);
+      return observer;
+    }
+
+    private readonly onScroll = (): void => {
+      this.scheduleLoad();
+    };
+
+    private scheduleLoad(): void {
+      if (!this.nearViewport || this.loadingStarted || this.disposed) return;
+      if (this.loadTimer !== null) window.clearTimeout(this.loadTimer);
+
+      this.loadTimer = window.setTimeout(() => {
+        this.loadTimer = null;
+        this.loadingStarted = true;
+        this.viewportObserver?.disconnect();
+        window.removeEventListener("scroll", this.onScroll);
+        void this.load();
+      }, SCROLL_SETTLE_MS);
+    }
+
+    private cancelScheduledLoad(): void {
+      if (this.loadTimer !== null) window.clearTimeout(this.loadTimer);
+      this.loadTimer = null;
+      window.removeEventListener("scroll", this.onScroll);
+    }
+
+    private async load(): Promise<void> {
+      this.setState("loading", "Loading CAD model…");
+
+      try {
+        const [three, { OrbitControls }] = await Promise.all([
+          import("three"),
+          import("three/addons/controls/OrbitControls.js"),
+        ]);
+        if (this.disposed) return;
+
+        this.three = three;
+        this.orbitControlsConstructor = OrbitControls;
+        this.setupScene();
+        this.worker = new Worker(
+          new URL("./VrmlCadModel.worker.ts", import.meta.url),
+          { type: "module" },
+        );
+        this.worker.addEventListener("message", this.onWorkerMessage);
+        this.worker.addEventListener("error", this.onWorkerError);
+
+        const message: VrmlCadStartMessage = {
+          basePath: MODEL_BASE_PATH,
+          modelUrl: MODEL_URL,
+        };
+        this.worker.postMessage(message);
+      } catch (error) {
+        this.fail(error);
+      }
+    }
+
+    private readonly onWorkerMessage = (
+      event: MessageEvent<VrmlCadWorkerMessage>,
+    ): void => {
+      if (this.disposed) return;
+
+      if (event.data.type === "status") {
+        this.status.textContent = event.data.message;
+        return;
+      }
+
+      if (event.data.type === "error") {
+        this.fail(new Error(event.data.message));
+        return;
+      }
+
+      try {
+        this.stopWorker();
+        this.addModel(event.data.geometries);
+        this.observeThemeChanges();
+        this.applyThemeLighting();
+        this.resize();
+        this.bindInteraction();
+        this.setState("ready", "CAD model ready");
+      } catch (error) {
+        this.fail(error);
+      }
+    };
+
+    private readonly onWorkerError = (event: ErrorEvent): void => {
+      this.fail(new Error(event.message || "The CAD worker failed."));
+    };
+
+    private setupScene(): void {
+      const three = this.three;
+      if (!three) return;
+
+      this.scene = new three.Scene();
+      this.perspectiveCamera = new three.PerspectiveCamera(32, 1, 0.01, 100);
+      this.planCamera = new three.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
+      this.renderer = new three.WebGLRenderer({
+        canvas: this.canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance",
+      });
+      this.renderer.outputColorSpace = three.SRGBColorSpace;
+      this.renderer.toneMapping = three.ACESFilmicToneMapping;
+
+      this.scene.add(new three.HemisphereLight(0xffffff, 0x454a52, 1.65));
+      const keyLight = new three.DirectionalLight(0xfff5e8, 2.5);
+      keyLight.position.set(3, 4, 5);
+      this.scene.add(keyLight);
+
+      const fillLight = new three.DirectionalLight(0xdce8ff, 1.2);
+      fillLight.position.set(-4, 1.5, -3);
+      this.scene.add(fillLight);
+    }
+
+    private addModel(geometries: VrmlCadGeometryData[]): void {
+      const three = this.three;
+      if (!three || !this.scene) return;
+
+      const model = new three.Group();
+      for (const data of geometries) {
+        const geometry = new three.BufferGeometry();
+        geometry.setAttribute("position", new three.BufferAttribute(data.positions, 3));
+        if (data.normals) {
+          geometry.setAttribute("normal", new three.BufferAttribute(data.normals, 3));
+        } else {
+          geometry.computeVertexNormals();
+        }
+        if (data.colors) {
+          geometry.setAttribute("color", new three.BufferAttribute(data.colors, 3));
+        }
+        geometry.setAttribute(
+          "partOffset",
+          new three.BufferAttribute(data.partOffsets, 3),
+        );
+
+        const mesh = new three.Mesh(geometry, this.createMaterial(data.material));
+        mesh.frustumCulled = false;
+        model.add(mesh);
+      }
+
+      const bounds = new three.Box3().setFromObject(model);
+      if (bounds.isEmpty()) {
+        this.disposeObject(model);
+        throw new Error("The CAD model has no visible bounds.");
+      }
+
+      const center = bounds.getCenter(new three.Vector3());
+      model.position.sub(center);
+      model.updateMatrixWorld(true);
+
+      const centeredBounds = new three.Box3().setFromObject(model);
+      const size = centeredBounds.getSize(new three.Vector3());
+      const sphere = centeredBounds.getBoundingSphere(new three.Sphere());
+      this.modelWidth = Math.max(size.x, 0.01);
+      this.modelHeight = Math.max(size.y, 0.01);
+      this.modelDepth = Math.max(size.z, 0.01);
+      this.modelRadius = Math.max(sphere.radius, 0.01);
+
+      this.model = model;
+      this.scene.add(model);
+      this.createGrid();
+    }
+
+    private createMaterial(data: VrmlCadMaterialData): ThreeMaterial {
+      const three = this.three;
+      if (!three) throw new Error("Three.js is unavailable.");
+
+      const common = {
+        color: data.color,
+        opacity: data.opacity,
+        side: data.side,
+        transparent: data.transparent,
+        vertexColors: data.vertexColors,
+      };
+
+      const material =
+        data.kind === "basic"
+          ? new three.MeshBasicMaterial(common)
+          : new three.MeshPhongMaterial({
+              ...common,
+              emissive: data.emissive,
+              shininess: data.shininess,
+              specular: data.specular,
+            });
+      const explodeUniform: ExplodeUniform = { value: this.explosionProgress };
+      this.explodeUniforms.push(explodeUniform);
+
+      material.onBeforeCompile = (shader) => {
+        shader.uniforms.cadExplode = explodeUniform;
+        shader.vertexShader = shader.vertexShader
+          .replace(
+            "#include <common>",
+            "#include <common>\nattribute vec3 partOffset;\nuniform float cadExplode;",
+          )
+          .replace(
+            "#include <begin_vertex>",
+            "vec3 transformed = vec3(position) + partOffset * cadExplode;",
+          );
+      };
+      material.customProgramCacheKey = () => EXPLODE_SHADER_KEY;
+      return material;
+    }
+
+    private createGrid(): void {
+      const three = this.three;
+      const scene = this.scene;
+      if (!three || !scene) return;
+
+      const size =
+        Math.max(this.modelWidth, this.modelHeight, this.modelDepth) * GRID_SIZE_SCALE;
+      const grid = new three.Group();
+      grid.name = "cad-xyz-grid";
+      grid.visible = this.gridVisible;
+
+      const xzPlane = new three.GridHelper(
+        size,
+        GRID_DIVISIONS,
+        0x76808c,
+        0x9aa0a8,
+      );
+      xzPlane.name = "cad-grid-plane";
+
+      const xyPlane = new three.GridHelper(
+        size,
+        GRID_DIVISIONS,
+        0x76808c,
+        0x9aa0a8,
+      );
+      xyPlane.name = "cad-grid-plane";
+      xyPlane.rotation.x = Math.PI / 2;
+
+      const yzPlane = new three.GridHelper(
+        size,
+        GRID_DIVISIONS,
+        0x76808c,
+        0x9aa0a8,
+      );
+      yzPlane.name = "cad-grid-plane";
+      yzPlane.rotation.z = Math.PI / 2;
+
+      const axes = new three.AxesHelper(size * 0.55);
+      axes.name = "cad-grid-axes";
+      grid.add(xzPlane, xyPlane, yzPlane, axes);
+      this.styleGridMaterials(grid);
+      this.grid = grid;
+      scene.add(grid);
+    }
+
+    private styleGridMaterials(grid: ThreeGroup): void {
+      const three = this.three;
+      if (!three) return;
+
+      const isDark = document.documentElement.classList.contains("dark");
+      grid.traverse((child) => {
+        if (!(child instanceof three.LineSegments)) return;
+        const materials = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+        const isAxes = child.name === "cad-grid-axes";
+        for (const material of materials) {
+          material.transparent = true;
+          material.opacity = isAxes
+            ? isDark
+              ? 0.72
+              : 0.62
+            : isDark
+              ? 0.13
+              : 0.09;
+          material.depthWrite = false;
+        }
+      });
+    }
+
+    private observeThemeChanges(): void {
+      this.themeObserver = new MutationObserver(this.applyThemeLighting);
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+
+    private readonly applyThemeLighting = (): void => {
+      if (!this.renderer) return;
+
+      const isDark = document.documentElement.classList.contains("dark");
+      this.renderer.toneMappingExposure = isDark
+        ? DARK_THEME_EXPOSURE
+        : LIGHT_THEME_EXPOSURE;
+      if (this.grid) this.styleGridMaterials(this.grid);
+      this.queueRender();
+    };
+
+    private bindInteraction(): void {
+      const OrbitControls = this.orbitControlsConstructor;
+      const camera = this.perspectiveCamera;
+      if (!OrbitControls || !camera) {
+        throw new Error("CAD camera controls are unavailable.");
+      }
+
+      const controls = new OrbitControls(camera, this.canvas);
+      controls.screenSpacePanning = true;
+      controls.zoomToCursor = true;
+      controls.minDistance = this.perspectiveFrameDistance * 0.35;
+      controls.maxDistance = this.perspectiveFrameDistance * 5;
+      controls.target.set(0, 0, 0);
+      controls.update();
+      controls.addEventListener("start", this.onOrbitControlsStart);
+      controls.addEventListener("change", this.onOrbitControlsChange);
+      controls.addEventListener("end", this.onOrbitControlsEnd);
+      this.orbitControls = controls;
+
+      this.gridButton.addEventListener("click", this.onGridToggle);
+      this.orbitButton.addEventListener("click", this.onOrbitSelect);
+      this.planButton.addEventListener("click", this.onPlanSelect);
+      this.explodeButton.addEventListener("click", this.onExplodeToggle);
+      this.homeButton.addEventListener("click", this.onHomeReset);
+
+      this.gridButton.disabled = false;
+      this.orbitButton.disabled = false;
+      this.planButton.disabled = false;
+      this.explodeButton.disabled = false;
+      this.syncControlState();
+
+      this.resizeObserver = new ResizeObserver(this.resize);
+      this.resizeObserver.observe(this.canvas);
+    }
+
+    private readonly onOrbitControlsStart = (): void => {
+      this.cancelResetAnimation();
+      this.root.dataset.dragging = "true";
+    };
+
+    private readonly onOrbitControlsChange = (): void => {
+      this.updateHomeButtonState();
+      this.queueRender();
+    };
+
+    private readonly onOrbitControlsEnd = (): void => {
+      delete this.root.dataset.dragging;
+    };
+
+    private readonly onGridToggle = (): void => {
+      this.gridVisible = !this.gridVisible;
+      if (this.grid) this.grid.visible = this.gridVisible;
+      this.syncControlState();
+      this.queueRender();
+    };
+
+    private readonly onOrbitSelect = (): void => {
+      this.setViewMode("orbit");
+    };
+
+    private readonly onPlanSelect = (): void => {
+      this.setViewMode("plan");
+    };
+
+    private readonly onExplodeToggle = (): void => {
+      this.exploded = !this.exploded;
+      this.explosionStartProgress = this.explosionProgress;
+      this.explosionTarget = this.exploded ? 1 : 0;
+      this.explosionAnimationStart = 0;
+      this.syncControlState();
+      this.queueRender();
+    };
+
+    private readonly onHomeReset = (): void => {
+      const camera = this.perspectiveCamera;
+      const controls = this.orbitControls;
+      const homePosition = this.homeCameraPosition;
+      if (!camera || !controls || !homePosition) return;
+
+      this.endPointerInteraction();
+      this.viewMode = "orbit";
+      controls.enabled = false;
+      this.resetStartCameraPosition = camera.position.clone();
+      this.resetStartTarget = controls.target.clone();
+      this.resetAnimationStart = 0;
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      const threshold = this.modelRadius * HOME_EPSILON;
+      this.resetAnimating =
+        !reduceMotion &&
+        (camera.position.distanceTo(homePosition) > threshold ||
+          controls.target.length() > threshold);
+      if (!this.resetAnimating) {
+        camera.position.copy(homePosition);
+        controls.target.set(0, 0, 0);
+        controls.enabled = true;
+        controls.update();
+      }
+
+      this.syncControlState();
+      this.queueRender();
+    };
+
+    private setViewMode(mode: CadViewMode): void {
+      const controls = this.orbitControls;
+      if (!controls || mode === this.viewMode) return;
+
+      this.cancelResetAnimation();
+      this.viewMode = mode;
+      controls.enabled = mode === "orbit";
+      this.endPointerInteraction();
+      this.syncControlState();
+      this.frameCameras();
+      this.queueRender();
+    }
+
+    private syncControlState(): void {
+      this.root.dataset.view = this.viewMode;
+      this.gridButton.setAttribute("aria-pressed", this.gridVisible ? "true" : "false");
+      this.orbitButton.setAttribute(
+        "aria-pressed",
+        this.viewMode === "orbit" ? "true" : "false",
+      );
+      this.planButton.setAttribute(
+        "aria-pressed",
+        this.viewMode === "plan" ? "true" : "false",
+      );
+      this.explodeButton.setAttribute("aria-pressed", this.exploded ? "true" : "false");
+      this.canvas.setAttribute(
+        "aria-label",
+        this.viewMode === "plan"
+          ? "Top-down plan view of an engine CAD assembly."
+          : "Interactive 3D engine CAD assembly. Drag to orbit, right-drag to pan, and scroll to zoom.",
+      );
+      this.updateHomeButtonState();
+    }
+
+    private updateHomeButtonState(): void {
+      const camera = this.perspectiveCamera;
+      const controls = this.orbitControls;
+      const homePosition = this.homeCameraPosition;
+      if (!camera || !controls || !homePosition) {
+        this.homeButton.disabled = true;
+        return;
+      }
+
+      const threshold = this.modelRadius * HOME_EPSILON;
+      const atHome =
+        this.viewMode === "orbit" &&
+        camera.position.distanceTo(homePosition) <= threshold &&
+        controls.target.length() <= threshold;
+      this.homeButton.disabled = atHome || this.resetAnimating;
+    }
+
+    private cancelResetAnimation(): void {
+      this.resetAnimating = false;
+      this.resetAnimationStart = 0;
+      this.resetStartCameraPosition = null;
+      this.resetStartTarget = null;
+      if (this.orbitControls) {
+        this.orbitControls.enabled = this.viewMode === "orbit";
+      }
+      this.updateHomeButtonState();
+    }
+
+    private endPointerInteraction(): void {
+      delete this.root.dataset.dragging;
+    }
+
+    private readonly resize = (): void => {
+      if (!this.renderer || !this.perspectiveCamera || !this.planCamera) return;
+
+      const { width, height } = this.canvas.getBoundingClientRect();
+      if (width <= 0 || height <= 0) return;
+
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, PIXEL_RATIO_CAP));
+      this.renderer.setSize(width, height, false);
+      this.viewportAspect = width / height;
+      this.frameCameras();
+      this.queueRender();
+    };
+
+    private frameCameras(): void {
+      const three = this.three;
+      const perspectiveCamera = this.perspectiveCamera;
+      const planCamera = this.planCamera;
+      if (!three || !perspectiveCamera || !planCamera) return;
+
+      const frameScale = 1 + this.explosionProgress * EXPLODED_FRAME_SCALE;
+      perspectiveCamera.aspect = this.viewportAspect;
+      const verticalFov = three.MathUtils.degToRad(perspectiveCamera.fov);
+      const horizontalFov = 2 * Math.atan(
+        Math.tan(verticalFov / 2) * perspectiveCamera.aspect,
+      );
+      const horizontalExtent = Math.max(this.modelWidth, this.modelDepth) / 2;
+      const verticalExtent = this.modelHeight / 2;
+      const horizontalDistance = horizontalExtent / Math.tan(horizontalFov / 2);
+      const verticalDistance = verticalExtent / Math.tan(verticalFov / 2);
+      const distance =
+        Math.max(horizontalDistance, verticalDistance) * MODEL_FRAME_PADDING * frameScale;
+      const previousDistance = this.perspectiveFrameDistance;
+      this.perspectiveFrameDistance = distance;
+      if (!this.homeCameraPosition) {
+        this.homeCameraPosition = new three.Vector3();
+      }
+      this.homeCameraPosition.set(
+        -Math.sin(INITIAL_ROTATION_Y) * distance,
+        distance * 0.025,
+        Math.cos(INITIAL_ROTATION_Y) * distance,
+      );
+
+      const controls = this.orbitControls;
+      if (!controls || previousDistance === 0) {
+        perspectiveCamera.position.copy(this.homeCameraPosition);
+        perspectiveCamera.lookAt(0, 0, 0);
+      } else if (Math.abs(distance - previousDistance) > Number.EPSILON) {
+        const offset = perspectiveCamera.position.clone().sub(controls.target);
+        if (offset.lengthSq() > 0) {
+          offset.multiplyScalar(distance / previousDistance);
+          perspectiveCamera.position.copy(controls.target).add(offset);
+        }
+      }
+      perspectiveCamera.near = Math.max(distance / 100, 0.01);
+      perspectiveCamera.far = distance * 6 + this.modelRadius * 6;
+      perspectiveCamera.updateProjectionMatrix();
+      if (controls) {
+        controls.minDistance = distance * 0.35;
+        controls.maxDistance = distance * 5;
+        controls.update();
+      }
+
+      const planHeight =
+        Math.max(this.modelDepth, this.modelWidth / this.viewportAspect) *
+        MODEL_FRAME_PADDING *
+        frameScale;
+      const planWidth = planHeight * this.viewportAspect;
+      planCamera.left = -planWidth / 2;
+      planCamera.right = planWidth / 2;
+      planCamera.top = planHeight / 2;
+      planCamera.bottom = -planHeight / 2;
+      planCamera.position.set(0, this.modelRadius * 3, 0);
+      planCamera.up.set(0, 0, -1);
+      planCamera.near = 0.01;
+      planCamera.far = this.modelRadius * 8;
+      planCamera.lookAt(0, 0, 0);
+      planCamera.updateProjectionMatrix();
+    }
+
+    private queueRender(): void {
+      if (this.renderRequest || !this.renderer || !this.scene || !this.activeCamera) {
+        return;
+      }
+
+      this.renderRequest = requestAnimationFrame(this.renderFrame);
+    }
+
+    private readonly renderFrame = (timestamp: number): void => {
+      this.renderRequest = 0;
+      const renderer = this.renderer;
+      const scene = this.scene;
+      const camera = this.activeCamera;
+      if (!renderer || !scene || !camera) return;
+
+      let keepAnimating = false;
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (this.explosionProgress !== this.explosionTarget) {
+        if (reduceMotion) {
+          this.explosionProgress = this.explosionTarget;
+        } else {
+          if (this.explosionAnimationStart === 0) {
+            this.explosionAnimationStart = timestamp;
+          }
+          const elapsed = timestamp - this.explosionAnimationStart;
+          const progress = Math.min(elapsed / EXPLODE_ANIMATION_MS, 1);
+          const easedProgress = 1 - Math.pow(1 - progress, 3);
+          this.explosionProgress =
+            this.explosionStartProgress +
+            (this.explosionTarget - this.explosionStartProgress) * easedProgress;
+          keepAnimating = progress < 1;
+        }
+
+        for (const uniform of this.explodeUniforms) {
+          uniform.value = this.explosionProgress;
+        }
+        this.frameCameras();
+      }
+
+      const perspectiveCamera = this.perspectiveCamera;
+      const controls = this.orbitControls;
+      const resetStartCameraPosition = this.resetStartCameraPosition;
+      const resetStartTarget = this.resetStartTarget;
+      const homeCameraPosition = this.homeCameraPosition;
+      if (
+        this.resetAnimating &&
+        perspectiveCamera &&
+        controls &&
+        resetStartCameraPosition &&
+        resetStartTarget &&
+        homeCameraPosition
+      ) {
+        if (reduceMotion) {
+          perspectiveCamera.position.copy(homeCameraPosition);
+          controls.target.set(0, 0, 0);
+          this.resetAnimating = false;
+        } else {
+          if (this.resetAnimationStart === 0) {
+            this.resetAnimationStart = timestamp;
+          }
+          const elapsed = timestamp - this.resetAnimationStart;
+          const progress = Math.min(elapsed / RESET_ANIMATION_MS, 1);
+          const easedProgress = 1 - Math.pow(1 - progress, 3);
+          perspectiveCamera.position.lerpVectors(
+            resetStartCameraPosition,
+            homeCameraPosition,
+            easedProgress,
+          );
+          controls.target
+            .copy(resetStartTarget)
+            .multiplyScalar(1 - easedProgress);
+          this.resetAnimating = progress < 1;
+          keepAnimating ||= this.resetAnimating;
+        }
+
+        if (!this.resetAnimating) {
+          perspectiveCamera.position.copy(homeCameraPosition);
+          controls.target.set(0, 0, 0);
+          controls.enabled = this.viewMode === "orbit";
+          this.resetAnimationStart = 0;
+          this.resetStartCameraPosition = null;
+          this.resetStartTarget = null;
+          controls.update();
+          this.updateHomeButtonState();
+        } else {
+          controls.update();
+        }
+      }
+
+      this.updateCompass(camera);
+      renderer.render(scene, camera);
+      if (keepAnimating && !this.renderRequest) {
+        this.renderRequest = requestAnimationFrame(this.renderFrame);
+      }
+    };
+
+    private get activeCamera(): ThreeCamera | null {
+      return this.viewMode === "plan" ? this.planCamera : this.perspectiveCamera;
+    }
+
+    private updateCompass(camera: ThreeCamera): void {
+      const three = this.three;
+      const model = this.model;
+      if (!three || !model) return;
+
+      const inverseCameraQuaternion = camera.quaternion.clone().invert();
+      const axisNames: CompassAxisName[] = ["x", "y", "z"];
+      for (const axisName of axisNames) {
+        const vector =
+          axisName === "x"
+            ? new three.Vector3(1, 0, 0)
+            : axisName === "y"
+              ? new three.Vector3(0, 1, 0)
+              : new three.Vector3(0, 0, 1);
+        vector.applyQuaternion(model.quaternion).applyQuaternion(inverseCameraQuaternion);
+
+        const line = this.compass.querySelector<SVGLineElement>(
+          `[data-compass-line="${axisName}"]`,
+        );
+        const point = this.compass.querySelector<SVGCircleElement>(
+          `[data-compass-point="${axisName}"]`,
+        );
+        const label = this.compass.querySelector<SVGTextElement>(
+          `[data-compass-label="${axisName}"]`,
+        );
+        const group = this.compass.querySelector<SVGGElement>(
+          `[data-compass-axis="${axisName}"]`,
+        );
+        if (!line || !point || !label || !group) continue;
+
+        const endpointX = 32 + vector.x * 19;
+        const endpointY = 32 - vector.y * 19;
+        const screenLength = Math.hypot(vector.x, vector.y);
+        const labelDirectionX = screenLength > 0.05 ? vector.x / screenLength : 0;
+        const labelDirectionY =
+          screenLength > 0.05 ? -vector.y / screenLength : -1;
+
+        line.setAttribute("x2", endpointX.toFixed(2));
+        line.setAttribute("y2", endpointY.toFixed(2));
+        point.setAttribute("cx", endpointX.toFixed(2));
+        point.setAttribute("cy", endpointY.toFixed(2));
+        point.setAttribute("r", (2.1 + Math.max(vector.z, 0) * 0.55).toFixed(2));
+        label.setAttribute("x", (endpointX + labelDirectionX * 5.5).toFixed(2));
+        label.setAttribute(
+          "y",
+          (endpointY + labelDirectionY * 5.5 + 2.2).toFixed(2),
+        );
+        group.style.opacity = (0.52 + (vector.z + 1) * 0.24).toFixed(2);
+      }
+    }
+
+    private fail(error: unknown): void {
+      if (this.disposed) return;
+      console.error("Unable to load the VRML CAD model", error);
+      this.stopWorker();
+      if (this.model) {
+        this.disposeObject(this.model);
+        this.model = null;
+      }
+      this.disposeGrid();
+      this.explodeUniforms.length = 0;
+      this.homeButton.disabled = true;
+      this.releaseRenderer();
+      this.setState("error", "The CAD model could not be loaded.");
+    }
+
+    private setState(state: "loading" | "ready" | "error", message: string): void {
+      this.root.dataset.state = state;
+      this.status.textContent = message;
+    }
+
+    private stopWorker(): void {
+      this.worker?.removeEventListener("message", this.onWorkerMessage);
+      this.worker?.removeEventListener("error", this.onWorkerError);
+      this.worker?.terminate();
+      this.worker = null;
+    }
+
+    private disposeObject(root: import("three").Object3D): void {
+      const three = this.three;
+      if (!three) return;
+
+      const materials = new Set<ThreeMaterial>();
+      root.traverse((child) => {
+        if (!(child instanceof three.Mesh)) return;
+        child.geometry.dispose();
+        const meshMaterials = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+        for (const material of meshMaterials) materials.add(material);
+      });
+      for (const material of materials) material.dispose();
+    }
+
+    private releaseRenderer(): void {
+      this.disposeOrbitControls();
+      this.renderer?.dispose();
+      this.renderer?.forceContextLoss();
+      this.renderer = null;
+      this.scene = null;
+      this.perspectiveCamera = null;
+      this.planCamera = null;
+    }
+
+    private disposeOrbitControls(): void {
+      if (!this.orbitControls) return;
+      this.orbitControls.removeEventListener("start", this.onOrbitControlsStart);
+      this.orbitControls.removeEventListener("change", this.onOrbitControlsChange);
+      this.orbitControls.removeEventListener("end", this.onOrbitControlsEnd);
+      this.orbitControls.dispose();
+      this.orbitControls = null;
+    }
+
+    private disposeGrid(): void {
+      const three = this.three;
+      if (!three || !this.grid) return;
+
+      this.grid.removeFromParent();
+      const materials = new Set<ThreeMaterial>();
+      this.grid.traverse((child) => {
+        if (!(child instanceof three.LineSegments)) return;
+        child.geometry.dispose();
+        const lineMaterials = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+        for (const material of lineMaterials) materials.add(material);
+      });
+      for (const material of materials) material.dispose();
+      this.grid = null;
+    }
+
+    private readonly dispose = (): void => {
+      if (this.disposed) return;
+      this.disposed = true;
+      this.viewportObserver?.disconnect();
+      this.resizeObserver?.disconnect();
+      this.themeObserver?.disconnect();
+      this.cancelScheduledLoad();
+      this.stopWorker();
+      this.gridButton.removeEventListener("click", this.onGridToggle);
+      this.orbitButton.removeEventListener("click", this.onOrbitSelect);
+      this.planButton.removeEventListener("click", this.onPlanSelect);
+      this.explodeButton.removeEventListener("click", this.onExplodeToggle);
+      this.homeButton.removeEventListener("click", this.onHomeReset);
+      document.removeEventListener("astro:before-swap", this.dispose);
+
+      if (this.renderRequest) cancelAnimationFrame(this.renderRequest);
+      this.endPointerInteraction();
+      this.disposeGrid();
+      if (this.model) this.disposeObject(this.model);
+      this.explodeUniforms.length = 0;
+      this.releaseRenderer();
+    };
+  }
+
+  const initializeVrmlCadViewers = (): void => {
+    const viewers = document.querySelectorAll<HTMLElement>("[data-vrml-cad-model]");
+    for (const element of viewers) {
+      if (element.dataset.initialized === "true") continue;
+      element.dataset.initialized = "true";
+      new VrmlCadViewer(element);
+    }
+  };
+
+  document.addEventListener("astro:page-load", initializeVrmlCadViewers);
+</script>
