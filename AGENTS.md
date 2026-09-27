@@ -142,6 +142,18 @@ Committed to the repo. The two that encode real conventions for this site:
 - **`publish-problem-of-day`** — the exact workflow for adding `src/content/problems/*.mdx` entries (start from `_template.mdx`, import `Toggle.astro` once, order the solution as proof → derivation → implementation → answer → full solution in a `Toggle`, then run `bun run build`).
 - **`astro-image-optimization`** — WebP conversion + ThumbHash generation workflow for `src/assets` images.
 
+## Writing voice
+
+When drafting or editing first-person blog posts, preserve Lucas's established voice:
+
+- Open with the concrete idea, observation or result. Avoid scene-setting, throat-clearing and generic summaries.
+- Prefer short paragraphs and plain, conversational sentences. Use occasional fragments, rhetorical questions and one-line paragraphs to control pace.
+- Explain technical ideas through a small concrete example before zooming out to the broader claim. Keep enough implementation detail to make the argument credible, but do not turn the post into documentation.
+- Write with curiosity and conviction in the first person. It is fine to be playful, mildly irreverent or self-deprecating; a restrained punchline is better than corporate polish.
+- Use Australian/British spelling where natural (`labour`, `realised`, `optimised`) and typographic apostrophes in prose.
+- Keep short posts genuinely short. End on the sharpest implication, question or callback rather than appending a recap or a generic call to action.
+- Do not invent biographical or project details to make a story smoother. Check dates, links and technical claims against repository history or the primary project first.
+
 ## Cursor Cloud specific instructions
 
 - The dev server runs without any environment variables.
