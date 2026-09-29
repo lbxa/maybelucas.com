@@ -10,7 +10,7 @@ The available keys, imported WebPs, alt text, viewer captions, museum source lin
 
 Alt text describes what is visible in each crop. Captions add the work's title, artist and story, with a museum link for further reading. Banners use `captionVisibility="viewer"` so this text appears when the image is opened, while other images keep their existing inline captions. The coastal scene's title and artist remain unidentified. Dates follow the linked museum records, including the Louvre's current c. 1654–1658 dating for Diogenes; Sandrart's broadly dated work is labelled 17th century.
 
-All eleven assets are **1400 × 350**. The rendered image height stays between **192 and 240 px**, and every banner starts at the top of the page beneath the floating navigation. The `position` value keeps the subject in view on narrower screens, and is shared by the image and its placeholder. Five paintings set `preserveComposition` so screens wider than 960 px show the complete banner detail at the capped height, with a blurred backdrop sampled from the same asset at the sides. This prevents a second vertical crop from removing the subjects. `"wide"` preserves the detail on wide screens; `"always"` also preserves its full width on phones, with the backdrop filling above and below. Turner uses `"always"` to keep both the ship and sunrise visible; Nausicaa uses it to keep both sides of her encounter with Odysseus visible.
+All eleven assets are **1400 × 350**. The rendered image height stays between **192 and 240 px**, and every banner starts at the top of the page beneath the floating navigation. Every painting fills the entire banner with `object-fit: cover` on all screen sizes. The `position` value controls the focal point for responsive cropping and is shared by the image and its loading placeholder. There are no blurred backdrops, letterboxing or alternate fitting modes. The image viewer shows the complete prepared banner crop.
 
 ## Assignments
 
@@ -25,8 +25,8 @@ All eleven assets are **1400 × 350**. The rendered image height stays between *
 | Lexicon | `diogenes` | `src/assets/images/banners/diogenes.webp` |
 | Musings | `sirens` | `src/assets/images/banners/ulysses-and-the-sirens.webp` |
 | Projects | `polyphemus` | `src/assets/images/banners/ulysses-and-polyphemus.webp` |
-| Bookshelf | `nausicaa` | `src/assets/images/banners/odysseus-and-nausicaa.webp` |
-| Notes | `patroclus` | `src/assets/images/banners/funeral-of-patroclus.webp` |
+| Available for future pages | `nausicaa` | `src/assets/images/banners/odysseus-and-nausicaa.webp` |
+| Bookshelf, Notes | `patroclus` | `src/assets/images/banners/funeral-of-patroclus.webp` |
 
 The standalone NYC map and Möbius showcase retain their immersive layouts. Home retains the overlapping portrait; Blurb has no portrait.
 
@@ -69,9 +69,9 @@ The [Wellcome Collection's account of Poussin's scene](https://wellcomecollectio
 
 The [NGV's account of Waterhouse's painting](https://www.ngv.vic.gov.au/explore/collection/work/4457/) centres on Ulysses listening to the sirens while bound to the mast. The Musings crop retains his face, bound hands and the airborne sirens around him; the lower rowers and foreground siren are outside this detail. The phone focal point keeps Ulysses and the nearest sirens together.
 
-The [National Gallery's account of Turner's painting](https://www.nationalgallery.org.uk/paintings/joseph-mallord-william-turner-ulysses-deriding-polyphemus-homer-s-odyssey) identifies both Ulysses on the departing ship and Polyphemus above the cliffs. The user chose a short banner focused on the ship and sunrise. The Projects crop follows that choice; Polyphemus and the upper sail fall outside this detail. Its full horizontal composition is retained on phones so the ship and sunrise are not cropped apart.
+The [National Gallery's account of Turner's painting](https://www.nationalgallery.org.uk/paintings/joseph-mallord-william-turner-ulysses-deriding-polyphemus-homer-s-odyssey) identifies both Ulysses on the departing ship and Polyphemus above the cliffs. The user chose a short banner focused on the ship and sunrise. The prepared Projects crop follows that choice; Polyphemus and the upper sail fall outside this detail. The page crops this asset further as needed to cover the banner viewport.
 
-[Joachim von Sandrart's Odysseus and Nausicaa](https://www.rijksmuseum.nl/en/collection/object/Odysseus-and-Nausicaa--36d44d38106f0cc843b11a1b12dc5c09) shows the shipwrecked Odysseus meeting Nausicaa and her attendants. The Bookshelf crop preserves both central faces and Nausicaa's gesture offering clothing. The lower bodies, dog and upper sky are outside the detail. The complete horizontal crop stays visible on phones so the two protagonists are not separated.
+[Joachim von Sandrart's Odysseus and Nausicaa](https://www.rijksmuseum.nl/en/collection/object/Odysseus-and-Nausicaa--36d44d38106f0cc843b11a1b12dc5c09) shows the shipwrecked Odysseus meeting Nausicaa and her attendants. The prepared crop preserves both central faces and Nausicaa's gesture offering clothing. The lower bodies, dog and upper sky are outside the detail. This banner remains in the library for future pages, with its alt text, caption and museum link.
 
 [Jacques-Louis David's The Funeral of Patroclus](https://onlinecollection.nationalgallery.ie/objects/8188) centres on Achilles mourning his friend before the funeral pyre. The Notes crop keeps Achilles's entire helmet, red cloak and Patroclus's reclining body, together with the surrounding mourners. It removes most of the sky and lower foreground; the phone focal point keeps Achilles and Patroclus together.
 

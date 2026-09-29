@@ -19,7 +19,6 @@ export interface BannerImage {
   captionSourceLabel?: string;
   thumbhash: string;
   position: string;
-  preserveComposition?: "wide" | "always";
 }
 
 // Each page chooses a key with <ContentLayout banner="orion">.
@@ -85,7 +84,6 @@ export const bannerImages = {
     captionSourceLabel: "Musée du Louvre",
     thumbhash: "8d08060a80028b79627ac5674056094877",
     position: "88% 50%",
-    preserveComposition: "wide",
   },
   sirens: {
     src: sirensImage,
@@ -95,7 +93,6 @@ export const bannerImages = {
     captionSourceLabel: "National Gallery of Victoria",
     thumbhash: "8f18020a823c7b74ef8af8584f0de5f631",
     position: "70% 50%",
-    preserveComposition: "wide",
   },
   polyphemus: {
     src: polyphemusImage,
@@ -105,7 +102,6 @@ export const bannerImages = {
     captionSourceLabel: "The National Gallery, London",
     thumbhash: "16290a1282726a6a6f977888a27f36ff39",
     position: "50% 50%",
-    preserveComposition: "always",
   },
   nausicaa: {
     src: nausicaaImage,
@@ -115,7 +111,6 @@ export const bannerImages = {
     captionSourceLabel: "Rijksmuseum",
     thumbhash: "8e18020a804324e9038925970b43f32456",
     position: "50% 50%",
-    preserveComposition: "always",
   },
   patroclus: {
     src: patroclusImage,
@@ -125,7 +120,6 @@ export const bannerImages = {
     captionSourceLabel: "National Gallery of Ireland",
     thumbhash: "8f28060a82099454987996890a94580469",
     position: "61% 50%",
-    preserveComposition: "wide",
   },
 } satisfies Record<string, BannerImage>;
 

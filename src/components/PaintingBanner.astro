@@ -11,15 +11,9 @@ const banner: BannerImage = bannerImages[painting];
 ---
 
 <div
-  class:list={[
-    "painting-banner relative z-20",
-    {
-      "preserve-composition": banner.preserveComposition,
-      "preserve-composition-always": banner.preserveComposition === "always",
-    },
-  ]}
+  class="painting-banner relative z-20"
   data-banner={painting}
-  style={`--banner-position: ${banner.position}; --banner-background: url("${banner.src.src}")`}
+  style={`--banner-position: ${banner.position}`}
 >
   <Image
     src={banner.src}
@@ -48,29 +42,9 @@ const banner: BannerImage = bannerImages[painting];
   }
 
   .painting-banner :global(img) {
+    width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: var(--banner-position);
-  }
-
-  .preserve-composition :global(.placeholder-shell)::before {
-    content: "";
-    position: absolute;
-    inset: -24px;
-    background: var(--banner-background) var(--banner-position) / cover;
-    filter: blur(20px);
-  }
-
-  .preserve-composition-always :global(img) {
-    object-fit: contain;
-  }
-
-  /* Beyond 4:1, cover would cut off faces and gestures vertically. */
-  @media (min-width: 960px) {
-    .preserve-composition :global(img) {
-      width: auto;
-      max-width: 100%;
-      object-fit: contain;
-    }
   }
 </style>
