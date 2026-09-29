@@ -13,8 +13,13 @@ const { title, ...seoProps } = Astro.props;
   >
   </div>
 
+  <slot name="banner" />
+
   <main
-    class="flex flex-col mx-auto px-lg md:px-0 max-w-screen-sm min-h-dvh pt-20 relative z-20"
+    class:list={[
+      "flex flex-col mx-auto px-lg md:px-0 max-w-screen-sm min-h-dvh relative z-20",
+      !Astro.slots.has("banner") && "pt-20",
+    ]}
   >
     <article class="grow">
       <slot />

@@ -3,6 +3,7 @@ import Socials from "@components/Socials.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import Image from "@components/Image.astro";
 import { getEntry, render } from "astro:content";
+import bannerImage from "../assets/images/coastal-banner.webp";
 import profileImage from "../assets/images/profile.webp";
 import treeImage from "../assets/images/tree.webp";
 
@@ -27,10 +28,25 @@ const { Content: PublicationsContent } = await render(publications);
   url="/"
   type="profile"
 >
-  <div class="mt-md mb-xl w-32 sm:w-38 md:w-44">
+  <div slot="banner" class="home-banner relative z-20">
+    <Image
+      src={bannerImage}
+      alt="A painting of a quiet coastal inlet bordered by rocks and greenery"
+      width={1400}
+      height={350}
+      class="!my-0"
+      thumbhash="2fe8090a828a78767f779877e590f2df75"
+      widths={[768, 1024, 1400]}
+      sizes="(max-width: 768px) 768px, 100vw"
+      loading="eager"
+      fetchpriority="high"
+      quality={82}
+    />
+  </div>
+  <div class="relative -mt-16 mb-xl w-32 md:-mt-[5.5rem] md:w-44 rounded-lg ring-4 ring-ivory dark:ring-shark-950">
     <Image
       src={profileImage}
-      alt="Portrait photo"
+      alt="Portrait of Lucas Barbosa"
       width={176}
       height={176}
       class="!my-0 w-full"
@@ -63,3 +79,16 @@ const { Content: PublicationsContent } = await render(publications);
     quality={82}
   /> -->
 </ContentLayout>
+
+<style>
+  .home-banner :global(.placeholder-shell) {
+    height: clamp(12rem, 25vw, 21.875rem);
+    aspect-ratio: auto !important;
+    border-radius: 0;
+  }
+
+  .home-banner :global(img[data-main-image]) {
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
