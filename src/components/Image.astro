@@ -8,6 +8,8 @@ interface Props {
   src: ImageLike;
   alt: string;
   caption?: string;
+  /** Keep banner captions in the image viewer without adding text below the banner. */
+  captionVisibility?: "always" | "viewer";
   captionSourceHref?: string;
   captionSourceLabel?: string;
   width?: number;
@@ -28,6 +30,7 @@ const {
   src,
   alt,
   caption,
+  captionVisibility = "always",
   captionSourceHref,
   captionSourceLabel,
   width,
@@ -183,7 +186,7 @@ const mainOnLoad = thumbhash
     )
   }
   {
-    (caption || captionSourceHref) && (
+    captionVisibility === "always" && (caption || captionSourceHref) && (
       <figcaption class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
         {caption}
         {caption && captionSourceHref && " "}

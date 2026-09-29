@@ -224,11 +224,12 @@ export default function ImageViewer() {
                     </div>
                   </header>
 
-                  <div class="relative flex-1 overflow-auto bg-ivory/70 p-md dark:bg-shark-950/70 md:p-xl">
+                  <div class="relative min-h-0 flex-1 overflow-auto bg-ivory/70 p-md dark:bg-shark-950/70 md:p-xl">
                     <div class="flex min-h-full items-center justify-center">
                       <img
                         src={state().src}
                         alt={state().alt}
+                        aria-describedby={state().caption || state().captionSourceHref ? "image-viewer-caption" : undefined}
                         class="max-h-full max-w-full select-none rounded-lg object-contain shadow-xl transition-transform duration-150 ease-out"
                         style={{
                           transform: `scale(${zoom()})`,
@@ -239,7 +240,7 @@ export default function ImageViewer() {
                     </div>
                   </div>
                   <Show when={state().caption || state().captionSourceHref}>
-                    <p class="border-t border-shark-950/10 px-md pt-md text-sm leading-snug break-words text-shark-700 dark:border-ivory/10 dark:text-shark-200 md:px-lg">
+                    <p id="image-viewer-caption" class="max-h-[35dvh] shrink-0 overflow-y-auto border-t border-shark-950/10 px-md py-md text-sm leading-relaxed break-words text-shark-700 dark:border-ivory/10 dark:text-shark-200 md:px-lg">
                       {state().caption}
                       <Show when={state().caption && state().captionSourceHref}>
                         {" "}

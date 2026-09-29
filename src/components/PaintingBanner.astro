@@ -1,0 +1,76 @@
+---
+import Image from "@components/Image.astro";
+import { bannerImages, type BannerImage, type BannerName } from "@/lib/bannerImages";
+
+interface Props {
+  painting: BannerName;
+}
+
+const { painting } = Astro.props;
+const banner: BannerImage = bannerImages[painting];
+---
+
+<div
+  class:list={[
+    "painting-banner relative z-20",
+    {
+      "preserve-composition": banner.preserveComposition,
+      "preserve-composition-always": banner.preserveComposition === "always",
+    },
+  ]}
+  data-banner={painting}
+  style={`--banner-position: ${banner.position}; --banner-background: url("${banner.src.src}")`}
+>
+  <Image
+    src={banner.src}
+    alt={banner.alt}
+    caption={banner.caption}
+    captionSourceHref={banner.captionSourceHref}
+    captionSourceLabel={banner.captionSourceLabel}
+    captionVisibility="viewer"
+    width={1400}
+    height={350}
+    class="!my-0"
+    thumbhash={banner.thumbhash}
+    widths={[768, 1024, 1400]}
+    sizes="(max-width: 768px) 768px, 100vw"
+    loading="eager"
+    fetchpriority="high"
+    quality={82}
+  />
+</div>
+
+<style>
+  .painting-banner :global(.placeholder-shell) {
+    height: clamp(12rem, 25vw, 15rem);
+    aspect-ratio: auto !important;
+    border-radius: 0;
+  }
+
+  .painting-banner :global(img) {
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--banner-position);
+  }
+
+  .preserve-composition :global(.placeholder-shell)::before {
+    content: "";
+    position: absolute;
+    inset: -24px;
+    background: var(--banner-background) var(--banner-position) / cover;
+    filter: blur(20px);
+  }
+
+  .preserve-composition-always :global(img) {
+    object-fit: contain;
+  }
+
+  /* Beyond 4:1, cover would cut off faces and gestures vertically. */
+  @media (min-width: 960px) {
+    .preserve-composition :global(img) {
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+    }
+  }
+</style>

@@ -54,6 +54,7 @@ export async function getStaticPaths() {
 ---
 
 <ContentLayout
+  banner="apollo"
   title={entry.data.title}
   description={entry.data.description ?? undefined}
   url={`/posts/${entry.id}`}
@@ -80,13 +81,13 @@ export async function getStaticPaths() {
   </header>
   <script type="application/ld+json" is:inline>{jsonLd}</script>
   <section class="mx-auto">
-    {
+    <!-- {
       opener && (
         <p class="mb-2xl border-l-2 border-shark-950/20 pl-md font-serif text-[1.35rem] leading-relaxed text-shark-700 dark:border-ivory/25 dark:text-shark-200 md:text-[1.55rem]">
           {opener}
         </p>
       )
-    }
+    } -->
     <div
       class="blog-content content post-content [&_p]:text-[1.125rem] md:[&_p]:text-[1.25rem] [&_p]:leading-[1.85] [&_li]:text-[1.0625rem] md:[&_li]:text-[1.125rem] [&_li]:leading-[1.8]"
     >

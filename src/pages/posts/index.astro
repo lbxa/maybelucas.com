@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import dayjs from "dayjs";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import ReadingTime from "@components/ReadingTime.astro";
+import Title from "@/components/Title.astro";
 
 const pageTitle = "All my writing";
 const pageDescription =
@@ -33,15 +34,15 @@ const postsByYear = posts.reduce(
 ---
 
 <ContentLayout
+  banner="apollo"
   title={pageTitle}
   description={pageDescription}
   url={canonicalPath}
   type="website"
 >
-  <!-- <section class="font-mono">
+  <section>
     <Title>Posts</Title>
-    <p class="mb-3xl">Toward escape velocity</p>
-  </section> -->
+  </section>
   <section class="flex flex-col gap-2xl">
     {
       postsByYear.map(({ year, posts }) => (

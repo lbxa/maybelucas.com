@@ -1,10 +1,7 @@
 ---
 import Socials from "@components/Socials.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
-import Image from "@components/Image.astro";
 import { getEntry, render } from "astro:content";
-import profileImage from "../assets/images/profile.webp";
-import treeImage from "../assets/images/tree.webp";
 
 const bioIntro = await getEntry("about", "blurb");
 if (!bioIntro) {
@@ -16,13 +13,14 @@ const { Content: BlurbContent } = await render(bioIntro);
 ---
 
 <ContentLayout
+  banner="orion"
   title="Lucas Barbosa"
   ogTitle="Lucas Barbosa - Software, AI, and Life"
   ogDescription="Thoughtful essays on software engineering, AI, startups, and personal growth. Explore ideas, practical lessons, and experiments."
   url="/"
   type="profile"
 >
-  <section class="blog-content content mb-xl">
+  <section class="blog-content content mt-2xl mb-xl">
       <BlurbContent />
   </section>
   <section class="mb-3xl">

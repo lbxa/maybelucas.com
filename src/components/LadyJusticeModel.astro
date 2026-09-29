@@ -187,6 +187,7 @@
   const SCROLL_SETTLE_MS = 180;
   const PIXEL_RATIO_CAP = 1.5;
   const DRAG_SPEED = 0.008;
+  const IDLE_ROTATION_SPEED = 0.16; // Radians per second; one turn in about 40 seconds.
   const MAX_VERTICAL_ROTATION = Math.PI * 0.22;
   // Calibrated for pale stone (mean vertex-colour albedo ≈ 0.6), not the
   // gladiator's dark bronze — the gladiator's rig blows this model out to white.
@@ -224,6 +225,7 @@
     private readonly canvas: HTMLCanvasElement;
     private readonly status: HTMLElement;
     private readonly viewportObserver: IntersectionObserver | null;
+    private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     private resizeObserver: ResizeObserver | null = null;
     private three: ThreeModule | null = null;
     private scene: ThreeScene | null = null;
@@ -240,6 +242,7 @@
     private pointerX = 0;
     private pointerY = 0;
     private renderRequest = 0;
+    private lastFrameTime: number | null = null;
     private loadTimer: number | null = null;
     private nearViewport = false;
     private loadingStarted = false;
@@ -255,11 +258,14 @@
       this.canvas = canvas;
       this.status = status;
       this.viewportObserver = this.createViewportObserver();
+      this.reducedMotion.addEventListener("change", this.onAnimationStateChange);
+      document.addEventListener("visibilitychange", this.onAnimationStateChange);
       document.addEventListener("astro:before-swap", this.dispose, { once: true });
     }
 
     private createViewportObserver(): IntersectionObserver | null {
       if (!("IntersectionObserver" in window)) {
+        this.nearViewport = true;
         this.loadingStarted = true;
         void this.load();
         return null;
@@ -268,13 +274,16 @@
       const observer = new IntersectionObserver(
         (entries) => {
           this.nearViewport = entries.some((entry) => entry.isIntersecting);
+          this.onAnimationStateChange();
           if (!this.nearViewport) {
             this.cancelScheduledLoad();
             return;
           }
 
-          window.addEventListener("scroll", this.onScroll, { passive: true });
-          this.scheduleLoad();
+          if (!this.loadingStarted) {
+            window.addEventListener("scroll", this.onScroll, { passive: true });
+            this.scheduleLoad();
+          }
         },
         { rootMargin: PRELOAD_MARGIN },
       );
@@ -293,7 +302,6 @@
       this.loadTimer = window.setTimeout(() => {
         this.loadTimer = null;
         this.loadingStarted = true;
-        this.viewportObserver?.disconnect();
         window.removeEventListener("scroll", this.onScroll);
         void this.load();
       }, SCROLL_SETTLE_MS);
@@ -470,6 +478,7 @@
       if (!this.model || (event.pointerType === "mouse" && event.button !== 0)) return;
 
       this.pointerId = event.pointerId;
+      this.lastFrameTime = null;
       this.pointerX = event.clientX;
       this.pointerY = event.clientY;
       this.canvas.setPointerCapture(event.pointerId);
@@ -499,6 +508,7 @@
       }
       this.pointerId = null;
       delete this.root.dataset.dragging;
+      this.queueRender();
     };
 
     private readonly resize = (): void => {
@@ -534,15 +544,33 @@
       camera.updateProjectionMatrix();
     }
 
+    private readonly onAnimationStateChange = (): void => {
+      this.lastFrameTime = null;
+      this.queueRender();
+    };
+
     private queueRender(): void {
       const renderer = this.renderer;
       const scene = this.scene;
       const camera = this.camera;
-      if (this.renderRequest || !renderer || !scene || !camera) return;
+      if (this.disposed || this.renderRequest || !renderer || !scene || !camera) return;
 
-      this.renderRequest = requestAnimationFrame(() => {
+      this.renderRequest = requestAnimationFrame((time) => {
         this.renderRequest = 0;
+        const shouldRotate = this.model !== null && this.nearViewport &&
+          !document.hidden && !this.reducedMotion.matches && this.pointerId === null;
+
+        if (shouldRotate && this.model) {
+          // Reset the clock on pauses so returning to the page never jumps ahead.
+          const elapsed = this.lastFrameTime === null ? 0 : Math.min((time - this.lastFrameTime) / 1000, 0.1);
+          this.model.rotation.y += elapsed * IDLE_ROTATION_SPEED;
+          this.lastFrameTime = time;
+        } else {
+          this.lastFrameTime = null;
+        }
+
         renderer.render(scene, camera);
+        if (shouldRotate) this.queueRender();
       });
     }
 
@@ -590,6 +618,8 @@
       this.resizeObserver?.disconnect();
       this.themeObserver?.disconnect();
       this.cancelScheduledLoad();
+      this.reducedMotion.removeEventListener("change", this.onAnimationStateChange);
+      document.removeEventListener("visibilitychange", this.onAnimationStateChange);
       this.canvas.removeEventListener("pointerdown", this.onPointerDown);
       this.canvas.removeEventListener("pointermove", this.onPointerMove);
       this.canvas.removeEventListener("pointerup", this.onPointerEnd);
