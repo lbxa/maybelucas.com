@@ -8,14 +8,14 @@ import WordCount from "@/components/WordCount.astro";
 
 const { slug } = Astro.params;
 if (!slug) {
-  throw new Error("Missing blog slug parameter");
+  throw new Error("Missing writing slug parameter");
 }
 
 const entry = await getEntry("blog", slug);
 
 // TODO Redirect to 404 page
 if (!entry) {
-  throw new Error(`Blog post with slug "${slug}" not found`);
+  throw new Error(`Writing entry with slug "${slug}" not found`);
 }
 
 const { Content } = await render(entry);
@@ -44,10 +44,10 @@ const jsonLd = JSON.stringify(
   2
 );
 
-// Define getStaticPaths to generate paths for all blog posts
+// Generate a writing page for each entry, keeping its existing slug.
 export async function getStaticPaths() {
-  const blogPosts = await getCollection("blog");
-  return blogPosts.map((post) => ({
+  const writing = await getCollection("blog");
+  return writing.map((post) => ({
     params: { slug: post.id },
   }));
 }
@@ -57,14 +57,14 @@ export async function getStaticPaths() {
   banner="apollo"
   title={entry.data.title}
   description={entry.data.description ?? undefined}
-  url={`/posts/${entry.id}`}
+  url={`/writing/${entry.id}`}
   publishedTime={entry.data.date.toISOString?.()}
   type="article"
 >
   <header class="mb-2xl">
     <div class="my-lg">
       <a
-        href="/posts"
+        href="/writing"
         class="font-mono text-xs hover:underline no-underline inline-flex items-center gap-xs text-gray-700 dark:text-gray-400 hover:text-shark-950 hover:dark:text-ivory transition-colors duration-200"
       >
         ← Go back
@@ -79,7 +79,7 @@ export async function getStaticPaths() {
       <span>Written {dayjs(entry.data.date).format(dateFormat)}</span>
     </div>
   </header>
-  <script type="application/ld+json" is:inline>{jsonLd}</script>
+  <script type="application/ld+json" is:inline set:html={jsonLd} />
   <section class="mx-auto">
     <!-- {
       opener && (

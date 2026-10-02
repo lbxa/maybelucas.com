@@ -61,7 +61,7 @@ Configured via `include`/`exclude` on the `solidJs()` and `react()` integrations
 Defined in `src/content.config.ts` with glob loaders over `src/content/<name>`. Only **`blog`** (`title`, `author`, `description`, `date`) and **`problems`** (`title`, `description`, `date`, `source` URL, `topic`, `difficulty` 1–10, `estimatedTime`) have Zod schemas; `about`, `research`, `questions`, `bookshelf`, `coding` are schema-less.
 
 - `problems` uses pattern `**/[^_]*.{md,mdx}` so `_template.mdx` is excluded — underscore-prefixed files are drafts/templates.
-- The entry `id` (filename slug) drives routing: `posts/[slug].astro` and `problems/[slug].astro` use `getStaticPaths()` + `getEntry()`.
+- The entry `id` (filename slug) drives routing: `writing/[slug].astro` and `problems/[slug].astro` use `getStaticPaths()` + `getEntry()`. The writing pages read the `blog` collection; `public/_redirects` permanently redirects legacy `/posts` URLs to `/writing` on Cloudflare Workers static assets.
 - Singleton pages pull specific entries by id, e.g. `index.astro` renders the `about`/`bio-intro` and `about`/`publications` entries. Editing site copy usually means editing MDX in `src/content/about/`, not the `.astro` page. **The homepage body — including which 3D models appear and in what order — lives in `src/content/about/bio-intro.mdx`.**
 
 ### MDX pipeline

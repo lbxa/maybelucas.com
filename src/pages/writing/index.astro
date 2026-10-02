@@ -8,28 +8,28 @@ import Title from "@/components/Title.astro";
 const pageTitle = "All my writing";
 const pageDescription =
   "Browse the full archive of my writing, sorted by recency with reading times.";
-// Keep canonicalPath per page (e.g., /posts/page/2) if pagination/filters are added.
-const canonicalPath = "/posts";
+// Keep canonicalPath per page (e.g., /writing/page/2) if pagination/filters are added.
+const canonicalPath = "/writing";
 const dateFormat = "D MMM";
 
-const posts = (await getCollection("blog")).sort((a, b) =>
+const writing = (await getCollection("blog")).sort((a, b) =>
   dayjs(a.data.date).isBefore(dayjs(b.data.date)) ? 1 : -1,
 );
 
-const postsByYear = posts.reduce(
+const writingByYear = writing.reduce<Array<{ year: string; entries: typeof writing }>>(
   (groups, post) => {
     const year = dayjs(post.data.date).format("YYYY");
     const currentGroup = groups.at(-1);
 
     if (currentGroup?.year === year) {
-      currentGroup.posts.push(post);
+      currentGroup.entries.push(post);
       return groups;
     }
 
-    groups.push({ year, posts: [post] });
+    groups.push({ year, entries: [post] });
     return groups;
   },
-  [] as Array<{ year: string; posts: typeof posts }>,
+  [],
 );
 ---
 
@@ -41,23 +41,23 @@ const postsByYear = posts.reduce(
   type="website"
 >
   <section>
-    <Title>Posts</Title>
+    <Title>Writing</Title>
   </section>
   <section class="flex flex-col gap-2xl">
     {
-      postsByYear.map(({ year, posts }) => (
-        <section aria-labelledby={`posts-${year}`}>
+      writingByYear.map(({ year, entries }) => (
+        <section aria-labelledby={`writing-${year}`}>
           <h2
-            id={`posts-${year}`}
+            id={`writing-${year}`}
             class="!mt-0 !mb-lg font-mono !text-xs !leading-snug font-medium tracking-normal text-gray-600 dark:text-gray-400"
           >
             {year}
           </h2>
-          {posts.map((p) => (
+          {entries.map((p) => (
             <article class="mb-xl grid grid-cols-[minmax(0,1fr)_auto] gap-x-md gap-y-xs sm:gap-x-lg">
               <a
                 class="col-start-1 row-start-1 min-w-0 truncate no-underline hover:underline focus:underline visited:text-blue-700 dark:visited:text-blue-300"
-                href={"/posts/" + p.id}
+                href={"/writing/" + p.id}
               >
                 {p.data.title.trim()}
               </a>

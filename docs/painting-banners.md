@@ -18,7 +18,7 @@ All eleven assets are **1400 × 350**. The rendered image height stays between *
 | --- | --- | --- |
 | Home | `coastal` | `src/assets/images/coastal-banner.webp` |
 | Blurb, Research, Lab | `orion` | `src/assets/images/banners/orion.webp` |
-| Posts and individual posts | `apollo` | `src/assets/images/banners/apollo.webp` |
+| Writing archive and individual entries | `apollo` | `src/assets/images/banners/apollo.webp` |
 | Coding, Problems and individual problems | `minerva` | `src/assets/images/banners/minerva.webp` |
 | 404 | `harbour` | `src/assets/images/banners/harbour.webp` |
 | Questions | `lastSupper` | `src/assets/images/banners/last-supper.webp` |

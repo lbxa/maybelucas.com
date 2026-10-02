@@ -13,12 +13,12 @@ This site contains Lucas's biography, selected work, research, essays, notes, an
 
 ## Writing
 
-- [Writing archive](https://maybelucas.com/posts): Complete, reverse-chronological index of essays with summaries and reading times.
-- [The Hippocampus of AGI](https://maybelucas.com/posts/hippocampus): An essay on whether language models are AGI or one component of a larger system.
-- [The Laws of Software](https://maybelucas.com/posts/software-laws): A collection of laws and principles from software engineering and computing.
-- [Policy Gradients](https://maybelucas.com/posts/policy-gradients): A technical introduction to how reinforcement-learning agents learn by acting.
-- [Zig Doesn't Need an FFI](https://maybelucas.com/posts/zig-interop): A practical exploration of interoperability between Zig and C.
-- [On Research](https://maybelucas.com/posts/on-research): A short argument for ambitious, consequential research.
+- [Writing archive](https://maybelucas.com/writing): Complete, reverse-chronological index of essays with summaries and reading times.
+- [The Hippocampus of AGI](https://maybelucas.com/writing/hippocampus): An essay on whether language models are AGI or one component of a larger system.
+- [The Laws of Software](https://maybelucas.com/writing/software-laws): A collection of laws and principles from software engineering and computing.
+- [Policy Gradients](https://maybelucas.com/writing/policy-gradients): A technical introduction to how reinforcement-learning agents learn by acting.
+- [Zig Doesn't Need an FFI](https://maybelucas.com/writing/zig-interop): A practical exploration of interoperability between Zig and C.
+- [On Research](https://maybelucas.com/writing/on-research): A short argument for ambitious, consequential research.
 
 ## Problems
 

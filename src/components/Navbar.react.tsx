@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 const TOP_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Posts", href: "/posts" },
+  { label: "Writing", href: "/writing" },
   { label: "Research", href: "/research" },
 ];
 
@@ -155,7 +155,9 @@ export default function NavbarReact() {
   return (
     <>
       <div
-        className={`fixed inset-0 z-40 bg-black/20 ${isOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`fixed inset-0 z-40 bg-black/20 ${
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
         style={{ transition: `opacity 300ms ${EASE}` }}
         onClick={closeMenu}
         aria-hidden="true"
@@ -164,9 +166,7 @@ export default function NavbarReact() {
       <nav
         className="fixed top-4 left-1/2 z-50"
         style={{
-          transform: visible
-            ? "translate(-50%, 0)"
-            : "translate(-50%, -120%)",
+          transform: visible ? "translate(-50%, 0)" : "translate(-50%, -120%)",
           opacity: visible ? 1 : 0,
           transition: `transform 400ms ${EASE}, opacity 400ms ${EASE}`,
         }}
@@ -184,7 +184,11 @@ export default function NavbarReact() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${isActive(link.href) ? "text-blue-700 dark:text-blue-300" : ""}`}
+                  className={`no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${
+                    isActive(link.href)
+                      ? "text-blue-700 dark:text-blue-300"
+                      : ""
+                  }`}
                 >
                   [{link.label}]
                 </a>
@@ -246,7 +250,11 @@ export default function NavbarReact() {
                       key={link.href}
                       href={link.href}
                       onClick={closeMenu}
-                      className={`cursor-pointer text-sm tracking-tight no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${isActive(link.href) ? "text-blue-700 dark:text-blue-300" : ""}`}
+                      className={`cursor-pointer text-sm tracking-tight no-underline transition-colors hover:text-shark-600 dark:hover:text-shark-300 ${
+                        isActive(link.href)
+                          ? "text-blue-700 dark:text-blue-300"
+                          : ""
+                      }`}
                     >
                       [{link.label}]
                     </a>
