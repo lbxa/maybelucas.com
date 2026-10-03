@@ -206,9 +206,7 @@ li {
 }
 
 blockquote {
-  @apply border-l-4 border-l-gray-700 text-gray-700 dark:border-l-gray-400 dark:text-gray-400;
-  @apply pl-lg my-lg;
-  font-style: italic;
+  @apply my-lg font-serif text-center italic;
 }
 
 code {

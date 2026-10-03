@@ -71,11 +71,13 @@ export async function getStaticPaths() {
       </a>
     </div>
     <Title>{entry.data.title}</Title>
-    <div class="font-mono text-xs text-gray-700 dark:text-gray-400 flex flex-wrap items-center gap-x-sm">
-      <WordCount content={entry.body ?? ""} />
-      <span>•</span>
-      <ReadingTime content={entry.body ?? ""} />
-      <span>•</span>
+    <div class="font-mono text-xs text-gray-700 dark:text-gray-400 flex flex-col items-start gap-y-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-sm">
+      <div class="flex items-center gap-x-lg sm:gap-x-sm">
+        <WordCount content={entry.body ?? ""} />
+        <span class="hidden sm:inline" aria-hidden="true">•</span>
+        <ReadingTime content={entry.body ?? ""} />
+      </div>
+      <span class="hidden sm:inline" aria-hidden="true">•</span>
       <span>Written {dayjs(entry.data.date).format(dateFormat)}</span>
     </div>
   </header>
