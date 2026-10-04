@@ -5,48 +5,93 @@ date: 2024-09-08
 description: Notes on reproducible hyper productivity.
 ---
 
+import Image from '@components/Image.astro';
+
 Breaking large insurmountable tasks into smaller manageable subtasks enables hyper-productivity. I found that completing a high volume of small tasks results in a larger area under the productivity curve due to a ‘momentum bonus’ when compared to completing fewer monolithic tasks.
 
-Let’s prove it mathematically.
+Let’s model it mathematically.
 
-**Definitions**. Momentum is a mass in motion $p=mv$. Let’s define velocity to be *productivity* and mass to be the *magnitude* of the task being completed.
+**Definition**. Momentum is mass times velocity, given by $p=mv$. Let’s define velocity to be *productivity* and mass to be the *magnitude* of the task being completed.
 
-Momentum is conserved so if two objects $A$ and $B$ collide, elastically, $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ where  $v'$ represents their posterior velocities, respectively. In the inelastic case $m_av_a + m_bv_b = (m_a+m_b)v$ kinetic energy is not conserved and *lost* to the environment. The analogy in the context of productivity is switching from task $A$ to task $B$ after either $A$ has been completed or not. The reason I model context switching as a collision is because it can be classified as elastic or inelastic. Kind of neat.
-
-For a quick refresher:
-
-- Elastic collisions have both momentum and kinetic energy conserved e.g. throwing billiard balls against the edge of a pool table and it comes back just as fast
-- Inelastic collisions only have momentum conserved e.g. you trying to push your friend off a cliff (their kinetic energy is converted mostly to friction on the ground)
-
-The coefficient of restitution is designed to quantify collision elasticity
+Consider a one-dimensional collision between two objects $A$ and $B$ with positive masses $m_a$ and $m_b$. All velocities are measured along the same axis. Assuming negligible net external impulse during the collision, total momentum is conserved, so
 
 $$
-e = \dfrac{v'_b - v_a'}{v_a - v_b}.
+m_av_a + m_bv_b = m_av_a' + m_bv_b'.
 $$
 
-The value of $e$  means that
+Here $v_a'$ and $v_b'$ represent the final velocities of $A$ and $B$, respectively. This conservation law applies to both [elastic and inelastic collisions](https://openstax.org/books/university-physics-volume-1/pages/9-4-types-of-collisions). The analogy in the context of productivity is switching from task $A$ to task $B$ after either $A$ has been completed or not. The reason I model context switching as a collision is that it lets me compare elastic and inelastic cases. Kind of neat.
 
-- $e= 0$ is perfectly inelastic
-- $0< e < 1$ is real-world inelastic
-- $e = 1$ is perfectly elastic
-- $e > 1$ occurs in special cases where the collision results in an explosion
-- $e = \infin$ when there is a [perfect explosion of a rigid system](https://en.wikipedia.org/wiki/Coefficient_of_restitution)
+For a quick refresher.
+
+- An elastic collision conserves total momentum and total kinetic energy, e.g. an idealised collision between two billiard balls.
+- An inelastic collision conserves total momentum under the same assumptions, but some kinetic energy is converted into other forms, such as deformation, thermal energy and sound. If the objects stick together, the collision is perfectly inelastic, e.g. two lumps of putty colliding and sticking.
+
+The [coefficient of restitution](https://mechref.engr.illinois.edu/dyn/rec.html) is designed to quantify collision elasticity. Choose the axis so that $A$ approaches $B$ with $v_a > v_b$. Then $v_a-v_b$ is the relative approach speed and $v_b'-v_a'$ is the relative separation speed, giving
+
+$$
+e = \dfrac{v_b' - v_a'}{v_a - v_b}.
+$$
+
+The value of $e$ tells us what kind of collision we have.
+
+- $e = 0$ is perfectly inelastic; the objects have the same final velocity.
+- $0 < e < 1$ is partially inelastic; relative separation speed is smaller than relative approach speed.
+- $e = 1$ is perfectly elastic.
+- $e > 1$ is superelastic; stored energy is released into translational kinetic energy.
+- $e = \infin$ is the idealised [perfect explosion of a rigid system](https://en.wikipedia.org/wiki/Coefficient_of_restitution) limit.
+
+The $e=\infin$ entry sits outside the collision model. It describes a limit where the approach speed tends to zero but the separation speed tends to a positive value. At exactly zero initial relative velocity, the ratio is undefined.
 
 Back to productivity.
 
-<ins>Case 1</ins>: You fully complete task $A$ and move onto $B$ (elastic)
+<ins>Case 1</ins>. You fully complete task $A$ and move onto $B$ (elastic).
 
-Since $m_av_a + m_bv_b = m_av_a' + m_bv_b'$ your posterior velocities remain unchanged i.e. you haven’t hit the wall yet. At this point you’ll have the maximum momentum prior to starting task $B$. God speed.
+In an elastic collision, total momentum and total kinetic energy are conserved, although the individual velocities generally change. Momentum conservation gives $m_av_a + m_bv_b = m_av_a' + m_bv_b'$. For equal masses in a head-on elastic collision, the objects [exchange velocities](https://openstax.org/books/college-physics-ap-courses/pages/8-4-elastic-collisions-in-one-dimension). Godspeed.
 
-<ins>Case 2</ins>: You don’t fully complete task $A$ and move onto $B$ (inelastic)
+<ins>Case 2</ins>. You don’t fully complete task $A$ and move onto $B$ (perfectly inelastic).
 
-This case falls under the condition where $0\le e < 1$ which means your posterior velocity will decrease from losses to the environment hence $m_av_a + m_bv_b = (m_a+m_b)v$. By definition we know that $v \le v_a, v_b$. We can re-arrange to get
+This case falls under the condition where $e=0$, which means the objects have the same final velocity, hence $m_av_a + m_bv_b = (m_a+m_b)v$. Total kinetic energy decreases, but [an individual object can speed up](https://openstax.org/books/college-physics-ap-courses/pages/8-5-inelastic-collisions-in-one-dimension). We can re-arrange to get
 
 $$
 v = \dfrac{m_av_a + m_bv_b}{m_a+m_b}.
 $$
 
-If we decrease either $m_a$ or $m_b$ whilst increasing $v_a$ or $v_b$ then the final velocity $v$ increases. The real-world analogy is having maximum productivity on the smallest task possible results in a larger final velocity for your next *collision* i.e. task $C$. Unfortunately we don’t live in a world where $v\rightarrow \infin$. Productivity always feels like it tapers at a physical maximum but there are methods of increasing $v_a$ and $v_b$:
+Since the masses are positive, the common final velocity lies between the two initial velocities, so
+
+$$
+\min(v_a,v_b) \le v \le \max(v_a,v_b).
+$$
+
+Increasing either initial velocity whilst holding the masses fixed increases the common final velocity. Holding the initial velocities fixed, increasing one mass shifts the final velocity toward that object’s initial velocity. Reducing both masses by the same proportion leaves the final velocity unchanged.
+
+For a simpler case, set $v_b=0$ and take $v_a>0$, giving
+
+$$
+v = \dfrac{m_a}{m_a+m_b}v_a.
+$$
+
+Now we can rewrite the equation in terms of the mass ratio $m_b/m_a$ and plot $v/v_a$, the fraction of incoming velocity retained.
+
+<Image
+  src="/diagrams/momentum-bonus/mass-ratio.svg"
+  alt="A dimensionless graph of final velocity divided by incoming velocity against target mass divided by incoming mass. The curve is one over one plus the mass ratio and decreases from its excluded zero-mass limit. Equal masses give half the incoming velocity."
+  width={1100}
+  height={640}
+  caption="With the target initially at rest, decreasing its mass increases the common final velocity when the incoming mass and speed are held fixed. The open endpoint is the zero-target-mass limit."
+/>
+
+Holding $m_a$ and $v_a>0$ fixed, reducing $m_b$ increases $v$.
+The real-world analogy is that keeping productivity on task $A$ fixed and moving
+onto a smaller task $B$, initially at rest, leaves a larger incoming velocity
+for your next *collision*, i.e. task $C$.
+
+This is our productivity slider. Want to go faster? Slide to the left.
+What if you want to tackle bigger tasks? Slide to the right. The trade-offs are quantifiable within the model.
+
+Unfortunately we don’t live in a world
+where $v\rightarrow \infin$. Reducing $m_b$ only brings $v$ closer to $v_a$ in this case.
+Productivity always feels like it tapers at a physical maximum but there are
+methods of increasing $v_a$, and hence $v$.
 
 - Great sleep
 - Physical exercise
@@ -54,6 +99,6 @@ If we decrease either $m_a$ or $m_b$ whilst increasing $v_a$ or $v_b$ then the f
 - Frequent breaks
 - Deep focus/flow state triggered from deep curiosity
 
-After applying some from this list and some from your own list, the next step is decreasing $m_a$ and $m_b$ to non-zero values. Personally, $m_a = m_b = 0$ equates to holidays. 
+After applying some from this list and some from your own list, the next step is decreasing the ratio $m_b/m_a$, whilst keeping both masses positive. Personally, $m_a = m_b = 0$ equates to holidays. That’s a joke outside the model. Setting both masses to zero gives $0/0$, so the final velocity is undefined. I guess it depends how good your holidays were!
 
 We always strive to have our days structured as a sequence of case 1 victories, but reality is much more brutal. I find myself frequently in case 2 territory, but now with a new theoretical framework; a new attack angle.

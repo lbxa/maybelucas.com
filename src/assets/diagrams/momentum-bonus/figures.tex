@@ -1,0 +1,47 @@
+% Editable source for the Momentum Bonus mass-ratio graph.
+% Regenerate the SVG with bash scripts/build-momentum-diagrams.sh.
+\ifdefined\MomentumSvg
+  \PassOptionsToPackage{dvisvgm}{xcolor}
+  \PassOptionsToPackage{dvisvgm}{graphicx}
+  \def\pgfsysdriver{pgfsys-dvisvgm.def}
+\fi
+\documentclass[tikz,border=0pt]{standalone}
+\usepackage{amsmath}
+\usepackage{lmodern}
+\usetikzlibrary{arrows.meta}
+
+\tikzset{
+  every picture/.style={font=\fontsize{13}{15}\selectfont, text=black},
+  axis/.style={-{Stealth[length=4pt,width=3pt]}, draw=black, line width=0.6pt},
+  label/.style={font=\fontsize{11}{13}\selectfont, text=black},
+}
+
+\begin{document}
+
+% Dimensionless mass-ratio plot, with the zero-target-mass limit excluded.
+\begin{tikzpicture}
+  \path[fill=white] (0,0) rectangle (11,6.4);
+  \useasboundingbox (0,0) rectangle (11,6.4);
+  \begin{scope}[shift={(1.5,1.45)},x=2cm,y=4.3cm]
+    \foreach \y/\lab in {0.5/{\tfrac12},1/1} {
+      \draw[black,line width=0.6pt] (-0.025,\y) -- (0.025,\y);
+      \node[label,anchor=east] at (-0.08,\y) {$\lab$};
+    }
+    \draw[axis] (0,0) -- (4.22,0);
+    \draw[axis] (0,0) -- (0,1.08);
+    \foreach \x in {1,2,3,4} {
+      \draw[black,line width=0.6pt] (\x,-0.015) -- (\x,0.015);
+      \node[label,below=5pt] at (\x,0) {$\x$};
+    }
+    \node[label,below left=3pt] at (0,0) {$0$};
+    \draw[black,line width=1.1pt,domain=0.035:4,samples=100,smooth]
+      plot (\x,{1/(1+\x)});
+    \draw[black,fill=white,line width=1pt] (0,1) circle (2.6pt);
+    \node at (2.65,0.84) {$\dfrac{v}{v_a}=\dfrac{1}{1+m_b/m_a}$};
+  \end{scope}
+
+  \node[rotate=90] at (0.45,3.6) {$v/v_a$};
+  \node[anchor=east] at (9.95,0.3) {$m_b/m_a$};
+\end{tikzpicture}
+
+\end{document}

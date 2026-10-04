@@ -46,6 +46,8 @@ const {
   sizes,
 } = Astro.props as Props;
 const isOptimizable = typeof src === "object" && src !== null && "src" in src;
+const sourceUrl = typeof src === "string" ? src : src.src;
+const isSvg = /\.svg(?:[?#]|$)/i.test(sourceUrl);
 const captionSourceLabelText = captionSourceLabel ?? "Source";
 const viewerCaptionSourceLabel = captionSourceHref
   ? captionSourceLabelText
@@ -83,10 +85,29 @@ const mainOnLoad = thumbhash
     thumbhash && "thumbhash-placeholder",
     className,
   ]}
+  data-vector-image={isSvg || undefined}
   id={placeholderFigureId}
 >
   {
-    thumbhash ? (
+    isSvg ? (
+      <img
+        src={sourceUrl}
+        alt={alt}
+        width={width ?? (typeof src === "object" ? src.width : undefined)}
+        height={height ?? (typeof src === "object" ? src.height : undefined)}
+        loading={loading ?? "lazy"}
+        decoding={decoding ?? "async"}
+        fetchpriority={fetchpriority}
+        class={`h-auto w-full ${interactiveMainImageClass}`}
+        data-image-viewer-trigger="true"
+        data-image-viewer-alt={alt}
+        data-image-viewer-caption={caption}
+        data-image-viewer-caption-source-href={captionSourceHref}
+        data-image-viewer-caption-source-label={viewerCaptionSourceLabel}
+        tabindex="0"
+        aria-haspopup="dialog"
+      />
+    ) : thumbhash ? (
       <div
         class="placeholder-shell relative w-full overflow-hidden rounded-lg"
         style={aspectStyle}
@@ -215,6 +236,15 @@ const mainOnLoad = thumbhash
 </figure>
 
 <style>
+  figure[data-vector-image] :where(img) {
+    /* Preserve vector sharpness and aspect ratio at every viewport and zoom level. */
+    display: block;
+    height: auto;
+    max-width: 100%;
+    margin-inline: auto;
+    border-radius: 0.5rem;
+  }
+
   figure:not(.thumbhash-placeholder) :where(img) {
     display: block;
     margin-left: auto;
