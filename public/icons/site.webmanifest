@@ -3,13 +3,13 @@
   "short_name": "maybelucas",
   "icons": [
     {
-      "src": "/icons/cube-glass-192x192.png",
+      "src": "/icons/block-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/cube-glass-512x512.png",
+      "src": "/icons/block-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
