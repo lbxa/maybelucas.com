@@ -1,0 +1,41 @@
+---
+title: On Thinking
+author: Lucas
+date: 2026-11-09
+description: Towards a general framework for problem solving
+---
+
+Whenever dealing with a new set of problems apriori, it’s useful to take a step back and decompose the overarching field into it’s primitives, and understand which of them are essential to performing at the $2\sigma$ regime.
+
+If you relentless poke your intellectual horn into problems for long enough they will reveal wonders to you. Most people don’t get past the mental hurdle of patiently solving a problem for several hours. The issue is when you get stuck and don’t know where to go next. Usually, we have an inductive bias indicate the next best action selection. This comes with experience but even the inexperienced can develop a suitable hill climbing algorithm to solve any problem. It’s like a muscle that needs to be developed.
+
+This is a shot at such a framework:
+
+1. Frame the target
+    - Why does repeatedly multiplying by a small number make an RNN’s gradient disappear?
+    - Why must an injective linear map have a trivial kernel?
+    - What observation would show that my proposed robot controller fails?
+    - *“What remains hard even if everything else works?”*
+2. Shrink the problem
+    - Work backwards from the solution
+    - Create an auxiliary problem
+3. Make one justified move
+
+    Knowing where to start is sometimes the most difficult part. If there is no inductive bias forming as you read the question then you need to hill climb.
+
+    - What exactly am I claiming?
+    - Why should that follow?
+    - What is the simplest example?
+    - Can I construct a counterexample?
+    - What changes if I remove one assumption?
+
+    Explore several steps ahead when the consequences are clear. When uncertainty dominates, choose the next step that would teach you the most.
+
+4. Challenge the result
+
+    > How could this be wrong?
+    >
+    - Try a counterexample or an extreme case. For math problems test the boundary conditions
+5. Compress and continue
+6. Reflect and update weights
+    - Try a different solution. Tackle the problem from a different angle.
