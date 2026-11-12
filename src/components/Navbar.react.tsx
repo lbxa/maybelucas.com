@@ -196,38 +196,49 @@ export default function NavbarReact() {
             </div>
             <div className="flex items-center gap-3">
               <button
+                type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
-                className="relative flex size-5 shrink-0 cursor-pointer items-center justify-center"
+                className="relative -mr-3 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-current"
                 aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
+                aria-controls="primary-navigation-menu"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 640 640"
-                  className="absolute size-5 fill-current"
+                  viewBox="0 0 24 24"
+                  className="size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
                   aria-hidden="true"
-                  style={{
-                    transition: `opacity 300ms ${EASE}, transform 500ms ${EASE}`,
-                    opacity: isOpen ? 0 : 1,
-                    transform: isOpen ? "rotate(90deg)" : "rotate(0)",
-                  }}
+                  focusable="false"
                 >
-                  <path d="M96 160C96 142.3 110.3 128 128 128L512 128C529.7 128 544 142.3 544 160C544 177.7 529.7 192 512 192L128 192C110.3 192 96 177.7 96 160zM96 320C96 302.3 110.3 288 128 288L512 288C529.7 288 544 302.3 544 320C544 337.7 529.7 352 512 352L128 352C110.3 352 96 337.7 96 320zM544 480C544 497.7 529.7 512 512 512L128 512C110.3 512 96 497.7 96 480C96 462.3 110.3 448 128 448L512 448C529.7 448 544 462.3 544 480z" />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                    style={{
+                      transform: isOpen
+                        ? "translateY(0px) rotate(45deg)"
+                        : "translateY(-3px) rotate(0deg)",
+                    }}
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                    style={{
+                      transform: isOpen
+                        ? "translateY(0px) rotate(-45deg)"
+                        : "translateY(3px) rotate(0deg)",
+                    }}
+                  />
                 </svg>
-                <span
-                  className="absolute text-xl leading-none"
-                  style={{
-                    transition: `opacity 300ms ${EASE}, transform 500ms ${EASE}`,
-                    opacity: isOpen ? 1 : 0,
-                    transform: isOpen ? "rotate(0)" : "rotate(-90deg)",
-                  }}
-                >
-                  ×
-                </span>
               </button>
             </div>
           </div>
 
           <div
+            id="primary-navigation-menu"
             className="grid"
             style={{
               gridTemplateRows: isOpen ? "1fr" : "0fr",

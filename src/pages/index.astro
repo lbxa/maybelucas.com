@@ -2,6 +2,8 @@
 import Socials from "@components/Socials.astro";
 import ContentLayout from "@layouts/ContentLayout.astro";
 import Image from "@components/Image.astro";
+import CoastalPoppiesBanner from "@components/CoastalPoppiesBanner.astro";
+import coastalPoster from "@/assets/images/coastal-poppies-poster.webp";
 import { getEntry, render } from "astro:content";
 import profileImage from "../assets/images/profile.webp";
 import treeImage from "../assets/images/tree.webp";
@@ -21,14 +23,21 @@ const { Content: PublicationsContent } = await render(publications);
 ---
 
 <ContentLayout
-  banner="coastal"
   title="Lucas Barbosa"
   ogTitle="Lucas Barbosa - Software, AI, and Life"
   ogDescription="Thoughtful essays on software engineering, AI, startups, and personal growth. Explore ideas, practical lessons, and experiments."
   url="/"
   type="profile"
 >
-  <div class="relative -mt-16 mb-xl w-32 md:-mt-[5.5rem] md:w-44 rounded-lg ring-4 ring-ivory dark:ring-shark-950">
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href={coastalPoster.src}
+    fetchpriority="high"
+  />
+  <CoastalPoppiesBanner slot="banner" />
+  <div class="home-profile relative mb-xl w-32 md:w-44 rounded-lg ring-4 ring-ivory dark:ring-shark-950">
     <Image
       src={profileImage}
       alt="Portrait of Lucas Barbosa"
@@ -64,3 +73,30 @@ const { Content: PublicationsContent } = await render(publications);
     quality={82}
   /> -->
 </ContentLayout>
+
+<style>
+  .home-profile {
+    margin-top: -4rem;
+    transition: margin-top 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (min-width: 768px) {
+    .home-profile {
+      margin-top: -5.5rem;
+    }
+  }
+
+  :global(body:has(.coastal-poppies-banner[open])) {
+    overflow-anchor: none;
+  }
+
+  :global(.coastal-poppies-banner[open] ~ main) .home-profile {
+    margin-top: 1.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-profile {
+      transition: none;
+    }
+  }
+</style>

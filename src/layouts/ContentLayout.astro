@@ -10,9 +10,11 @@ type Props = ComponentProps<typeof RootLayout> & {
 };
 
 const { title, banner, ...seoProps } = Astro.props;
+const hasBanner = Boolean(banner) || Astro.slots.has("banner");
 ---
 
 <RootLayout title={title} {...seoProps}>
+  <slot name="head" slot="head" />
   <slot name="background" />
 
   <div
@@ -20,12 +22,14 @@ const { title, banner, ...seoProps } = Astro.props;
   >
   </div>
 
-  {banner && <PaintingBanner painting={banner} />}
+  <slot name="banner">
+    {banner && <PaintingBanner painting={banner} />}
+  </slot>
 
   <main
     class:list={[
       "flex flex-col mx-auto px-lg md:px-0 max-w-screen-sm min-h-dvh relative z-20",
-      !banner && "pt-20",
+      !hasBanner && "pt-20",
     ]}
   >
     <article class="grow">

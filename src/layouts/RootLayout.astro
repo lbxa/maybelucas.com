@@ -50,6 +50,7 @@ const structuredData = JSON.stringify([
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f5f5f5" id="theme-color" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <slot name="head" />
 
     <!-- DNS prefetch for external domains -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
