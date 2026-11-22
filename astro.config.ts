@@ -3,7 +3,7 @@ import mdx from "@astrojs/mdx";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import rehypeExternalLinks from "rehype-external-links";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import solidJs from "@astrojs/solid-js";
 import react from "@astrojs/react";
 import svelte from "@astrojs/svelte";
@@ -33,6 +33,7 @@ export default defineConfig({
   },
 
   vite: {
+    plugins: [tailwindcss()],
     server: {
       strictPort: true,
     },
@@ -80,7 +81,6 @@ export default defineConfig({
         },
       },
     }),
-    tailwind(),
     solidJs({
       include: ["**/*.tsx", "**/*.solid.tsx"],
       exclude: ["**/*.react.tsx"],

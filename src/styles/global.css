@@ -1,128 +1,132 @@
-/* reset.css */
-/* https://hankchizljaw.com/wrote/a-modern-css-reset/ */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@import "./tailwind.css";
 
-html {
-  @apply bg-ivory dark:bg-shark-950;
-  @apply text-shark-950 dark:text-ivory;
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-  height: -webkit-fill-available;
-}
+@layer base {
+  /* reset.css */
+  /* https://hankchizljaw.com/wrote/a-modern-css-reset/ */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-/* Tetris tetromino palette. Darker shades in light mode for contrast
-   against the ivory background; engine-default shades in dark mode. */
-:root {
-  --tetris-i: #2563eb; /* blue-600  (dark: blue-400  #60a5fa) */
-  --tetris-o: #d97706; /* amber-600 (dark: amber-400 #fbbf24) */
-  --tetris-t: #7c3aed; /* violet-600(dark: violet-400 #a78bfa) */
-  --tetris-j: #1d4ed8; /* blue-700  (dark: blue-500  #3b82f6) */
-  --tetris-l: #ea580c; /* orange-600(dark: orange-500 #f97316) */
-  --tetris-s: #16a34a; /* green-600 (dark: green-500 #22c55e) */
-  --tetris-z: #dc2626; /* red-600   (dark: red-500   #ef4444) */
-}
+  html {
+    @apply bg-ivory dark:bg-shark-950;
+    @apply text-shark-950 dark:text-ivory;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    height: -webkit-fill-available;
+  }
 
-html.dark {
-  --tetris-i: #60a5fa;
-  --tetris-o: #fbbf24;
-  --tetris-t: #a78bfa;
-  --tetris-j: #3b82f6;
-  --tetris-l: #f97316;
-  --tetris-s: #22c55e;
-  --tetris-z: #ef4444;
-}
+  /* Tetris tetromino palette. Darker shades in light mode for contrast
+     against the ivory background; engine-default shades in dark mode. */
+  :root {
+    --tetris-i: #2563eb; /* blue-600  (dark: blue-400  #60a5fa) */
+    --tetris-o: #d97706; /* amber-600 (dark: amber-400 #fbbf24) */
+    --tetris-t: #7c3aed; /* violet-600(dark: violet-400 #a78bfa) */
+    --tetris-j: #1d4ed8; /* blue-700  (dark: blue-500  #3b82f6) */
+    --tetris-l: #ea580c; /* orange-600(dark: orange-500 #f97316) */
+    --tetris-s: #16a34a; /* green-600 (dark: green-500 #22c55e) */
+    --tetris-z: #dc2626; /* red-600   (dark: red-500   #ef4444) */
+  }
 
-body {
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  /* mobile viewport bug fix */
-  /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
-  min-height: -webkit-fill-available;
-}
+  html.dark {
+    --tetris-i: #60a5fa;
+    --tetris-o: #fbbf24;
+    --tetris-t: #a78bfa;
+    --tetris-j: #3b82f6;
+    --tetris-l: #f97316;
+    --tetris-s: #22c55e;
+    --tetris-z: #ef4444;
+  }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
+  body {
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    /* mobile viewport bug fix */
+    /* https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/ */
+    min-height: -webkit-fill-available;
+  }
 
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
 
-/* Global Typography and Content Styles */
-p,
-blockquote,
-code,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-  @apply mb-sm;
-}
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-serif;
-  line-height: 1.3;
-  letter-spacing: -0.025em;
-}
+  /* Global Typography and Content Styles */
+  p,
+  blockquote,
+  code,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+    @apply mb-sm;
+  }
 
-h1 {
-  @apply text-4xl/snug md:text-5xl/snug mb-2xl mt-2xl font-light;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+  }
 
-h2 {
-  @apply text-3xl/snug md:text-4xl/snug mt-2xl mb-xl font-light;
-}
+  h1 {
+    @apply text-4xl/snug md:text-5xl/snug mb-2xl mt-2xl font-light;
+  }
 
-h3 {
-  @apply text-2xl/snug md:text-3xl/snug mt-2xl mb-lg font-medium;
-}
+  h2 {
+    @apply text-3xl/snug md:text-4xl/snug mt-2xl mb-xl font-light;
+  }
 
-h4 {
-  @apply text-xl/snug md:text-2xl/snug mt-2xl mb-md font-medium;
-}
+  h3 {
+    @apply text-2xl/snug md:text-3xl/snug mt-2xl mb-lg font-medium;
+  }
 
-h5 {
-  @apply text-lg/snug md:text-xl/snug mt-xl mb-sm font-semibold;
-}
+  h4 {
+    @apply text-xl/snug md:text-2xl/snug mt-2xl mb-md font-medium;
+  }
 
-h6 {
-  @apply text-base/snug md:text-lg/snug mt-lg mb-sm font-semibold uppercase;
-}
+  h5 {
+    @apply text-lg/snug md:text-xl/snug mt-xl mb-sm font-semibold;
+  }
 
-p {
-  @apply mb-lg;
-}
+  h6 {
+    @apply text-base/snug md:text-lg/snug mt-lg mb-sm font-semibold uppercase;
+  }
 
-a {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-  transition: all 0.2s ease;
+  p {
+    @apply mb-lg;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: all 0.2s ease;
+  }
 }
 
 .blog-content a {
@@ -165,48 +169,50 @@ a {
   text-decoration: none;
 }
 
-ul,
-ol {
-  @apply mb-md pl-md md:pl-lg;
-}
+@layer base {
+  ul,
+  ol {
+    @apply mb-md pl-md md:pl-lg;
+  }
 
-ul {
-  list-style-type: disc;
-}
+  ul {
+    list-style-type: disc;
+  }
 
-ol {
-  list-style-type: decimal;
-}
+  ol {
+    list-style-type: decimal;
+  }
 
-ul ul {
-  list-style-type: circle;
-}
+  ul ul {
+    list-style-type: circle;
+  }
 
-ul ul ul {
-  list-style-type: square;
-}
+  ul ul ul {
+    list-style-type: square;
+  }
 
-ol ol {
-  list-style-type: lower-alpha;
-}
+  ol ol {
+    list-style-type: lower-alpha;
+  }
 
-ol ol ol {
-  list-style-type: lower-roman;
-}
+  ol ol ol {
+    list-style-type: lower-roman;
+  }
 
-ul ul,
-ol ul,
-ul ol,
-ol ol {
-  @apply mt-sm mb-0 ml-0;
-}
+  ul ul,
+  ol ul,
+  ul ol,
+  ol ol {
+    @apply mt-sm mb-0 ml-0;
+  }
 
-li {
-  @apply mb-sm ml-md leading-relaxed;
-}
+  li {
+    @apply mb-sm ml-md leading-relaxed;
+  }
 
-blockquote {
-  @apply my-lg font-serif text-center italic;
+  blockquote {
+    @apply my-lg font-serif text-center italic;
+  }
 }
 
 code {

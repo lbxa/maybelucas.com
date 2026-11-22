@@ -1,5 +1,6 @@
 ---
 import NyuBudgetModel from "@components/NyuBudgetModel.svelte";
+import "@/styles/tailwind.css";
 
 export const prerender = true;
 
@@ -33,10 +34,6 @@ const description =
 </html>
 
 <style is:global>
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-
   @layer base {
     *,
     *::before,
